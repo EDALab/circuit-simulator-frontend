@@ -10,6 +10,7 @@ import { Graph } from './graph';
 import { styleRule } from './styleRule';
 import { PartClass } from './parts';
 import { partsAll, partsNow } from './collection';
+import { filter } from './filter';
 import { nodeId } from './nodeID';
 import './test';
 
@@ -750,15 +751,15 @@ action.on('click', '#fab-run', function (event) {
                 }
             }
 
-            var output = nodeId(example_input);
-            console.log(output);
+            // console.log("Original data: " + n_copy);
+            // console.log("Simplified data: " + example_input);
 
+            var filteredCircuit = filter(n_copy);
             // console.log(filteredCircuit);
-            // console.log("Exmaple_input's node identification");
-            // console.log(nodeId(example_input))
-            // console.log("filteredCircuit's node identification");
-            // console.log(nodeId(filteredCircuit))
-
+            var output = nodeId(filteredCircuit);
+            // console.log(output);
+            // var output = nodeId(example_input);
+            // console.log("Transferred data: " + output);
 
             var xhr = new XMLHttpRequest();
             var url = 'http://127.0.0.1:5000/simulate/Test';
@@ -767,7 +768,6 @@ action.on('click', '#fab-run', function (event) {
             // Create a state change callback 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-
                     // Print received data from server 
                     result.innerHTML = this.responseText;
                     alert(responseText);
@@ -794,7 +794,7 @@ action.on('click', '#fab-run', function (event) {
     let error = '';
 
     // alert(diagrams[0]);
-    alert("This graph contains " + diagrams.length + " Components");
+    // alert("This graph contains " + diagrams.length + " Components");
     // alert("First part's id is " + diagrams[0].id);
 
     if (!diagrams.length) {

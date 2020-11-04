@@ -60,6 +60,7 @@ var example_output = {
 
 let nodeList = [[]];
 let gndList = [];
+let firstNode = true;
 
 function findLastPin(pin) {
     /**
@@ -108,9 +109,10 @@ function appendNode(pin) {
      * 
      */
     var newNode = [pin];
-    if (nodeList === [[]]) {
+    if (firstNode) {
         // If the node List is originally empty, change the first node to the newNode.
         nodeList[0] = newNode;
+        firstNode = false;
     } else {
         nodeList.push(newNode);
     }
@@ -118,14 +120,19 @@ function appendNode(pin) {
 }
 
 function joinNode(pin, node) {
-    nodeList[node].push(pin);
+    if (!(nodeList[node].includes(pin))) {
+        nodeList[node].push(pin);
+        return node;
+    }
+    return -1;
 }
 
 function migrateNode(oldNode, newNode) {
-    nodeListToString();
-    console.log("oldNode = " + oldNode + ", newNode = " + newNode);
     var migratedPin = [];
     for (var pin in nodeList[oldNode]) {
+        if (pin.includes("isEqual")) {
+            break;
+        }
         if (!(nodeList[newNode].includes(nodeList[oldNode][pin]))) {
             // If a pin exists in oldNode but not in newNode, migrate
             joinNode(nodeList[oldNode][pin], newNode);
@@ -150,20 +157,25 @@ function migrateNode(oldNode, newNode) {
 
 function nodeListToString() {
     var retVal = "";
-    console.log("nodeList's length: " + nodeList.length);
     for (var i = 0; i < nodeList.length; i++) {
-        retVal.concat("For node " + i + ": ");
-        console.log("nodeList[" + i + "]'s length: " + nodeList[i].length);
+        retVal = retVal.concat("For node " + i + ": ");
         for (var j = 0; j < nodeList[i].length; j++) {
-            console.log("nodeList[" + i + "][" + j + "] " + nodeList[i][j]);
-            retVal.concat(nodeList[i][j] + " ");
+            retVal = retVal.concat(nodeList[i][j] + " ");
         }
-        retVal.concat("\n");
+        retVal = retVal.concat("\n");
     }
-    console.log("retVal: " + retVal);
+    console.log("retVal: \n" + retVal);
     return retVal;
 }
 
+function pinCmp(pin_cmp, node) {
+    for (var pin in nodeList[node]) {
+        if (nodeList[node][pin] == pin_cmp) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function nodeId(input) {
     // Empty the nodeList
@@ -179,14 +191,13 @@ function nodeId(input) {
             var pinNode = findPin(pinName);
             if (pinNode == -1) {
                 pinNode = appendNode(pinName);
-                alert(nodeListToString);
             }
             // Add all the connected lines to the pin node
             var connLines = component["connect"][0].split(" ");
             var minNode = pinNode;
             for (var connLine = 0; connLine < connLines.length; connLine++) {
                 joinNode(connLines[connLine], pinNode);
-                var lowestIndex = findPin(connLine);
+                var lowestIndex = findPin(connLines[connLine]);
                 if (lowestIndex != -1) {
                     minNode = Math.min(minNode, lowestIndex);
                 }
@@ -206,11 +217,11 @@ function nodeId(input) {
                 pinNode = appendNode(pinName);
             }
             var connLines = component["connect"][0].split(" ");
-            connLines.push(component["connect"][1].split(" "));
+            connLines = connLines.concat(component["connect"][1].split(" "));
             var minNode = pinNode;
             for (var connLine = 0; connLine < connLines.length; connLine++) {
                 joinNode(connLines[connLine], pinNode);
-                var lowestIndex = findPin(connLine);
+                var lowestIndex = findPin(connLines[connLine]);
                 if (lowestIndex != -1) {
                     minNode = Math.min(minNode, lowestIndex);
                 }
@@ -218,7 +229,6 @@ function nodeId(input) {
             if (minNode < pinNode) {
                 migrateNode(pinNode, minNode);
             }
-
         } else if (
             // This branch is for two node components
             component.type == "V" ||
@@ -272,15 +282,15 @@ function nodeId(input) {
             var minNode1 = pinNode1;
 
             for (var connLine = 0; connLine < connLines0.length; connLine++) {
-                joinNode(connLines[connLine], pinNode0);
-                var lowestIndex = findPin(connLine);
+                joinNode(connLines0[connLine], pinNode0);
+                var lowestIndex = findPin(connLines0[connLine]);
                 if (lowestIndex != -1) {
                     minNode0 = Math.min(minNode0, lowestIndex);
                 }
             }
             for (var connLine = 0; connLine < connLines1.length; connLine++) {
-                joinNode(connLines[connLine], pinNode1);
-                var lowestIndex = findPin(connLine);
+                joinNode(connLines1[connLine], pinNode1);
+                var lowestIndex = findPin(connLines1[connLine]);
                 if (lowestIndex != -1) {
                     minNode1 = Math.min(minNode1, lowestIndex);
                 }
@@ -288,16 +298,16 @@ function nodeId(input) {
             if (minNode0 < pinNode0) {
                 migrateNode(pinNode0, minNode0);
             }
-            if (minNode0 < pinNode0) {
-                migrateNode(pinNode0, minNode0);
+            if (minNode1 < pinNode1) {
+                migrateNode(pinNode1, minNode1);
             }
 
             // Output as json
             var compJson = {
                 "name": component.id,
                 "value": component.value[0],
-                "node0": component.connect[0],
-                "node1": component.connect[1],
+                "node1": component.connect[0],
+                "node2": component.connect[1],
             }
 
             if (output[component.type]) {
@@ -308,33 +318,28 @@ function nodeId(input) {
         }
     }
 
-    nodeListToString();
+
 
     for (var components in output) {
         for (var component = 0; component < output[components].length; component++) {
-            console.log("findPin input is: " + output[components][component]["node0"] + " and " + output[components][component]["node1"]);
-            var nodeInd0 = findPin(output[components][component]["node0"]);
-            var nodeInd1 = findPin(output[components][component]["node1"]);
-            console.log(components + "[" + component + "]'s node0 is " + nodeInd0 + ", node1 is " + nodeInd1);
+            var nodeInd0 = findPin(output[components][component]["node1"]);
+            var nodeInd1 = findPin(output[components][component]["node2"]);
             for (var gndIndex = 0; gndIndex < gndList.length; gndIndex++) {
-                console.log(nodeList);
-                console.log(nodeList[0]);
-                console.log(nodeList[1]);
-                console.log(nodeList[2]);
-                console.log(nodeList[3]);
-                console.log(nodeList[4]);
-                console.log(nodeList[5]);
-                console.log(nodeList[6]);
-                if (nodeList[nodeInd0].contains(gndList[gndIndex])) {
+                if (pinCmp(gndList[gndIndex], nodeInd0)) {
                     nodeInd0 = "gnd";
                 }
-                if (nodeList[nodeInd1].contains(gndList[gndIndex])) {
+                if (pinCmp(gndList[gndIndex], nodeInd1)) {
                     nodeInd1 = "gnd";
                 }
             }
-
-            output[components][component]["node0"] = nodeInd0;
-            output[components][component]["node1"] = nodeInd1;
+            if (typeof (nodeInd0) == "number") {
+                nodeInd0 = nodeInd0.toString();
+            }
+            if (typeof (nodeInd1) == "number") {
+                nodeInd1 = nodeInd1.toString();
+            }
+            output[components][component]["node1"] = nodeInd0;
+            output[components][component]["node2"] = nodeInd1;
         }
     }
     return output
