@@ -10,6 +10,7 @@ import { Graph } from './graph';
 import { styleRule } from './styleRule';
 import { PartClass } from './parts';
 import { partsAll, partsNow } from './collection';
+import { nodeId } from './nodeID';
 import './test';
 
 //全局变量定义
@@ -676,7 +677,7 @@ action.on('click', '#fab-run', function (event) {
         .map(function (n) {
             const n_copy = n
             const temp_json = {
-                "Voltage Source": {
+                "Voltage Source": {
                     "name": "input",
                     "value": 10,
                     "node1": "in",
@@ -701,7 +702,52 @@ action.on('click', '#fab-run', function (event) {
                     }
                 ]
             }
-            console.log(JSON.stringify(n_copy));
+            const example_input = {
+                "0": {
+                    "id": "GND_1",
+                    "type": "REF",
+                    "value": [],
+                    "connect": ["line_2"]
+                },
+                "1": {
+                    "id": "line_2",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["GND_1-0", "line_1 line_3"]
+                },
+                "2": {
+                    "id": "line_3",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["line_1 line_2", "V_1-1"]
+                },
+                "3": {
+                    "id": "V_1",
+                    "type": "V",
+                    "value": [12],
+                    "connect": ["line_4", "line_3"]
+                },
+                "4": {
+                    "id": "line_4",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["VM_1-0", "V_1-0"]
+                },
+                "5": {
+                    "id": "VM_1",
+                    "type": "VM",
+                    "value": [],
+                    "connect": ["line_4", "line_1"]
+                },
+                "6": {
+                    "id": "line_1",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["VM_1-1", "line_3 line_2"]
+                }
+            }
+            // console.log(JSON.stringify(n_copy));
+            console.log(nodeId(example_input))
             var xhr = new XMLHttpRequest();
             var url = 'http://127.0.0.1:5000/simulate/Test';
             xhr.open('POST', url, true);
@@ -716,7 +762,7 @@ action.on('click', '#fab-run', function (event) {
                 }
             };
             // Converting JSON data to string 
-            var data = JSON.stringify(n_copy);
+            var data = JSON.stringify(temp_json);
             // Sending data with the request 
             xhr.send(data);
 
@@ -727,7 +773,6 @@ action.on('click', '#fab-run', function (event) {
             //     console.log("Request complete! response:", res);
             // });
 
-            // post("http://192.168.0.1:5000/simulate/Test", { mode: 'no-cors' }, { body: JSON.stringify(n_copy) });
             const ans = { solver: new Solver(n) };
             ans.iteration = ans.solver.solve();
             return (ans);

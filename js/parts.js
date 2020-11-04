@@ -1,5 +1,5 @@
 'use strict';
-//外部模块引用
+// Import external packages
 import { $ } from './jquery';
 import { Point } from './point';
 import { Matrix } from './matrix';
@@ -8,17 +8,17 @@ import { schMap } from './maphash';
 import { styleRule } from './styleRule';
 import { partsAll, partsNow } from './collection';
 
-//常量定义
+// Define Constants
 const u = undefined,
     actionArea = $('#area-of-parts'),
     rotateMatrix = [
-        new Matrix([[0, 1], [-1, 0]]),  //顺时针
-        new Matrix([[0, -1], [1, 0]]),  //逆时针
-        new Matrix([[1, 0], [0, -1]]),  //沿X轴镜像
-        new Matrix([[-1, 0], [0, 1]])   //沿Y轴镜像
+        new Matrix([[0, 1], [-1, 0]]),  //CW
+        new Matrix([[0, -1], [1, 0]]),  //CCW
+        new Matrix([[1, 0], [0, -1]]),  //X-Mirror
+        new Matrix([[-1, 0], [0, 1]])   //Y-Mirror
     ];
 
-//器件原型描述
+// Device Description
 const originalElectronic = {
     /*
      * 此处是器件的基本属性及外形形态描述——
@@ -35,19 +35,19 @@ const originalElectronic = {
      *
      */
 
-    //电阻
-    resistance : {
-        readWrite: {  //可读写数据
+    // Resistance
+    resistance: {
+        readWrite: {  // Editable Data
             id: 'R_',
             input: ['10k']
         },
-        readOnly: {
+        readOnly: {   // Readonly Data
             partType: 'resistance',
-            inputTxt: ['阻值：'],
+            inputTxt: ['Resistance：'],
             parameterUnit: ['Ω'],
             visionNum: 2,
             txtLocate: 14,
-            //器件初始为横向
+            // Default Orientation is horizontal
             padding: [0, 1],
             margin: 1,
             pointInfor: [
@@ -68,24 +68,24 @@ const originalElectronic = {
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-30', 'y':'-13', 'width':'60', 'height':'26', 'class':'focus-part'
+                        'x': '-30', 'y': '-13', 'width': '60', 'height': '26', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '电阻器'
+            introduction: 'Resistance'
         }
     },
-    //电容
-    capacitor : {
-        readWrite : {
-            id : 'C_',
-            input : ['100u']
+    // Capacitor
+    capacitor: {
+        readWrite: {
+            id: 'C_',
+            input: ['100u']
         },
-        readOnly: {  //只读数据
+        readOnly: {
             partType: 'capacitor',
-            inputTxt: ['电容量：'],
+            inputTxt: ['Capacitance：'],
             parameterUnit: ['F'],
             visionNum: 2,
             pointInfor: [
@@ -98,7 +98,7 @@ const originalElectronic = {
                     direction: [1, 0]
                 }
             ],
-            //器件初始为横向
+            // Default Orientation is horizontal
             padding: [0, 1],
             margin: 1,
             txtLocate: 22,
@@ -110,24 +110,24 @@ const originalElectronic = {
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-30', 'y':'-15', 'width':'60', 'height':'30', 'class':'focus-part'
+                        'x': '-30', 'y': '-15', 'width': '60', 'height': '30', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '电容器'
+            introduction: 'Capacitor'
         }
     },
-    //电感
-    inductance : {
-        readWrite : {
-            id : 'L_',
-            input : ['10u']
+    // Inductor
+    inductance: {
+        readWrite: {
+            id: 'L_',
+            input: ['10u']
         },
-        readOnly : {
+        readOnly: {
             partType: 'inductance',
-            inputTxt: ['电感量：'],
+            inputTxt: ['Inductance：'],
             parameterUnit: ['H'],
             visionNum: 2,
             pointInfor: [
@@ -140,7 +140,6 @@ const originalElectronic = {
                     direction: [1, 0]
                 }
             ],
-            //器件初始为横向
             padding: [0, 1],
             margin: 1,
             txtLocate: 13,
@@ -152,25 +151,25 @@ const originalElectronic = {
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-30', 'y':'-10', 'width':'60', 'height':'15', 'class':'focus-part'
+                        'x': '-30', 'y': '-10', 'width': '60', 'height': '15', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '电感器'
+            introduction: 'Inductor'
         }
     },
-    //直流电压源
+    // DC Voltage Source
     dc_voltage_source: {
-        readWrite : {
-            id : 'V_',
-            input : ['12']
+        readWrite: {
+            id: 'V_',
+            input: ['12']
         },
-        readOnly : {
-            partType : 'dc_voltage_source',
+        readOnly: {
+            partType: 'dc_voltage_source',
             inputTxt: ['电压值：'],
-            parameterUnit:['V'],
+            parameterUnit: ['V'],
             visionNum: 2,
             pointInfor: [
                 {
@@ -194,25 +193,25 @@ const originalElectronic = {
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-16', 'y':'-30', 'width':'32', 'height':'60', 'class':'focus-part'
+                        'x': '-16', 'y': '-30', 'width': '32', 'height': '60', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '直流电压源'
+            introduction: '直流电压源'
         }
     },
     //交流电压源
     ac_voltage_source: {
-        readWrite : {
-            id : 'V_',
-            input : ['220', '50', '0', '0']
+        readWrite: {
+            id: 'V_',
+            input: ['220', '50', '0', '0']
         },
-        readOnly : {
-            partType : 'ac_voltage_source',
+        readOnly: {
+            partType: 'ac_voltage_source',
             inputTxt: ['峰值电压：', '频率：', '偏置电压：', '相位角：'],
-            parameterUnit:['V', 'Hz', 'V', '°'],
+            parameterUnit: ['V', 'Hz', 'V', '°'],
             visionNum: 3,
             pointInfor: [
                 {
@@ -232,7 +231,7 @@ const originalElectronic = {
                 {
                     'name': 'circle',
                     'attribute': {
-                        'cx': '0', 'cy': '0', 'r': '19', 'class':'white-fill'
+                        'cx': '0', 'cy': '0', 'r': '19', 'class': 'white-fill'
                     }
                 },
                 {
@@ -242,25 +241,25 @@ const originalElectronic = {
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-20', 'y':'-30', 'width':'40', 'height':'60', 'class':'focus-part'
+                        'x': '-20', 'y': '-30', 'width': '40', 'height': '60', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '交流电压源'
+            introduction: '交流电压源'
         }
     },
     //直流电流源
     dc_current_source: {
-        readWrite : {
-            id : 'I_',
-            input : ['10']
+        readWrite: {
+            id: 'I_',
+            input: ['10']
         },
-        readOnly : {
-            partType : 'dc_current_source',
+        readOnly: {
+            partType: 'dc_current_source',
             inputTxt: ['电流值：'],
-            parameterUnit:['A'],
+            parameterUnit: ['A'],
             visionNum: 2,
             pointInfor: [
                 {
@@ -280,7 +279,7 @@ const originalElectronic = {
                 {
                     'name': 'circle',
                     'attribute': {
-                        'cx': '0', 'cy': '0', 'r': '19', 'class':'white-fill'
+                        'cx': '0', 'cy': '0', 'r': '19', 'class': 'white-fill'
                     }
                 },
                 {
@@ -292,28 +291,28 @@ const originalElectronic = {
                 {
                     'name': 'polygon',
                     'attribute': {
-                        'points': '0,-14 -5,-4 0,-8 5,-4', 'class' : 'fill-whole'//'fill' : '#3B4449', 'stroke-width' : '0.5', 'stroke-linecap' : 'square'
+                        'points': '0,-14 -5,-4 0,-8 5,-4', 'class': 'fill-whole'//'fill' : '#3B4449', 'stroke-width' : '0.5', 'stroke-linecap' : 'square'
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-20', 'y':'-30', 'width':'40', 'height':'60', 'class':'focus-part'
+                        'x': '-20', 'y': '-30', 'width': '40', 'height': '60', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '直流电流源'
+            introduction: '直流电流源'
         }
     },
     //参考地
     reference_ground: {
         readWrite: {
-            id : 'GND_'
+            id: 'GND_'
         },
-        readOnly : {
-            partType : 'reference_ground',
-            inputTxt :[],
-            visionNum : 0,
+        readOnly: {
+            partType: 'reference_ground',
+            inputTxt: [],
+            visionNum: 0,
             pointInfor: [
                 {
                     position: [0, -20],
@@ -322,7 +321,7 @@ const originalElectronic = {
             ],
             padding: 0,
             margin: 1,
-            txtLocate:12,
+            txtLocate: 12,
             aspectInfor: [
                 {
                     'name': 'path',
@@ -331,22 +330,22 @@ const originalElectronic = {
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-15', 'y':'-10', 'width':'30', 'height':'26', 'class':'focus-part'
+                        'x': '-15', 'y': '-10', 'width': '30', 'height': '26', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '参考地'
+            introduction: '参考地'
         }
     },
     //电压表
     voltage_meter: {
-        readWrite : {
-            id : 'VM_'
+        readWrite: {
+            id: 'VM_'
         },
-        readOnly : {
-            partType : 'voltage_meter',
+        readOnly: {
+            partType: 'voltage_meter',
             inputTxt: [],
             visionNum: 1,
             pointInfor: [
@@ -379,26 +378,26 @@ const originalElectronic = {
                 {
                     'name': 'path',
                     'attribute': {
-                        'd': 'M-7,-6L0,7L7,-6', 'class':'part-rotate'
+                        'd': 'M-7,-6L0,7L7,-6', 'class': 'part-rotate'
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-20', 'y':'-30', 'width':'40', 'height':'60', 'class':'focus-part'
+                        'x': '-20', 'y': '-30', 'width': '40', 'height': '60', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '电压表'
+            introduction: '电压表'
         }
     },
     //电流表
     current_meter: {
-        readWrite : {
-            id : 'IM_'
+        readWrite: {
+            id: 'IM_'
         },
-        readOnly : {
-            partType : 'current_meter',
+        readOnly: {
+            partType: 'current_meter',
             inputTxt: [],
             visionNum: 1,
             pointInfor: [
@@ -424,24 +423,24 @@ const originalElectronic = {
                 {
                     'name': 'polygon',
                     'attribute': {
-                        'points': '12,0 2,-6 6,0 2,6', 'class':'fill-whole'
+                        'points': '12,0 2,-6 6,0 2,6', 'class': 'fill-whole'
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-10', 'y':'-8', 'width':'20', 'height':'16', 'class':'focus-part'
+                        'x': '-10', 'y': '-8', 'width': '20', 'height': '16', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '电流表'
+            introduction: '电流表'
         }
     },
     //二极管
-    diode : {
+    diode: {
         readWrite: {  //可读写数据
             id: 'VD_',
-            input : ['1', '0.5', '5M']
+            input: ['1', '0.5', '5M']
         },
         readOnly: {  //只读数据
             partType: 'diode',
@@ -471,24 +470,24 @@ const originalElectronic = {
                 {
                     'name': 'polygon',
                     'attribute': {
-                        'points': '0,-11 -13,11 13,11', 'class' : 'fill-whole'//'fill' : '#3B4449', 'stroke-width' : '1'
+                        'points': '0,-11 -13,11 13,11', 'class': 'fill-whole'//'fill' : '#3B4449', 'stroke-width' : '1'
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-13', 'y':'-30', 'width':'26', 'height':'60', 'class':'focus-part'
+                        'x': '-13', 'y': '-30', 'width': '26', 'height': '60', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction : '二极管'
+            introduction: '二极管'
         }
     },
     //NPN三极管
-    transistor_npn : {
+    transistor_npn: {
         readWrite: {  //可读写数据
             id: 'Q_',
-            input : ['40', '26', '0.6', '1']
+            input: ['40', '26', '0.6', '1']
         },
         readOnly: {  //只读数据
             partType: 'transistor_npn',
@@ -522,14 +521,14 @@ const originalElectronic = {
                 {
                     'name': 'polygon',
                     'attribute': {
-                        'points' : '0,0 -11,-6 -7,0 -11,6', 'class' : 'fill-whole',
-                        'transform' : 'translate(18, 26.4) rotate(38.7)'
+                        'points': '0,0 -11,-6 -7,0 -11,6', 'class': 'fill-whole',
+                        'transform': 'translate(18, 26.4) rotate(38.7)'
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-10', 'y':'-30', 'width':'30', 'height':'60', 'class':'focus-part'
+                        'x': '-10', 'y': '-30', 'width': '30', 'height': '60', 'class': 'focus-part'
                     }
                 }
             ],
@@ -537,10 +536,10 @@ const originalElectronic = {
         }
     },
     //运放
-    operational_amplifier : {
+    operational_amplifier: {
         readWrite: {  //可读写数据
             id: 'OP_',
-            input : ['120', '80M', '60']  //['120', '1G', '80M', '60']
+            input: ['120', '80M', '60']  //['120', '1G', '80M', '60']
         },
         readOnly: {  //只读数据
             partType: 'operational_amplifier',
@@ -568,25 +567,25 @@ const originalElectronic = {
                 {
                     'name': 'path',
                     'attribute': {
-                        'd': 'M-25,-35V35L25,0Z', 'class' : 'white-fill'
+                        'd': 'M-25,-35V35L25,0Z', 'class': 'white-fill'
                     }
                 },
                 {
                     'name': 'path',
                     'attribute': {
-                        'd' : 'M-40,-20H-25M-40,20H-25M25,0H40'
+                        'd': 'M-40,-20H-25M-40,20H-25M25,0H40'
                     }
                 },
                 {
-                    'name':'path',
+                    'name': 'path',
                     'attribute': {
-                        'd': 'M-22,-20H-16M-22,20H-16M-19,17V23', 'stroke-width' : '1'
+                        'd': 'M-22,-20H-16M-22,20H-16M-19,17V23', 'stroke-width': '1'
                     }
                 },
                 {
-                    'name':'rect',
+                    'name': 'rect',
                     'attribute': {
-                        'x': '-30', 'y':'-35', 'width':'60', 'height':'70', 'class':'focus-part'
+                        'x': '-30', 'y': '-35', 'width': '60', 'height': '70', 'class': 'focus-part'
                     }
                 }
 
@@ -1026,7 +1025,7 @@ PartClass.prototype = {
             attr = ['padding', 'margin'];
 
         for (let i = 0; i < 2; i++) {
-            const margin = {left:0, right:0, top:0, bottom:0},
+            const margin = { left: 0, right: 0, top: 0, bottom: 0 },
                 data = this[attr[i]],
                 tempMargin = [
                     [0, - data.top],
@@ -1042,7 +1041,7 @@ PartClass.prototype = {
                     if (ma[0] > 0) {
                         margin.right = ma[0];
                     } else {
-                        margin.left =  - ma[0];
+                        margin.left = - ma[0];
                     }
                 } else if (ma[1] !== 0) {
                     if (ma[1] > 0) {
@@ -1132,7 +1131,7 @@ PartClass.prototype = {
         //器件属性与说明文字的最大宽度
         let introWidth = 3, unitWidth = 0;
         for (let i = 0; i < inputGroup.length; i++) {
-            const intro = i ? this.inputTxt[i - 1] : '编号：',
+            const intro = i ? this.inputTxt[i - 1] : 'Name：',
                 input = i ? this.input[i - 1] : this.id,
                 unit = i ? this.parameterUnit[i - 1] : '';
             //把输入的u替换成μ
@@ -1143,7 +1142,7 @@ PartClass.prototype = {
             const group = $(inputGroup[i]),
                 groupIntro = group.childrens(0),
                 groupUnit = group.childrens(3),
-                groupInput =  group.childrens(1);
+                groupInput = group.childrens(1);
 
             group.attr('id', 'parameter-' + i);
             groupIntro.text(intro);
@@ -1154,7 +1153,7 @@ PartClass.prototype = {
             unitWidth = groupUnit.width() > unitWidth ? groupUnit.width() : unitWidth;
         }
         //inputDOM比器件的input数组多了一个器件ID
-        this.input.length --;
+        this.input.length--;
         //DOM位置调整
         inputGroup.childrens('span.st-menu-input-unit').attr('style', 'left:' + (introWidth + 100) + 'px');
         inputGroup.childrens('input, span.st-menu-input-bar').attr('style', 'left:' + introWidth + 'px');
@@ -1164,15 +1163,15 @@ PartClass.prototype = {
             boxTopBegin, sharpposx, sharpposy, triangledown;
 
         //输入框的宽度最小175
-        boxWidth = (120 + introWidth + unitWidth) < 175 ? 175: (120 + introWidth + unitWidth),
-        boxLeftBegin = - boxWidth / 2,                      //输入框宽度的一半
-        boxLeftEnd = boxLeftBegin,
-        boxTopEnd = - parameterDiv.height() - 20,           //输入框高度加上倒三角
-        boxTopBegin = boxTopEnd / 2 + 20,
+        boxWidth = (120 + introWidth + unitWidth) < 175 ? 175 : (120 + introWidth + unitWidth),
+            boxLeftBegin = - boxWidth / 2,                      //输入框宽度的一半
+            boxLeftEnd = boxLeftBegin,
+            boxTopEnd = - parameterDiv.height() - 20,           //输入框高度加上倒三角
+            boxTopBegin = boxTopEnd / 2 + 20,
 
-        sharpposx = this.position[0] * zoom + SVG[0],       //器件中心点在屏幕中实际的位置
-        sharpposy = this.position[1] * zoom + SVG[1],
-        triangledown = $('#parameter-menu-triangle-down');  //参数框的小倒三角
+            sharpposx = this.position[0] * zoom + SVG[0],       //器件中心点在屏幕中实际的位置
+            sharpposy = this.position[1] * zoom + SVG[1],
+            triangledown = $('#parameter-menu-triangle-down');  //参数框的小倒三角
 
         //倒三角默认在对话框中间
         triangledown.css('left', '50%');
@@ -1196,7 +1195,7 @@ PartClass.prototype = {
 
         //参数框的打开关闭动画
         const keyframeOpen = new styleRule('parameter-open'),
-            keyframeEnd  = new styleRule('parameter-close');
+            keyframeEnd = new styleRule('parameter-close');
 
         keyframeOpen.setRule('0%', {
             opacity: 0,
@@ -1247,10 +1246,10 @@ PartClass.prototype = {
             parameter.addClass('parameter-error-0');
             error = false;
         }
-        for (let i = 0; i < this.inputTxt.length; i++){
+        for (let i = 0; i < this.inputTxt.length; i++) {
             const inputData = $('#parameter-' + (i + 1) + ' input', parameter).prop('value');
             const temp_input_match = inputData.match(dataMatch);
-            if (!temp_input_match || (inputData !== temp_input_match[0])){
+            if (!temp_input_match || (inputData !== temp_input_match[0])) {
                 parameter.addClass('parameter-error-' + (i + 1));
                 error = false;
             }
@@ -1382,8 +1381,8 @@ partsNow.extend({
                     }
                     //导线回溯
                     if (part.connect.every((con) =>
-                            con.split(' ').map((item) => partsAll.findPart(item))
-                                .some((item) => (!item) || self.has(item) || item.current.status))) {
+                        con.split(' ').map((item) => partsAll.findPart(item))
+                            .some((item) => (!item) || self.has(item) || item.current.status))) {
                         //当前导线整体移动
                         part.current.status = 'move';
                         part.connect.join(' ').split(' ')
@@ -1463,8 +1462,8 @@ partsNow.extend({
         });
         //是否能放置器件
         if (self.every((n) => (n.current.status === 'move')
-                ? !n.isCover()
-                : true)) {
+            ? !n.isCover()
+            : true)) {
             //首先放置整体移动的器件
             self.forEach((n) => {
                 if (n.current.status === 'move') {
@@ -1641,8 +1640,8 @@ for (const i in originalElectronic) {
 $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
     const elem = $(n),
         special = {
-            'reference_ground' : 'scale(1.3, 1.3)',
-            'transistor_npn' : 'translate(-5,0)'
+            'reference_ground': 'scale(1.3, 1.3)',
+            'transistor_npn': 'translate(-5,0)'
         },
         type = elem.attr('id'),
         part = originalElectronic[type].readOnly.aspectInfor,
@@ -1651,9 +1650,9 @@ $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
             ? 'translate(40,40) ' + special[type]
             : 'translate(40,40)',
         icon = elem.append($('<svg>', SVG_NS, {
-            'x' : '0px',
-            'y' : '0px',
-            'viewBox' : '0 0 80 80'
+            'x': '0px',
+            'y': '0px',
+            'viewBox': '0 0 80 80'
         })).append($('<g>', SVG_NS));
 
     icon.attr('transform', bias);
