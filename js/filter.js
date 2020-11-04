@@ -45,9 +45,7 @@ const filter = (jsonString) => {
   }
 };
 
-// Read the input json file
-// put the input json file in the same directory as this file
-// change './Example_Input.json' to './the-json-input-filename.json'
+// change “PATH” to the name of your input file (ex. Example_Input.json)
 fs.readFile('./Example_Input.json', 'utf8', (err, jsonString) => {
   if (err) {
     console.log('File read failed:', err);
@@ -57,11 +55,9 @@ fs.readFile('./Example_Input.json', 'utf8', (err, jsonString) => {
   // the variable "result" is the parsing result
   const result = JSON.stringify(output);
 
-  // Write the parsed data to a new json file
   fs.writeFile('./filterResult.json', result, (error) => {
     if (error) {
       console.log('Error writing file', error);
     }
   });
 });
-export { filter };
