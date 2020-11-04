@@ -59,6 +59,7 @@ var example_output = {
 }
 
 let nodeList = [[]];
+let gndList = [];
 
 function findLastPin(pin) {
     /**
@@ -107,7 +108,12 @@ function appendNode(pin) {
      * 
      */
     var newNode = [pin];
-    nodeList.push(newNode);
+    if (nodeList === [[]]) {
+        // If the node List is originally empty, change the first node to the newNode.
+        nodeList[0] = newNode;
+    } else {
+        nodeList.push(newNode);
+    }
     return nodeList.length - 1;
 }
 
@@ -173,6 +179,7 @@ function nodeId(input) {
             var pinNode = findPin(pinName);
             if (pinNode == -1) {
                 pinNode = appendNode(pinName);
+                alert(nodeListToString);
             }
             // Add all the connected lines to the pin node
             var connLines = component["connect"][0].split(" ");
@@ -189,6 +196,7 @@ function nodeId(input) {
             if (minNode < pinNode) {
                 migrateNode(pinNode, minNode);
             }
+            gndList.push(component.id + "-0");
 
         } else if (component.type == "W") {
             // Wire
@@ -308,6 +316,23 @@ function nodeId(input) {
             var nodeInd0 = findPin(output[components][component]["node0"]);
             var nodeInd1 = findPin(output[components][component]["node1"]);
             console.log(components + "[" + component + "]'s node0 is " + nodeInd0 + ", node1 is " + nodeInd1);
+            for (var gndIndex = 0; gndIndex < gndList.length; gndIndex++) {
+                console.log(nodeList);
+                console.log(nodeList[0]);
+                console.log(nodeList[1]);
+                console.log(nodeList[2]);
+                console.log(nodeList[3]);
+                console.log(nodeList[4]);
+                console.log(nodeList[5]);
+                console.log(nodeList[6]);
+                if (nodeList[nodeInd0].contains(gndList[gndIndex])) {
+                    nodeInd0 = "gnd";
+                }
+                if (nodeList[nodeInd1].contains(gndList[gndIndex])) {
+                    nodeInd1 = "gnd";
+                }
+            }
+
             output[components][component]["node0"] = nodeInd0;
             output[components][component]["node1"] = nodeInd1;
         }

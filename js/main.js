@@ -675,7 +675,10 @@ action.on('click', '#fab-run', function (event) {
     // Create a diagram consisting the 
     const diagrams = partsAll.connectGraph()
         .map(function (n) {
+
             const n_copy = n
+            // var filteredCircuit = filter(n_copy);
+
             const temp_json = {
                 "Voltage Source": {
                     "name": "input",
@@ -746,8 +749,17 @@ action.on('click', '#fab-run', function (event) {
                     "connect": ["VM_1-1", "line_3 line_2"]
                 }
             }
-            // console.log(JSON.stringify(n_copy));
-            console.log(nodeId(example_input))
+
+            var output = nodeId(example_input);
+            console.log(output);
+
+            // console.log(filteredCircuit);
+            // console.log("Exmaple_input's node identification");
+            // console.log(nodeId(example_input))
+            // console.log("filteredCircuit's node identification");
+            // console.log(nodeId(filteredCircuit))
+
+
             var xhr = new XMLHttpRequest();
             var url = 'http://127.0.0.1:5000/simulate/Test';
             xhr.open('POST', url, true);
@@ -758,11 +770,12 @@ action.on('click', '#fab-run', function (event) {
 
                     // Print received data from server 
                     result.innerHTML = this.responseText;
+                    alert(responseText);
 
                 }
             };
             // Converting JSON data to string 
-            var data = JSON.stringify(temp_json);
+            var data = JSON.stringify(output);
             // Sending data with the request 
             xhr.send(data);
 
