@@ -64,3 +64,4 @@ fs.readFile('./Example_Input.json', 'utf8', (err, jsonString) => {
     }
   });
 });
+export { filter };
