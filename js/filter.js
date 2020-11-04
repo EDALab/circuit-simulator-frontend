@@ -45,6 +45,7 @@ const filter = (jsonString) => {
   }
 };
 
+const readAndWrite = () => {
 // change “PATH” to the name of your input file (ex. Example_Input.json)
 fs.readFile('./Example_Input.json', 'utf8', (err, jsonString) => {
   if (err) {
@@ -61,3 +62,7 @@ fs.readFile('./Example_Input.json', 'utf8', (err, jsonString) => {
     }
   });
 });
+}
+
+
+export { readAndWrite };
