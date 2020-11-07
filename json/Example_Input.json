@@ -1,0 +1,374 @@
+{
+    "0": {
+        "id": "GND_1",
+        "rotate": {
+            "0": [
+                1,
+                0
+            ],
+            "1": [
+                0,
+                1
+            ]
+        },
+        "position": {
+            "0": 1580,
+            "1": 800
+        },
+        "connect": [
+            "line_2"
+        ],
+        "input": [],
+        "current": {},
+        "circle": [
+            {
+                "0": {},
+                "length": 1
+            }
+        ],
+        "elementDOM": {
+            "0": {},
+            "length": 1
+        }
+    },
+    "1": {
+        "id": "line_2",
+        "way": {
+            "0": {
+                "0": 1580,
+                "1": 780
+            },
+            "1": {
+                "0": 1580,
+                "1": 760
+            },
+            "length": 2
+        },
+        "circle": [
+            {
+                "0": {},
+                "length": 1
+            },
+            {
+                "0": {},
+                "length": 1
+            }
+        ],
+        "connect": [
+            "GND_1-0",
+            "line_1 line_3"
+        ],
+        "partType": "line",
+        "current": {},
+        "elementDOM": {
+            "0": {},
+            "length": 1
+        }
+    },
+    "2": {
+        "id": "line_3",
+        "way": {
+            "0": {
+                "0": 1580,
+                "1": 760
+            },
+            "1": {
+                "0": 1620,
+                "1": 760
+            },
+            "length": 2
+        },
+        "circle": [
+            {
+                "0": {},
+                "length": 1
+            },
+            {
+                "0": {},
+                "length": 1
+            }
+        ],
+        "connect": [
+            "line_1 line_2",
+            "V_1-1"
+        ],
+        "partType": "line",
+        "current": {},
+        "elementDOM": {
+            "0": {},
+            "length": 1
+        }
+    },
+    "3": {
+        "id": "V_1",
+        "input": [
+            "12"
+        ],
+        "rotate": {
+            "0": [
+                1,
+                0
+            ],
+            "1": [
+                0,
+                1
+            ]
+        },
+        "position": {
+            "0": 1620,
+            "1": 720
+        },
+        "connect": [
+            "line_4",
+            "line_3"
+        ],
+        "current": {},
+        "circle": [
+            {
+                "0": {},
+                "length": 1
+            },
+            {
+                "0": {},
+                "length": 1
+            }
+        ],
+        "elementDOM": {
+            "0": {},
+            "length": 1
+        }
+    },
+    "4": {
+        "id": "line_4",
+        "way": {
+            "0": {
+                "0": 1540,
+                "1": 680
+            },
+            "1": {
+                "0": 1620,
+                "1": 680
+            },
+            "length": 2
+        },
+        "circle": [
+            {
+                "0": {},
+                "length": 1
+            },
+            {
+                "0": {},
+                "length": 1
+            }
+        ],
+        "connect": [
+            "VM_1-0",
+            "V_1-0"
+        ],
+        "partType": "line",
+        "current": {
+            "zoom": 1,
+            "SVG": [
+                -184,
+                -487
+            ],
+            "gridL": [
+                1620,
+                660
+            ],
+            "pageL": {
+                "0": 1541,
+                "1": 679
+            },
+            "gridS": {
+                "0": 1340,
+                "1": 180
+            },
+            "startNode": {
+                "0": 1540,
+                "1": 680
+            },
+            "mouseGrid": {
+                "8134": {
+                    "0": {
+                        "0": 1540,
+                        "1": 680
+                    },
+                    "1": {
+                        "0": 1620,
+                        "1": 680
+                    },
+                    "length": 2
+                }
+            },
+            "enforceAlign": {
+                "label": {
+                    "part": {
+                        "id": "V_1",
+                        "input": [
+                            "12"
+                        ],
+                        "rotate": {
+                            "0": [
+                                1,
+                                0
+                            ],
+                            "1": [
+                                0,
+                                1
+                            ]
+                        },
+                        "position": {
+                            "0": 1620,
+                            "1": 720
+                        },
+                        "connect": [
+                            "line_4",
+                            "line_3"
+                        ],
+                        "current": {},
+                        "circle": [
+                            {
+                                "0": {},
+                                "length": 1
+                            },
+                            {
+                                "0": {},
+                                "length": 1
+                            }
+                        ],
+                        "elementDOM": {
+                            "0": {},
+                            "length": 1
+                        }
+                    },
+                    "sub": 0,
+                    "node": {
+                        "0": 1620,
+                        "1": 680
+                    }
+                },
+                "flag": false,
+                "onPart": true,
+                "part": {
+                    "id": "V_1",
+                    "input": [
+                        "12"
+                    ],
+                    "rotate": {
+                        "0": [
+                            1,
+                            0
+                        ],
+                        "1": [
+                            0,
+                            1
+                        ]
+                    },
+                    "position": {
+                        "0": 1620,
+                        "1": 720
+                    },
+                    "connect": [
+                        "line_4",
+                        "line_3"
+                    ],
+                    "current": {},
+                    "circle": [
+                        {
+                            "0": {},
+                            "length": 1
+                        },
+                        {
+                            "0": {},
+                            "length": 1
+                        }
+                    ],
+                    "elementDOM": {
+                        "0": {},
+                        "length": 1
+                    }
+                }
+            },
+            "initTrend": {
+                "0": 0,
+                "1": -1
+            }
+        },
+        "elementDOM": {
+            "0": {},
+            "length": 1
+        }
+    },
+    "5": {
+        "id": "VM_1",
+        "rotate": {
+            "0": [
+                1,
+                0
+            ],
+            "1": [
+                0,
+                1
+            ]
+        },
+        "position": {
+            "0": 1540,
+            "1": 720
+        },
+        "connect": [
+            "line_4",
+            "line_1"
+        ],
+        "input": [],
+        "current": {},
+        "circle": [
+            {
+                "0": {},
+                "length": 1
+            },
+            {
+                "0": {},
+                "length": 1
+            }
+        ],
+        "elementDOM": {
+            "0": {},
+            "length": 1
+        }
+    },
+    "6": {
+        "id": "line_1",
+        "way": {
+            "0": {
+                "0": 1540,
+                "1": 760
+            },
+            "1": {
+                "0": 1580,
+                "1": 760
+            },
+            "length": 2
+        },
+        "circle": [
+            {
+                "0": {},
+                "length": 1
+            },
+            {
+                "0": {},
+                "length": 1
+            }
+        ],
+        "connect": [
+            "VM_1-1",
+            "line_3 line_2"
+        ],
+        "partType": "line",
+        "current": {},
+        "elementDOM": {
+            "0": {},
+            "length": 1
+        }
+    }
+}

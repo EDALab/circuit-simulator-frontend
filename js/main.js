@@ -10,6 +10,8 @@ import { Graph } from './graph';
 import { styleRule } from './styleRule';
 import { PartClass } from './parts';
 import { partsAll, partsNow } from './collection';
+import { filter } from './filter';
+import { nodeId } from './nodeID';
 import './test';
 import filter from './filter';
 
@@ -675,9 +677,12 @@ action.on('click', '#fab-run', function (event) {
     // Create a diagram consisting the 
     const diagrams = partsAll.connectGraph()
         .map(function (n) {
+
             const n_copy = n
+            // var filteredCircuit = filter(n_copy);
+
             const temp_json = {
-                "Voltage Source": {
+                "Voltage Source": {
                     "name": "input",
                     "value": 10,
                     "node1": "in",
@@ -702,10 +707,67 @@ action.on('click', '#fab-run', function (event) {
                     }
                 ]
             }
+
+            const example_input = {
+                "0": {
+                    "id": "GND_1",
+                    "type": "REF",
+                    "value": [],
+                    "connect": ["line_2"]
+                },
+                "1": {
+                    "id": "line_2",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["GND_1-0", "line_1 line_3"]
+                },
+                "2": {
+                    "id": "line_3",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["line_1 line_2", "V_1-1"]
+                },
+                "3": {
+                    "id": "V_1",
+                    "type": "V",
+                    "value": [12],
+                    "connect": ["line_4", "line_3"]
+                },
+                "4": {
+                    "id": "line_4",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["VM_1-0", "V_1-0"]
+                },
+                "5": {
+                    "id": "VM_1",
+                    "type": "VM",
+                    "value": [],
+                    "connect": ["line_4", "line_1"]
+                },
+                "6": {
+                    "id": "line_1",
+                    "type": "W",
+                    "value": [],
+                    "connect": ["VM_1-1", "line_3 line_2"]
+                }
+            }
+
             const filteredCircuit = JSON.stringify(n_copy);
             console.log('input json is ' + filteredCircuit);
             const filterResult = JSON.stringify(filter(filteredCircuit));
             console.log('filter result is ' + filterResult);
+          
+            // console.log("Original data: " + n_copy);
+            // console.log("Simplified data: " + example_input);
+
+            var filteredCircuit = filter(n_copy);
+            // console.log(filteredCircuit);
+            var output = nodeId(filteredCircuit);
+            // console.log(output);
+            // var output = nodeId(example_input);
+            // console.log("Transferred data: " + output);
+
             var xhr = new XMLHttpRequest();
             var url = 'http://127.0.0.1:5000/simulate/Test';
             xhr.open('POST', url, true);
@@ -713,14 +775,14 @@ action.on('click', '#fab-run', function (event) {
             // Create a state change callback 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-
                     // Print received data from server 
                     result.innerHTML = this.responseText;
+                    alert(responseText);
 
                 }
             };
             // Converting JSON data to string 
-            var data = JSON.stringify(n_copy);
+            var data = JSON.stringify(output);
             // Sending data with the request 
             xhr.send(data);
 
@@ -731,7 +793,6 @@ action.on('click', '#fab-run', function (event) {
             //     console.log("Request complete! response:", res);
             // });
 
-            // post("http://192.168.0.1:5000/simulate/Test", { mode: 'no-cors' }, { body: JSON.stringify(n_copy) });
             const ans = { solver: new Solver(n) };
             ans.iteration = ans.solver.solve();
             return (ans);
@@ -740,7 +801,7 @@ action.on('click', '#fab-run', function (event) {
     let error = '';
 
     // alert(diagrams[0]);
-    alert("This graph contains " + diagrams.length + " Components");
+    // alert("This graph contains " + diagrams.length + " Components");
     // alert("First part's id is " + diagrams[0].id);
 
     if (!diagrams.length) {
