@@ -13,6 +13,7 @@ import { partsAll, partsNow } from './collection';
 import { filter } from './filter';
 import { nodeId } from './nodeID';
 import './test';
+import filter from './filter';
 
 //全局变量定义
 const doc = document,
@@ -706,6 +707,7 @@ action.on('click', '#fab-run', function (event) {
                     }
                 ]
             }
+
             const example_input = {
                 "0": {
                     "id": "GND_1",
@@ -751,6 +753,11 @@ action.on('click', '#fab-run', function (event) {
                 }
             }
 
+            const filteredCircuit = JSON.stringify(n_copy);
+            console.log('input json is ' + filteredCircuit);
+            const filterResult = JSON.stringify(filter(filteredCircuit));
+            console.log('filter result is ' + filterResult);
+          
             // console.log("Original data: " + n_copy);
             // console.log("Simplified data: " + example_input);
 
