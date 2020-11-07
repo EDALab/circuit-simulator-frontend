@@ -11,6 +11,7 @@ import { styleRule } from './styleRule';
 import { PartClass } from './parts';
 import { partsAll, partsNow } from './collection';
 import './test';
+import filter from './filter';
 
 //全局变量定义
 const doc = document,
@@ -701,7 +702,10 @@ action.on('click', '#fab-run', function (event) {
                     }
                 ]
             }
-            console.log(JSON.stringify(n_copy));
+            const filteredCircuit = JSON.stringify(n_copy);
+            console.log('input json is ' + filteredCircuit);
+            const filterResult = JSON.stringify(filter(filteredCircuit));
+            console.log('filter result is ' + filterResult);
             var xhr = new XMLHttpRequest();
             var url = 'http://127.0.0.1:5000/simulate/Test';
             xhr.open('POST', url, true);
