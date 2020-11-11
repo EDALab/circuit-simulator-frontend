@@ -20,18 +20,18 @@ const u = undefined,
 
 // Device Description
 const originalElectronic = {
-    /*
-     * 此处是器件的基本属性及外形形态描述——
-     *   id             ID编号前缀
-     *   partType       器件种类
-     *   input          输入的值
-     *   inputTxt       显示输入值的说明
-     *   visionNum      器件参数面板显示参数的数量
-     *   pointInfor     管脚方向以及相对器件中心的位置
-     *   padding        器件内边距
-     *   margin         器件外边距
-     *   txtLocate      显示的txt文本相对中心的距离
-     *   criteriaTrend  电流相对于管脚所连接节点的方向
+    /**
+     * This part is to describe the basic parameters and shape of a component
+     *   id             The component name
+     *   partType       The component type
+     *   input          The component parameters
+     *   inputTxt       The description of the component parameters
+     *   visionNum      Number of parameters displayed on the parameter panel
+     *   pointInfor     Node position and orientation
+     *   padding        The component padding
+     *   margin         The component margin
+     *   txtLocate      The distance between the text and the center of the component
+     *   criteriaTrend  Direction of the current with respect to the connection nodes
      *
      */
 
@@ -168,7 +168,7 @@ const originalElectronic = {
         },
         readOnly: {
             partType: 'dc_voltage_source',
-            inputTxt: ['电压值：'],
+            inputTxt: ['Voltage：'],
             parameterUnit: ['V'],
             visionNum: 2,
             pointInfor: [
@@ -181,15 +181,21 @@ const originalElectronic = {
                     direction: [0, 1]
                 }
             ],
-            //器件初始为竖向
+            // Default Orientation is horizontal
             padding: 1,
             margin: [1, 0],
             txtLocate: 20,
             aspectInfor: [
                 {
+                    'name': 'circle',
+                    'attribute': {
+                        'cx': '0', 'cy': '0', 'r': '19', 'class': 'white-fill'
+                    }
+                },
+                {
                     'name': 'path',
                     'attribute': {
-                        'd': 'M0,-40V-5M0,5V40M-16,-5H16M-10.5,5H10.5M-10,-12H-5M-7.5,-15V-9'
+                        'd': 'M0,-40V-19M0,19V40M0,-15V-9M-3,-12H3M-3,11H3', 'fill': 'none', 'stroke': 'black'
                     }
                 },
                 {
@@ -199,10 +205,10 @@ const originalElectronic = {
                     }
                 }
             ],
-            introduction: '直流电压源'
+            introduction: 'DC Voltage Source'
         }
     },
-    //交流电压源
+    // AC Voltage Source
     ac_voltage_source: {
         readWrite: {
             id: 'V_',
@@ -210,7 +216,7 @@ const originalElectronic = {
         },
         readOnly: {
             partType: 'ac_voltage_source',
-            inputTxt: ['峰值电压：', '频率：', '偏置电压：', '相位角：'],
+            inputTxt: ['Vp：', 'Freq：', 'Bias：', 'Phase：'],
             parameterUnit: ['V', 'Hz', 'V', '°'],
             visionNum: 3,
             pointInfor: [
@@ -223,7 +229,7 @@ const originalElectronic = {
                     direction: [0, 1]
                 }
             ],
-            //器件初始为竖向
+            // Default Orientation is horizontal
             padding: 1,
             margin: [1, 0],
             txtLocate: 24,
@@ -237,7 +243,7 @@ const originalElectronic = {
                 {
                     'name': 'path',
                     'attribute': {
-                        'd': 'M0,-40V-19.5M0,19.5V40M0,-16V-8M-4,-12H4M-4,15H4M-10,0Q-5,-10,0,0M0,0Q5,10,10,0'
+                        'd': 'M-0,-40V-19M0,19V40M-12,0Q-6,-12 0,0M0,0Q6,12 12,0'
                     }
                 },
                 {
@@ -247,10 +253,10 @@ const originalElectronic = {
                     }
                 }
             ],
-            introduction: '交流电压源'
+            introduction: 'AC Voltage Source'
         }
     },
-    //直流电流源
+    // DC Current Source
     dc_current_source: {
         readWrite: {
             id: 'I_',
@@ -271,7 +277,7 @@ const originalElectronic = {
                     direction: [0, -1]
                 }
             ],
-            //器件初始为竖向
+            // Default Orientation is horizontal
             padding: [1, 0],
             margin: 1,
             txtLocate: 20,
@@ -301,10 +307,10 @@ const originalElectronic = {
                     }
                 }
             ],
-            introduction: '直流电流源'
+            introduction: 'DC Current Source'
         }
     },
-    //参考地
+    // Reference Point
     reference_ground: {
         readWrite: {
             id: 'GND_'
@@ -336,10 +342,10 @@ const originalElectronic = {
                     }
                 }
             ],
-            introduction: '参考地'
+            introduction: 'Reference Point'
         }
     },
-    //电压表
+    // Voltmeter
     voltage_meter: {
         readWrite: {
             id: 'VM_'
@@ -358,7 +364,7 @@ const originalElectronic = {
                     direction: [0, 1]
                 }
             ],
-            //器件初始为竖向
+            // Default Orientation is vertical
             padding: 1,
             margin: [1, 0],
             txtLocate: 24,
@@ -388,10 +394,10 @@ const originalElectronic = {
                     }
                 }
             ],
-            introduction: '电压表'
+            introduction: 'Voltmeter'
         }
     },
-    //电流表
+    // Ammeter
     current_meter: {
         readWrite: {
             id: 'IM_'
@@ -402,49 +408,56 @@ const originalElectronic = {
             visionNum: 1,
             pointInfor: [
                 {
-                    position: [-20, 0],
-                    direction: [-1, 0]
+                    position: [0, -40],
+                    direction: [0, -1]
                 },
                 {
-                    position: [20, 0],
-                    direction: [1, 0]
+                    position: [0, 40],
+                    direction: [0, 1]
                 }
             ],
-            padding: 0,
-            margin: 1,
-            txtLocate: 11,
+            // Default Orientation is horizontal
+            padding: 1,
+            margin: [1, 0],
+            txtLocate: 24,
             aspectInfor: [
                 {
-                    'name': 'path',
+                    'name': 'circle',
                     'attribute': {
-                        'd': 'M-20,0H20'
+                        'cx': '0', 'cy': '0', 'r': '19', 'class': 'white-fill'
                     }
                 },
                 {
-                    'name': 'polygon',
+                    'name': 'path',
                     'attribute': {
-                        'points': '12,0 2,-6 6,0 2,6', 'class': 'fill-whole'
+                        'd': 'M0,-40V-20M0,20V40M0,-16V-8M-4,-12H4M-4,12H4'
+                    }
+                },
+                {
+                    'name': 'path',
+                    'attribute': {
+                        'd': 'M-5,7L0,-5L5,7M-2.5,1H2.5', 'class': 'part-rotate'
                     }
                 },
                 {
                     'name': 'rect',
                     'attribute': {
-                        'x': '-10', 'y': '-8', 'width': '20', 'height': '16', 'class': 'focus-part'
+                        'x': '-20', 'y': '-30', 'width': '40', 'height': '60', 'class': 'focus-part'
                     }
                 }
             ],
-            introduction: '电流表'
+            introduction: 'Ammeter'
         }
     },
-    //二极管
+    //diode
     diode: {
-        readWrite: {  //可读写数据
+        readWrite: {
             id: 'VD_',
             input: ['1', '0.5', '5M']
         },
-        readOnly: {  //只读数据
+        readOnly: {
             partType: 'diode',
-            inputTxt: ['导通电压：', '导通电阻：', '关断电阻：'],
+            inputTxt: ['Breakover V:', 'Breakover R', 'Shutoff R：'],
             parameterUnit: ['V', 'Ω', 'Ω'],
             visionNum: 1,
             txtLocate: 18,
@@ -480,18 +493,18 @@ const originalElectronic = {
                     }
                 }
             ],
-            introduction: '二极管'
+            introduction: 'Diode'
         }
     },
-    //NPN三极管
+    //BJT-NPN
     transistor_npn: {
-        readWrite: {  //可读写数据
+        readWrite: {
             id: 'Q_',
             input: ['40', '26', '0.6', '1']
         },
-        readOnly: {  //只读数据
+        readOnly: {
             partType: 'transistor_npn',
-            inputTxt: ['电流放大倍数：', 'B极电阻：', 'BE饱和压降：', 'CE饱和压降：'],
+            inputTxt: ['Current Magnify Ratio：', 'Base Node Resistor：', 'BE Saturate Voltage：', 'CE Saturate Voltage：'],
             parameterUnit: ['', 'Ω', 'V', 'V'],
             visionNum: 1,
             txtLocate: 25,
@@ -532,18 +545,18 @@ const originalElectronic = {
                     }
                 }
             ],
-            introduction: 'NPN型三极管'
+            introduction: 'BJT-NPN'
         }
     },
-    //运放
+    //opamp
     operational_amplifier: {
-        readWrite: {  //可读写数据
+        readWrite: {
             id: 'OP_',
             input: ['120', '80M', '60']  //['120', '1G', '80M', '60']
         },
-        readOnly: {  //只读数据
+        readOnly: {
             partType: 'operational_amplifier',
-            inputTxt: ['开环增益：', '输入电阻：', '输出电阻：'], //['开环增益：', '带宽范围：', '输入电阻：', '输出电阻：'],
+            inputTxt: ['Open loop gain：', 'Input Resistance：', 'Output Resistance：'], //['Open loop gain：', 'Bandwidth Range：', 'Input Resistance：', 'Output Resistance：'],
             parameterUnit: ['dB', 'Ω', 'Ω'],  //['dB', 'Hz', 'Ω', 'Ω'],
             visionNum: 1,
             txtLocate: 0,
@@ -590,19 +603,19 @@ const originalElectronic = {
                 }
 
             ],
-            introduction: '运算放大器'
+            introduction: 'Op-Amp'
         }
     }
 };
 
-//器件类
+// Part Class (Class for the components)
 function PartClass(data) {
     const type = data.partType || data;
 
     this.extend(Object.clone(originalElectronic[type].readWrite));
     Object.setPrototypeOf(this, originalElectronic[type].readOnly);
 
-    //输入是对象，那么直接扩展当前对象
+    // If an object is passed, expand on this object directly.
     if (typeof data === 'object') {
         const obj = Object.clone(data);
         delete obj.partType;
@@ -624,12 +637,12 @@ function PartClass(data) {
     this.elementDOM = this.createPart();
     this.move();
 
-    //引脚DOM引用
+    // Node DOM Reference
     for (let i = 0; i < this.pointInfor.length; i++) {
         this.circle[i] = $('#' + this.id + '-' + i, this.elementDOM);
         this.setConnect(i);
     }
-    //显示文字,默认在器件的右上方
+    // Display text, default position is on top of a component
     this.textVisition((this.text || [10, -10]));
 
     delete this.text;
@@ -639,21 +652,21 @@ function PartClass(data) {
 PartClass.prototype = {
     constructor: PartClass,
 
-    //绘制相关
-    //在图纸中创建器件SVG
+    // Drawing Related
+    // Create a SVG on paper
     createPart() {
         const group = $('<g>', SVG_NS, {
             class: 'editor-parts',
             id: this.id,
             opacity: '0.4'
         });
-        const nodepoint = {     //引脚节点外形
+        const nodepoint = {     // Node shape
             circle: {},
             rect: {
                 x: '-9', y: '-9', width: '18', height: '18', 'class': 'rect-part-point'
             }
         };
-        //创建器件本体
+        // Construct the component itself
         for (let i = 0; i < this.aspectInfor.length; i++) {
             const elementName = this.aspectInfor[i].name,
                 elementAttribute = this.aspectInfor[i].attribute,
@@ -663,7 +676,7 @@ PartClass.prototype = {
             }
             group.append(tempData);
         }
-        //创建器件引脚节点
+        // Create node for component
         for (let i = 0; i < this.pointInfor.length; i++) {
             const position = this.pointInfor[i].position,
                 tempDate = $('<g>', SVG_NS, {
@@ -679,12 +692,12 @@ PartClass.prototype = {
             }
             group.append(tempDate);
         }
-        //创建器件显示文本
-        //attention:网络标号的时候，text这里需要更改方式
+        // Create text for component
+        //attention: If the grid is numbered, the text need a different display method
         if (this.visionNum) {
-            //创建txt下属ID显示
+            // Create a text with ID displayed
             const propertyVision = [];
-            //把所有的 u 替换成 μ
+            // Substitute μ for u
             for (let i = 0; i < this.visionNum - 1; i++) {
                 this.input[i] = this.input[i].replace('u', 'μ');
                 propertyVision.push(this.input[i] + this.parameterUnit[i]);
@@ -692,11 +705,11 @@ PartClass.prototype = {
             const textMain = this.id.split('_'),
                 tempDate = $('<text>', SVG_NS, { 'class': 'features-text' });
 
-            //创建器件ID
+            // Create component ID
             tempDate.append($('<tspan>', SVG_NS).text(textMain[0]));
             tempDate.append($('<tspan>', SVG_NS).text(textMain[1]));
 
-            //创建txt下属器件属性
+            // Set parameters of a component
             for (let i = 0; i < propertyVision.length; i++) {
                 tempDate.append($('<tspan>', SVG_NS)
                     .text(propertyVision[i]));
@@ -706,7 +719,7 @@ PartClass.prototype = {
         actionArea.append(group);
         return (group);
     },
-    //移动器件本身或者是属性文本
+    // Move the component itself or text
     move(mouse, attr) {
         if (attr === 'text') {
             const grid = this.current;
@@ -717,30 +730,30 @@ PartClass.prototype = {
                 'y': grid.position[1]
             });
         } else {
-            //器件的几何中心将会移动至输入坐标
+            // The center of the component will be moved to this position
             this.position = mouse ? Point(mouse) : this.position;
             this.elementDOM.attr('transform',
                 'matrix(' + this.rotate.join(', ') + ', ' + this.position.join(', ') + ')');
         }
     },
-    //显示器件文字
+    // Display the text describing the component
     textVisition(coordinates) {
-        //没有需要显示的文字
+        // No text
         if (!this.visionNum) { return (false); }
 
         const elemtxt = $('text.features-text', this.elementDOM),
             signRotate = $('.part-rotate', this.elementDOM),
             elemtspan = elemtxt.childrens(),
             tempPointInfor = this.pointRotate(),
-            //器件文字旋转逆矩阵
+            // Rotation matrix for the text
             texttransfor = this.rotate.inverse(),
-            //文字属性
+            // Text properties
             textAttr = 'matrix(' + texttransfor.join(',') + ',0,0)';
 
-        //文字旋转
+        // Text rotation
         elemtxt.attr('transform', textAttr);
 
-        //如果没有指定坐标，那么默认为当前信息文本位置
+        // If coordiantes not provided, default coordinate is the current text location
         if (!coordinates) {
             coordinates = elemtxt.attr(['x', 'y']).map((n) => (+n) || 0);
         }
@@ -749,49 +762,49 @@ PartClass.prototype = {
             signRotate.attr('transform', textAttr);
         }
 
-        //判断文字显示的方位，文字显示在管脚没有的方向
+        // Determin the location of the text, it suppose to be the place with less nodes
         for (let i = 0; i < tempPointInfor.length; i++) {
             const direction = tempPointInfor[i].direction;
 
             if (direction[0] === 0) {
                 if ((direction[1] < 0 && coordinates[1] < 0) ||
                     (direction[1] > 0 && coordinates[1] > 0)) {
-                    //上下
+                    // Vertical
                     coordinates[1] = 0;
                 }
             } else {
                 if ((direction[0] < 0 && coordinates[0] < 0) ||
                     (direction[0] > 0 && coordinates[0] > 0)) {
-                    //左右
+                    // Horizontal
                     coordinates[0] = 0;
                 }
             }
         }
-        //取数字大的那个距离为标准
+        // The larger coordinate will be the major one
         if (Math.abs(coordinates[0]) > Math.abs(coordinates[1])) {
             coordinates[1] = 0;
         } else {
             coordinates[0] = 0;
         }
 
-        const //图纸放大倍数
+        const // canvas magnify ratio
             exec = (/scale\(([\d.]+?)\)/).exec(actionArea.attr('transform')) || [1, 1],
             scale = +(exec[1]),
-            //器件此时的外形尺寸
+            // Dimensions of the device at this time
             rect = $('.focus-part', this.elementDOM).attr(['width', 'height']).map((n) => +(n)),
             size = this.rotate.multo([rect])[0].map((n) => parseInt(Math.abs(n / 2))),
-            //文字最小偏移量
+            // Minimum text offset
             bias = 4,
-            //文本高度
+            // Text height
             height = 16,
             textRow = elemtspan.length,
             totalHeight = (height + 2) * (textRow - 1),
-            //id字符串的显示长度
+            // Length of displayed ID String
             idWidth = $(elemtspan[0]).STWidth() + $(elemtspan[1]).STWidth();
 
         if (!coordinates[0]) {
             if (coordinates[1] > 0) {
-                //下
+                // Downward
                 let last = idWidth / 2;
                 $(elemtspan[0]).attr({ 'dx': - last, 'dy': '0' });
                 for (let i = 2; i < elemtspan.length; i++) {
@@ -803,7 +816,7 @@ PartClass.prototype = {
                 }
                 elemtxt.attr({ 'x': '0', 'y': size[1] + bias + height - textRow });
             } else {
-                //上
+                // Upward
                 let last = idWidth / 2;
                 $(elemtspan[0]).attr({ 'dx': - last, 'dy': '0' });
                 for (let i = 2; i < elemtspan.length; i++) {
@@ -817,7 +830,7 @@ PartClass.prototype = {
             }
         } else {
             if (coordinates[0] > 0) {
-                //右
+                // Rightward
                 let last = idWidth;
                 $(elemtspan[0]).attr({ 'dx': '0', 'dy': '0' });
                 for (let i = 2; i < elemtspan.length; i++) {
@@ -828,7 +841,7 @@ PartClass.prototype = {
 
                 elemtxt.attr({ 'x': size[0] + bias, 'y': - (totalHeight / 2 - height) });
             } else {
-                //左
+                // Leftward
                 $(elemtspan[0]).attr({ 'dx': - idWidth, 'dy': '0' });
                 for (let i = 2; i < elemtspan.length; i++) {
                     const elem = $(elemtspan[i]);
@@ -839,7 +852,7 @@ PartClass.prototype = {
             }
         }
     },
-    //旋转器件
+    // Rotate a component
     rotateSelf(matrix, center) {
         this.position = this.position.rotate(matrix, center);
         this.rotate = this.rotate.mul(matrix);
@@ -849,38 +862,38 @@ PartClass.prototype = {
             .attr(['x', 'y']).map((n) => (+n) || 0);
         this.textVisition(matrix.multo([textPos])[0]);
     },
-    //取消引脚放大
+    // Shrink the node
     shrinkCircle(pointMark) {
         $('circle', this.circle[pointMark]).removeAttr('style');
     },
-    //引脚放大
+    // Enlarge the node
     enlargeCircle(pointMark) {
         $('circle', this.circle[pointMark]).attr('style', 'r:5');
     },
 
-    //标记
+    // Mark
     markSign() {
         const position = this.position.floorToSmall(),
             range = this.marginRotate().padding,
             points = this.pointRotate()
                 .map((n) => n.position);
 
-        //格式验证
+        // Verify the format
         if (!position.isInteger()) {
-            throw '设置标记时，器件必须对齐图纸';
+            throw 'When setting a label, component must align with the canvas';
         }
 
-        //器件内边距占位
+        // Component padding space
         for (let i = position[0] - range.left; i <= position[0] + range.right; i++) {
             for (let j = position[1] - range.top; j <= position[1] + range.bottom; j++) {
-                //删除原来的属性，并赋值新的属性
+                // Delete the old properties and give the new ones
                 schMap.setValueBySmalle([i, j], {
                     id: this.id,
                     form: 'part'
                 });
             }
         }
-        //器件管脚距占位
+        // Component node space
         for (let i = 0; i < points.length; i++) {
             schMap.setValueBySmalle([position[0] + points[i][0] / 20, position[1] + points[i][1] / 20], {
                 id: this.id + '-' + i,
@@ -895,26 +908,26 @@ PartClass.prototype = {
             points = this.pointRotate()
                 .map((n) => n.position);
 
-        //格式验证
+        // Format validation
         if (!position.isInteger()) {
-            throw '设置标记时，器件必须对齐图纸';
+            throw 'When setting a label, component must align with the canvas';
         }
-        //删除器件内边距占位
+        // Delete the component padding space
         for (let i = position[0] - range.left; i <= position[0] + range.right; i++) {
             for (let j = position[1] - range.top; j <= position[1] + range.bottom; j++) {
                 schMap.deleteValueBySmalle([i, j]);
             }
         }
-        //删除器件引脚占位
+        // Delete the component node space
         for (let i = 0; i < points.length; i++) {
             schMap.deleteValueBySmalle([position[0] + points[i][0] / 20, position[1] + points[i][1] / 20]);
         }
     },
 
-    //查询操作
-    //当前位置是否被占用
+    // Query operation
+    // If the current location is taken
     isCover(pos) {
-        //获取当前器件的内外边距之和
+        // Optain the margin and padding of the current component
         function merge(part) {
             const box = {},
                 range = part.marginRotate();
@@ -935,7 +948,7 @@ PartClass.prototype = {
                 ? Point(pos).roundToSmall()
                 : this.position.roundToSmall();
 
-        //检查器件管脚
+        // Check the Component's node
         for (let i = 0; i < point.length; i++) {
             const node = position.add(point[i]);
             if (schMap.getValueBySmalle(node)) {
@@ -943,11 +956,11 @@ PartClass.prototype = {
             }
             coverHash[node.join(', ')] = true;
         }
-        //扫描内边距
+        // Scan the padding
         for (let i = position[0] - margin.left; i <= position[0] + margin.right; i++) {
             for (let j = position[1] - margin.top; j <= position[1] + margin.bottom; j++) {
                 const status = schMap.getValueBySmalle([i, j]);
-                //内边距中存在任何元素都表示被占用
+                // If anything exist within the component's outline, the space will seen as "taken"
                 if (status) {
                     return (true);
                 } else {
@@ -955,10 +968,10 @@ PartClass.prototype = {
                 }
             }
         }
-        //扫描外边距
+        // Scan the margin
         for (let i = position[0] - boxSize.left; i <= position[0] + boxSize.right; i++) {
             for (let j = position[1] - boxSize.top; j <= position[1] + boxSize.bottom; j++) {
-                //跳过内边距
+                // Ignore the padding
                 if (coverHash[i + ', ' + j]) {
                     continue;
                 }

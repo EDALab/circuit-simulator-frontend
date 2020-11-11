@@ -10,10 +10,9 @@ import { Graph } from './graph';
 import { styleRule } from './styleRule';
 import { PartClass } from './parts';
 import { partsAll, partsNow } from './collection';
-import { filter } from './filter';
 import { nodeId } from './nodeID';
-import './test';
 import filter from './filter';
+import './test';
 
 //全局变量定义
 const doc = document,
@@ -681,118 +680,71 @@ action.on('click', '#fab-run', function (event) {
             const n_copy = n
             // var filteredCircuit = filter(n_copy);
 
-            const temp_json = {
-                "Voltage Source": {
-                    "name": "input",
-                    "value": 10,
-                    "node1": "in",
-                    "node2": "gnd"
-                },
+            var test_output = {
+                "V": [
+                    {
+                        "name": "V_1",
+                        "value": 20,
+                        "node1": "1",
+                        "node2": "gnd"
+                    }
+                ],
                 "R": [
                     {
-                        "R": {
-                            "name": 1,
-                            "value": 9,
-                            "node1": "in",
-                            "node2": "out"
-                        }
+                        "name": "R_2",
+                        "value": 1,
+                        "node1": "2",
+                        "node2": "gnd"
                     },
                     {
-                        "R": {
-                            "name": 2,
-                            "value": 1,
-                            "node1": "out",
-                            "node2": "gnd"
-                        }
+                        "name": "R_1",
+                        "value": 9,
+                        "node1": "1",
+                        "node2": "2"
+                    }
+                ],
+                "VM": [
+                    {
+                        "name": "VM_1",
+                        "value": 0,
+                        "node1": "1",
+                        "node2": "2"
+                    },
+                    {
+                        "name": "VM_2",
+                        "value": 0,
+                        "node1": "2",
+                        "node2": "gnd"
                     }
                 ]
             }
 
-            const example_input = {
-                "0": {
-                    "id": "GND_1",
-                    "type": "REF",
-                    "value": [],
-                    "connect": ["line_2"]
-                },
-                "1": {
-                    "id": "line_2",
-                    "type": "W",
-                    "value": [],
-                    "connect": ["GND_1-0", "line_1 line_3"]
-                },
-                "2": {
-                    "id": "line_3",
-                    "type": "W",
-                    "value": [],
-                    "connect": ["line_1 line_2", "V_1-1"]
-                },
-                "3": {
-                    "id": "V_1",
-                    "type": "V",
-                    "value": [12],
-                    "connect": ["line_4", "line_3"]
-                },
-                "4": {
-                    "id": "line_4",
-                    "type": "W",
-                    "value": [],
-                    "connect": ["VM_1-0", "V_1-0"]
-                },
-                "5": {
-                    "id": "VM_1",
-                    "type": "VM",
-                    "value": [],
-                    "connect": ["line_4", "line_1"]
-                },
-                "6": {
-                    "id": "line_1",
-                    "type": "W",
-                    "value": [],
-                    "connect": ["VM_1-1", "line_3 line_2"]
-                }
-            }
-
-            const filteredCircuit = JSON.stringify(n_copy);
-            console.log('input json is ' + filteredCircuit);
-            const filterResult = JSON.stringify(filter(filteredCircuit));
-            console.log('filter result is ' + filterResult);
-          
-            // console.log("Original data: " + n_copy);
-            // console.log("Simplified data: " + example_input);
-
-            var filteredCircuit = filter(n_copy);
-            // console.log(filteredCircuit);
+            var filteredCircuit = JSON.stringify(n_copy);
+            // console.log('input json is ' + filteredCircuit);
+            filteredCircuit = filter(filteredCircuit);
+            // console.log('filter result is ' + JSON.stringify(filteredCircuit));
             var output = nodeId(filteredCircuit);
-            // console.log(output);
-            // var output = nodeId(example_input);
-            // console.log("Transferred data: " + output);
+            console.log(JSON.stringify(output));
+
+            // var output = test_output;
 
             var xhr = new XMLHttpRequest();
-            var url = 'http://127.0.0.1:5000/simulate/Test';
+            var url = 'http://127.0.0.1:5000/dc_simulate/Test';
             xhr.open('POST', url, true);
             xhr.setRequestHeader('Content-type', 'application/JSON');
             // Create a state change callback 
             xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
+                if (xhr.readyState === 4 && xhr.status === 201) {
                     // Print received data from server 
-                    result.innerHTML = this.responseText;
-                    alert(responseText);
-
+                    // xhr.innerHTML = xhr.responseText;
+                    alert(xhr.responseText);
                 }
             };
             // Converting JSON data to string 
             var data = JSON.stringify(output);
             // Sending data with the request 
             xhr.send(data);
-
-            // fetch("http://127.0.0.1:5000/simulate/Test", { mode: 'no-cors' }, {
-            //     method: "POST",
-            //     body: JSON.stringify(n_copy)
-            // }).then(res => {
-            //     console.log("Request complete! response:", res);
-            // });
-
+            // console.log('Message: ' + message);
             const ans = { solver: new Solver(n) };
             ans.iteration = ans.solver.solve();
             return (ans);

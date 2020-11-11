@@ -23,13 +23,16 @@ const filter = (jsonString) => {
     } else if (id.includes('C_')) {
       temp.type = 'C'
       temp.value.push(value.input[0])
+    } else if (id.includes('R_')) {
+      temp.type = 'R'
+      temp.value.push(value.input[0])
     } else if (id.includes('L_')) {
       temp.type = 'L'
       temp.value.push(value.input[0])
     } else if (id.includes('I_')) {
       temp.type = 'I'
       temp.value.push(value.input[0])
-    } else if (id.includes('AM_')) {
+    } else if (id.includes('IM_')) {
       temp.type = 'AM'
       temp.value.push(value.input[0])
     }
