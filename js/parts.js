@@ -1408,6 +1408,18 @@ PartClass.prototype = {
 
 //器件移动相关的方法
 partsNow.extend({
+    // Check if the component is connected to the wire
+    checkConn() {
+        var single = 0;
+        this.forEach((n) => {
+            single += n.current.status ? 1 : 0
+        });
+        if (single == 1) {
+            return false;
+        } else {
+            return true;
+        }
+    },
     //由器件开始回溯导线，确定导线状态
     checkLine() {
         const self = this;

@@ -1473,6 +1473,10 @@ context.on('click', '#edit-parameters', function (event) {
 //顺时针旋转
 context.on('click', '#clockwise-direction', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
+        if (partsNow.checkConn()) {
+            grid.error('Please disconnect the component before rotate!');
+            return (false);
+        }
         contextSet();
         if (partsNow.isRotate(0)) {
             partsNow.rotate(0);
@@ -1483,6 +1487,10 @@ context.on('click', '#clockwise-direction', function (event) {
 //逆时针旋转
 context.on('click', '#anticlockwise-direction', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
+        if (partsNow.checkConn()) {
+            grid.error('Please disconnect the component before rotate!');
+            return (false);
+        }
         contextSet();
         if (partsNow.isRotate(1)) {
             partsNow.rotate(1);
@@ -1493,6 +1501,10 @@ context.on('click', '#anticlockwise-direction', function (event) {
 //沿X轴镜像
 context.on('click', '#X-Mirror', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
+        if (partsNow.checkConn()) {
+            grid.error('Please disconnect the component before rotate!');
+            return (false);
+        }
         contextSet();
         if (partsNow.isRotate(2)) {
             partsNow.rotate(2);
@@ -1503,6 +1515,10 @@ context.on('click', '#X-Mirror', function (event) {
 //沿Y轴镜像
 context.on('click', '#Y-Mirror', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
+        if (partsNow.checkConn()) {
+            grid.error('Please disconnect the component before rotate!');
+            return (false);
+        }
         contextSet();
         if (partsNow.isRotate(3)) {
             partsNow.rotate(3);
