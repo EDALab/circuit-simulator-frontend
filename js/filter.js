@@ -3,6 +3,8 @@ const filter = (jsonString) => {
   const object = JSON.parse(jsonString)
   let output = {}
 
+  output["-1"] = { id: 'GND_Abs', type: 'REF', value: 0, connect: [""] }
+
   for (const [key, value] of Object.entries(object)) {
     let temp = { id: '', type: '', value: [], connect: [] }
 
@@ -15,31 +17,38 @@ const filter = (jsonString) => {
       temp.type = 'W'
     } else if (id.includes('V_')) {
       temp.type = 'V'
-      // const voltageValue = parseFloat(value.input[0]); // convert to number
       temp.value.push(value.input[0])
+    } else if (id.includes('SPVM_')) {
+      temp.type = 'VM';
+      temp.value.push(value.input[0]);
+      temp.connect = [];
+      temp.connect[0] = value.connect[0];
+      temp.connect[1] = "GND_Abs-0";
+      output[`${key}`] = temp;
+      continue;
     } else if (id.includes('VM_')) {
-      temp.type = 'VM'
-      temp.value.push(value.input[0])
+      temp.type = 'VM';
+      temp.value.push(value.input[0]);
     } else if (id.includes('C_')) {
-      temp.type = 'C'
-      temp.value.push(value.input[0])
+      temp.type = 'C';
+      temp.value.push(value.input[0]);
     } else if (id.includes('R_')) {
-      temp.type = 'R'
-      temp.value.push(value.input[0])
+      temp.type = 'R';
+      temp.value.push(value.input[0]);
     } else if (id.includes('L_')) {
-      temp.type = 'L'
-      temp.value.push(value.input[0])
+      temp.type = 'L';
+      temp.value.push(value.input[0]);
     } else if (id.includes('I_')) {
-      temp.type = 'I'
-      temp.value.push(value.input[0])
+      temp.type = 'I';
+      temp.value.push(value.input[0]);
     } else if (id.includes('IM_')) {
-      temp.type = 'AM'
-      temp.value.push(value.input[0])
+      temp.type = 'AM';
+      temp.value.push(value.input[0]);
     }
 
-    temp.connect = value.connect
+    temp.connect = value.connect;
 
-    output[`${key}`] = temp
+    output[`${key}`] = temp;
   }
 
   return output

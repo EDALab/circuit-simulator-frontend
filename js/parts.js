@@ -605,6 +605,53 @@ const originalElectronic = {
             ],
             introduction: 'Op-Amp'
         }
+    },
+    // Single point voltmeter
+    SP_Voltmeter: {
+        readWrite: {
+            id: 'SPVM_'
+        },
+        readOnly: {
+            partType: 'SP_Voltmeter',
+            inputTxt: [],
+            visionNum: 0,
+            pointInfor: [
+                {
+                    position: [0, -40],
+                    direction: [0, -1]
+                }
+            ],
+            padding: 1,
+            margin: [1, 0],
+            txtLocate: 24,
+            aspectInfor: [
+                {
+                    'name': 'circle',
+                    'attribute': {
+                        'cx': '0', 'cy': '0', 'r': '19', 'class': 'white-fill'
+                    }
+                },
+                {
+                    'name': 'path',
+                    'attribute': {
+                        'd': 'M0,-40V-20'
+                    }
+                },
+                {
+                    'name': 'path',
+                    'attribute': {
+                        'd': 'M-7,-6L0,7L7,-6', 'class': 'part-rotate'
+                    }
+                },
+                {
+                    'name': 'rect',
+                    'attribute': {
+                        'x': '-20', 'y': '-30', 'width': '40', 'height': '60', 'class': 'focus-part'
+                    }
+                }
+            ],
+            introduction: 'Single Point Voltmeter'
+        }
     }
 };
 
