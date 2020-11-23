@@ -2,218 +2,218 @@ import { $ } from './jquery';
 import { Matrix } from './matrix';
 import { partsAll, PartsCollection } from './collection';
 
-//器件的内部结构
+// Internal structure of a component
 const partInternal = {
-    /*
-     * 器件的内部结构，数据成分如下
-     *   - 迭代方程(iterative)
-     *     - 方程原型(equation)
-     *     - 方程生成函数(create)
-     *   - 拆分结构(apart)
-     *     - 拆分器件原型(parts)
-     *     - 拆分器件内部的连接关系表(connect)
-     *     - 外部管脚到内部管脚的接口列表(interface)
+    /**
+     * For the internal structure of a component, we have the following parameters:
+     *   - Iterative function(iterative)
+     *     - Base function(equation)
+     *     - Function Generator(create)
+     *   - Sub-function(apart)
+     *     - Base sub-function(parts)
+     *     - Sub-component connection list(connect)
+     *     - Connection between external nodes and internal nodes(interface)
      */
     'ac_voltage_source': {
-        'iterative': {
-            equation(factor, frequency, bias, phase) {
-                return (function (t) {
-                    return ([factor * Math.sin((frequency * t) * Math.PI * 2 + phase / 180 * Math.PI) + bias]);
-                });
-            },
-            create(part) {
-                const ans = {
-                    'to': []
-                };
-                ans.process = partInternal['ac_voltage_source']['iterative']['equation'](
-                    part.input[0].toVal(),
-                    part.input[1].toVal(),
-                    part.input[2].toVal(),
-                    part.input[3].toVal()
-                );
-                //迭代方程参数描述
-                ans.describe = [
-                    { 'name': 'time' }
-                ];
-                return (ans);
-            }
-        }
+        // 'iterative': {
+        //     equation(factor, frequency, bias, phase) {
+        //         return (function (t) {
+        //             return ([factor * Math.sin((frequency * t) * Math.PI * 2 + phase / 180 * Math.PI) + bias]);
+        //         });
+        //     },
+        //     create(part) {
+        //         const ans = {
+        //             'to': []
+        //         };
+        //         ans.process = partInternal['ac_voltage_source']['iterative']['equation'](
+        //             part.input[0].toVal(),
+        //             part.input[1].toVal(),
+        //             part.input[2].toVal(),
+        //             part.input[3].toVal()
+        //         );
+        //         // Iterative function description
+        //         ans.describe = [
+        //             { 'name': 'time' }
+        //         ];
+        //         return (ans);
+        //     }
+        // }
     },
     'capacitor': {
-        'iterative': {
-            equation(valueCap) {
-                return (function (value, timeInterval, save) {
-                    //积分，一阶近似累加
-                    const current = (value + save.last) / 2 * timeInterval + save.integral;
-                    save.last = value;
-                    save.integral = current;
-                    const voltage = current / valueCap;
-                    return ([voltage]);
-                });
-            },
-            create(part) {
-                const ans = {
-                    'save': {
-                        'last': 0,
-                        'integral': 0
-                    },
-                    'to': []
-                };
-                ans.process = partInternal['capacitor']['iterative']['equation'](
-                    part.input[0].toVal()
-                );
-                ans.describe = [
-                    { 'name': 'current', 'place': part.id + '-0' },
-                    { 'name': 'timeInterval' },
-                    { 'name': 'save' }
-                ];
-                return (ans);
-            }
-        }
+        // 'iterative': {
+        //     equation(valueCap) {
+        //         return (function (value, timeInterval, save) {
+        //             //Integral
+        //             const current = (value + save.last) / 2 * timeInterval + save.integral;
+        //             save.last = value;
+        //             save.integral = current;
+        //             const voltage = current / valueCap;
+        //             return ([voltage]);
+        //         });
+        //     },
+        //     create(part) {
+        //         const ans = {
+        //             'save': {
+        //                 'last': 0,
+        //                 'integral': 0
+        //             },
+        //             'to': []
+        //         };
+        //         ans.process = partInternal['capacitor']['iterative']['equation'](
+        //             part.input[0].toVal()
+        //         );
+        //         ans.describe = [
+        //             { 'name': 'current', 'place': part.id + '-0' },
+        //             { 'name': 'timeInterval' },
+        //             { 'name': 'save' }
+        //         ];
+        //         return (ans);
+        //     }
+        // }
     },
     'diode': {
-        'iterative': {
-            equation(turnOnVoltage, turnOnRes, turnOffRes) {
-                //二段函数
-                return function (voltage) {
-                    if (voltage >= turnOnVoltage) {
-                        return ([turnOnRes, turnOnVoltage]);
-                    } else {
-                        return ([turnOffRes, 0]);
-                    }
-                };
-            },
-            create(part) {
-                const ans = {
-                    'to': []
-                };
-                ans.process = partInternal[part.partType]['iterative']['equation'](
-                    part.input[0].toVal(),
-                    part.input[1].toVal(),
-                    part.input[2].toVal()
-                );
-                const external = partInternal['diode']['apart']['interface'];
-                ans.describe = [
-                    {
-                        'name': 'voltage',
-                        'place': [part.id + '-' + external[1][0], part.id + '-' + external[0][0]]
-                    }
-                ];
-                return (ans);
-            }
-        },
-        'apart': {
-            'interface': [
-                ['R1-0'],
-                ['VD1-0']
-            ],
-            'connect': [
-                ['R1-1', 'VD1-1']
-            ],
-            'parts': [
-                {
-                    'partType': 'resistance',
-                    'id': 'R1',
-                    'input': ['update-0']
-                },
-                {
-                    'partType': 'dc_voltage_source',
-                    'id': 'VD1',
-                    'input': ['update-1']
-                }
-            ]
-        }
+        // 'iterative': {
+        //     equation(turnOnVoltage, turnOnRes, turnOffRes) {
+        //         // Piece-wise function
+        //         return function (voltage) {
+        //             if (voltage >= turnOnVoltage) {
+        //                 return ([turnOnRes, turnOnVoltage]);
+        //             } else {
+        //                 return ([turnOffRes, 0]);
+        //             }
+        //         };
+        //     },
+        //     create(part) {
+        //         const ans = {
+        //             'to': []
+        //         };
+        //         ans.process = partInternal[part.partType]['iterative']['equation'](
+        //             part.input[0].toVal(),
+        //             part.input[1].toVal(),
+        //             part.input[2].toVal()
+        //         );
+        //         const external = partInternal['diode']['apart']['interface'];
+        //         ans.describe = [
+        //             {
+        //                 'name': 'voltage',
+        //                 'place': [part.id + '-' + external[1][0], part.id + '-' + external[0][0]]
+        //             }
+        //         ];
+        //         return (ans);
+        //     }
+        // },
+        // 'apart': {
+        //     'interface': [
+        //         ['R1-0'],
+        //         ['VD1-0']
+        //     ],
+        //     'connect': [
+        //         ['R1-1', 'VD1-1']
+        //     ],
+        //     'parts': [
+        //         {
+        //             'partType': 'resistance',
+        //             'id': 'R1',
+        //             'input': ['update-0']
+        //         },
+        //         {
+        //             'partType': 'dc_voltage_source',
+        //             'id': 'VD1',
+        //             'input': ['update-1']
+        //         }
+        //     ]
+        // }
     },
     'transistor_npn': {
-        'iterative': {
-            equation(currentZoom, ResB, voltageB, voltageCE) {
-                return function (vd1, vd2) {
-                    const ans = new Array(4).fill(0);
+        // 'iterative': {
+        //     equation(currentZoom, ResB, voltageB, voltageCE) {
+        //         return function (vd1, vd2) {
+        //             const ans = new Array(4).fill(0);
 
-                    //ans[0] 基极导通压降
-                    //ans[1] E极导通压降
-                    //ans[2] 基极电阻
-                    //ans[3] 电流放大倍数
-                    if (vd1 >= voltageB) {
-                        //基极正向偏置
-                        ans[0] = voltageB;
-                        ans[2] = ResB;
-                        if (vd2 >= voltageCE) {
-                            //发射极正向偏置
-                            ans[1] = voltageCE;
-                            ans[3] = - currentZoom;
-                        } else {
-                            //发射极反向偏置
-                            ans[1] = 0;
-                            ans[3] = 0;
-                        }
-                    } else {
-                        //基极反向偏置
-                        ans[0] = 0;
-                        ans[1] = 0;
-                        ans[2] = 5e9;
-                        ans[3] = 0;
-                    }
-                    return (ans);
-                };
-            },
-            create(part) {
-                const ans = {
-                    'to': []
-                };
-                ans.process = partInternal[part.partType].iterative.equation(
-                    part.input[0].toVal(),
-                    part.input[1].toVal(),
-                    part.input[2].toVal(),
-                    part.input[3].toVal()
-                );
-                const external = partInternal['transistor_npn']['apart']['interface'];
-                ans.describe = [
-                    {
-                        'name': 'voltage',
-                        'place': [part.id + '-' + external[0][0], part.id + '-' + external[2][0]]
-                    },
-                    {
-                        'name': 'voltage',
-                        'place': [part.id + '-' + external[1][0], part.id + '-' + external[2][0]]
-                    }
-                ];
-                return (ans);
-            }
-        },
-        'apart': {
-            'interface': [
-                ['V1-0'],
-                ['V2-0'],
-                ['R1-1', 'I1-1']
-            ],
-            'connect': [
-                ['R1-0', 'V1-1'],
-                ['I1-0', 'V2-1']
-            ],
-            'parts': [
-                {
-                    'partType': 'dc_voltage_source',
-                    'id': 'V2',
-                    'input': ['update-0']
-                },
-                {
-                    'partType': 'dc_voltage_source',
-                    'id': 'V1',
-                    'input': ['update-1']
-                },
-                {
-                    'partType': 'resistance',
-                    'id': 'R1',
-                    'input': ['update-2']
-                },
-                {
-                    'partType': 'CCCS',
-                    'id': 'I1',
-                    'input': ['update-3', 'this-R1-0']
-                }
-            ]
-        }
+        //             //ans[0] 基极导通压降
+        //             //ans[1] E极导通压降
+        //             //ans[2] 基极电阻
+        //             //ans[3] 电流放大倍数
+        //             if (vd1 >= voltageB) {
+        //                 //基极正向偏置
+        //                 ans[0] = voltageB;
+        //                 ans[2] = ResB;
+        //                 if (vd2 >= voltageCE) {
+        //                     //发射极正向偏置
+        //                     ans[1] = voltageCE;
+        //                     ans[3] = - currentZoom;
+        //                 } else {
+        //                     //发射极反向偏置
+        //                     ans[1] = 0;
+        //                     ans[3] = 0;
+        //                 }
+        //             } else {
+        //                 //基极反向偏置
+        //                 ans[0] = 0;
+        //                 ans[1] = 0;
+        //                 ans[2] = 5e9;
+        //                 ans[3] = 0;
+        //             }
+        //             return (ans);
+        //         };
+        //     },
+        //     create(part) {
+        //         const ans = {
+        //             'to': []
+        //         };
+        //         ans.process = partInternal[part.partType].iterative.equation(
+        //             part.input[0].toVal(),
+        //             part.input[1].toVal(),
+        //             part.input[2].toVal(),
+        //             part.input[3].toVal()
+        //         );
+        //         const external = partInternal['transistor_npn']['apart']['interface'];
+        //         ans.describe = [
+        //             {
+        //                 'name': 'voltage',
+        //                 'place': [part.id + '-' + external[0][0], part.id + '-' + external[2][0]]
+        //             },
+        //             {
+        //                 'name': 'voltage',
+        //                 'place': [part.id + '-' + external[1][0], part.id + '-' + external[2][0]]
+        //             }
+        //         ];
+        //         return (ans);
+        //     }
+        // },
+        // 'apart': {
+        //     'interface': [
+        //         ['V1-0'],
+        //         ['V2-0'],
+        //         ['R1-1', 'I1-1']
+        //     ],
+        //     'connect': [
+        //         ['R1-0', 'V1-1'],
+        //         ['I1-0', 'V2-1']
+        //     ],
+        //     'parts': [
+        //         {
+        //             'partType': 'dc_voltage_source',
+        //             'id': 'V2',
+        //             'input': ['update-0']
+        //         },
+        //         {
+        //             'partType': 'dc_voltage_source',
+        //             'id': 'V1',
+        //             'input': ['update-1']
+        //         },
+        //         {
+        //             'partType': 'resistance',
+        //             'id': 'R1',
+        //             'input': ['update-2']
+        //         },
+        //         {
+        //             'partType': 'CCCS',
+        //             'id': 'I1',
+        //             'input': ['update-3', 'this-R1-0']
+        //         }
+        //     ]
+        // }
     },
     'operational_amplifier': {
         /*
@@ -264,37 +264,37 @@ const partInternal = {
             }
         },
         */
-        'apart': {
-            'interface': [
-                ['R1-1'],
-                ['R1-0'],
-                ['R2-0']
-            ],
-            'connect': [
-                ['R2-1', 'VD1-0']
-            ],
-            'parts': [
-                {
-                    'partType': 'resistance',
-                    'id': 'R1',
-                    'input': ['input-1']
-                },
-                {
-                    'partType': 'resistance',
-                    'id': 'R2',
-                    'input': ['input-2']
-                },
-                {
-                    'partType': 'VCVS',
-                    'id': 'VD1',
-                    'input': ['input-0', 'this-R1-0']
-                }
-            ]
-        }
+        // 'apart': {
+        //     'interface': [
+        //         ['R1-1'],
+        //         ['R1-0'],
+        //         ['R2-0']
+        //     ],
+        //     'connect': [
+        //         ['R2-1', 'VD1-0']
+        //     ],
+        //     'parts': [
+        //         {
+        //             'partType': 'resistance',
+        //             'id': 'R1',
+        //             'input': ['input-1']
+        //         },
+        //         {
+        //             'partType': 'resistance',
+        //             'id': 'R2',
+        //             'input': ['input-2']
+        //         },
+        //         {
+        //             'partType': 'VCVS',
+        //             'id': 'VD1',
+        //             'input': ['input-0', 'this-R1-0']
+        //         }
+        //     ]
+        // }
     }
 };
 
-//根据连接网络检查电路错误
+// Check if connect to the reference point
 function error(nodeHash, branchHash) {
     if (Object.keys(nodeHash).every((n) => nodeHash[n])) {
         return ('Please make sure all components are directly or indirectly connected to the reference point');
@@ -302,62 +302,63 @@ function error(nodeHash, branchHash) {
 
     return (false);
 }
-//从管脚到支路电流计算矩阵
+// Calculate a matrix from node to sub-circuit
 function pinToCurrent(pin, nodeHash, branchHash, branchNumber) {
-    const node = nodeHash[pin], branch = [];
+    // const node = nodeHash[pin], branch = [];
 
-    //和当前管脚相连的其余管脚
-    for (const i in nodeHash) {
-        if (nodeHash.hasOwnProperty(i)) {
-            if ((nodeHash[i] === node) && (i !== pin)) {
-                branch.push(i);
-            }
-        }
-    }
+    // // Other nodes connect to the current node
+    // for (const i in nodeHash) {
+    //     if (nodeHash.hasOwnProperty(i)) {
+    //         if ((nodeHash[i] === node) && (i !== pin)) {
+    //             branch.push(i);
+    //         }
+    //     }
+    // }
     const ans = new Matrix(1, branchNumber);
-    for (let i = 0; i < branch.length; i++) {
-        ans[0][branchHash[branch[i]]] = Math.pow(-1, parseInt(branch[i][branch[i].length - 1]) + 1);
-    }
+    // for (let i = 0; i < branch.length; i++) {
+    //     ans[0][branchHash[branch[i]]] = Math.pow(-1, parseInt(branch[i][branch[i].length - 1]) + 1);
+    // }
     return (ans);
 }
-//从管脚到节点电压计算矩阵
+// Calculate a matrix from node to node-voltage
 function pinToVoltage(pin, nodeHash, nodeNumber) {
     const ans = new Matrix(1, nodeNumber);
-    for (let i = 0; i < 2; i++) {
-        if (nodeHash[pin[i]]) {
-            ans[0][nodeHash[pin[i]] - 1] = Math.pow(-1, i);
-        }
-    }
+    // for (let i = 0; i < 2; i++) {
+    //     if (nodeHash[pin[i]]) {
+    //         ans[0][nodeHash[pin[i]] - 1] = Math.pow(-1, i);
+    //     }
+    // }
     return (ans);
 }
-//根据器件返回支路标号
+// Return the branch number based on component
 function partToBranch(part, branchHash) {
     return (branchHash[part + '-0']);
 }
 
-//求解器类
+// Solver class
 function Solver(collection) {
-    //临时变量初始化
-    const nodeHash = {},                    //[管脚->节点号]对应表
-        branchHash = {},                    //[管脚->支路号]对应表
-        observeCurrent = [],                //电压观测
-        observeVoltage = [],                //电流观测
-        parameterUpdate = [],               //参数迭代公式
-        tempLines = new PartsCollection(),  //待删除器件
+    // Initialtemp variables
+    const nodeHash = {},                    // key -> node table
+        branchHash = {},                    // key -> branch table
+        observeCurrent = [],                // Observe Current
+        observeVoltage = [],                // Observe Voltage
+        parameterUpdate = [],               // Iterate parameter
+        tempLines = new PartsCollection(),  // Parts to be deleted
 
-        parts = [];                 //拆分成的基础器件集
+        parts = [];                 // Collection of sub-parts
 
-    let nodeNumber = 1,             //节点数量
-        branchNumber = 0,           //支路数量
-        errorTip;                   //错误代码
+    let nodeNumber = 1,             // Node number
+        branchNumber = 0,           // Branch number
+        errorTip;                   // Error code
 
-    //扫描所有导线(以后可能还会有“网络标识符”)，建立[管脚->节点号]对应表
+    // Scan all wires, create a key -> node table
+    /*
     collection.forEach(function (item) {
-        //当前器件为导线，且还没有访问过
+        // Current component is unaccessed wire
         if ((item.partType === 'line') && (!tempLines.has(item))) {
-            //搜索用临时导线堆栈
+            // Search for temp wire and stack them
             const node = new PartsCollection(item);
-            //搜索当前导线构成的节点
+            // Search for the node of current wire
             while (node.length) {
                 const line = node.pop();
                 tempLines.push(line);
@@ -374,6 +375,7 @@ function Solver(collection) {
             nodeNumber++;
         }
     });
+    */
     //扫描所有器件，部分器件需要拆分，追加nodeHash列表、建立[管脚->支路号]列表
     collection.forEach(function (item) {
         //以下四种是辅助器件，不会建立支路
@@ -522,80 +524,89 @@ function Solver(collection) {
             }
         }
     }
-    //扫描所有器件，建立器件矩阵
+    // Scan for all components
     collection.forEach(function (item) {
-        //递归填写参数
+        // iteractive setting parameters
         (function insertFactor(part) {
-            //这里的index就是支路下标
+            // Index here refers to the branch number
             const index = partToBranch(part.id, branchHash);
 
+            // switch (part.partType) {
+            //     //基本器件
+            //     case 'ac_voltage_source': {
+            //         F[index][index] = 1;
+            //         S[index][0] = 'update-' + parameterUpdate.length + '-0';
+            //         break;
+            //     }
+            //     case 'dc_voltage_source': {
+            //         F[index][index] = 1;
+            //         S[index][0] = part.input[0].toVal();
+            //         break;
+            //     }
+            //     case 'dc_current_source': {
+            //         H[index][index] = 1;
+            //         S[index][0] = part.input[0].toVal();
+            //         break;
+            //     }
+            //     case 'resistance': {
+            //         F[index][index] = -1;
+            //         H[index][index] = part.input[0].toVal();
+            //         break;
+            //     }
+            //     case 'capacitor': {
+            //         F[index][index] = 1;
+            //         S[index][0] = 'update-' + parameterUpdate.length + '-0';
+            //         break;
+            //     }
+            //     case 'VCVS': {
+            //         F[index][index] = 1;
+            //         F[index][branchHash[part.input[1]]] = part.input[0].toVal();
+            //         break;
+            //     }
+            //     case 'CCCS': {
+            //         let temp = part.input[0].toVal();
+            //         if (typeof temp === 'number') { temp *= -1; }
+
+            //         H[index][index] = 1;
+            //         H[index][branchHash[part.input[1]]] = temp;
+            //         break;
+            //     }
+            //     //组合器件
+            //     default: {
+            //         const apart = partInternal[part.partType].apart;
+            //         //器件需要拆分
+            //         for (let i = 0; apart && i < apart.parts.length; i++) {
+            //             const pieces = Object.clone(apart.parts[i]);
+
+            //             pieces.id = part.id + '-' + pieces.id;
+            //             pieces.input = pieces.input.map(function (n) {
+            //                 if (n.search(/^input/) !== -1) {
+            //                     //分割的器件值等于完整器件的某个输入
+            //                     return (part.input[n.split('-')[1]]);
+            //                 } else if (n.search(/this/) !== -1) {
+            //                     //等于当前器件和某个器件的关系
+            //                     return (n.replace(/this/g, part.id));
+            //                 } else if (n.search(/^update/) !== -1) {
+            //                     //等于迭代公式的输出
+            //                     return ('update-' + parameterUpdate.length + '-' + n.split('-')[1]);
+            //                 } else {
+            //                     return (n);
+            //                 }
+            //             });
+            //             //插入拆分器件
+            //             insertFactor(pieces);
+            //         }
+            //     }
+            // }
+
             switch (part.partType) {
-                //基本器件
-                case 'ac_voltage_source': {
-                    F[index][index] = 1;
-                    S[index][0] = 'update-' + parameterUpdate.length + '-0';
-                    break;
-                }
-                case 'dc_voltage_source': {
-                    F[index][index] = 1;
-                    S[index][0] = part.input[0].toVal();
-                    break;
-                }
-                case 'dc_current_source': {
-                    H[index][index] = 1;
-                    S[index][0] = part.input[0].toVal();
-                    break;
-                }
-                case 'resistance': {
+                default: {
                     F[index][index] = -1;
                     H[index][index] = part.input[0].toVal();
                     break;
                 }
-                case 'capacitor': {
-                    F[index][index] = 1;
-                    S[index][0] = 'update-' + parameterUpdate.length + '-0';
-                    break;
-                }
-                case 'VCVS': {
-                    F[index][index] = 1;
-                    F[index][branchHash[part.input[1]]] = part.input[0].toVal();
-                    break;
-                }
-                case 'CCCS': {
-                    let temp = part.input[0].toVal();
-                    if (typeof temp === 'number') { temp *= -1; }
-
-                    H[index][index] = 1;
-                    H[index][branchHash[part.input[1]]] = temp;
-                    break;
-                }
-                //组合器件
-                default: {
-                    const apart = partInternal[part.partType].apart;
-                    //器件需要拆分
-                    for (let i = 0; apart && i < apart.parts.length; i++) {
-                        const pieces = Object.clone(apart.parts[i]);
-
-                        pieces.id = part.id + '-' + pieces.id;
-                        pieces.input = pieces.input.map(function (n) {
-                            if (n.search(/^input/) !== -1) {
-                                //分割的器件值等于完整器件的某个输入
-                                return (part.input[n.split('-')[1]]);
-                            } else if (n.search(/this/) !== -1) {
-                                //等于当前器件和某个器件的关系
-                                return (n.replace(/this/g, part.id));
-                            } else if (n.search(/^update/) !== -1) {
-                                //等于迭代公式的输出
-                                return ('update-' + parameterUpdate.length + '-' + n.split('-')[1]);
-                            } else {
-                                return (n);
-                            }
-                        });
-                        //插入拆分器件
-                        insertFactor(pieces);
-                    }
-                }
             }
+
             //器件有更新方程
             if (partInternal[part.partType] && partInternal[part.partType].iterative) {
                 const parameter = partInternal[part.partType].iterative.create(part),

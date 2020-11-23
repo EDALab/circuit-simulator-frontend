@@ -302,10 +302,30 @@ function nodeId(input) {
                 migrateNode(pinNode1, minNode1);
             }
 
+            var value = 0;
+            if (component.value[0]) {
+                value = parseInt(component.value[0]);
+                if (component.value[0].includes("p")) {
+                    value /= 1000000000000;
+                } else if (component.value[0].includes("n")) {
+                    value /= 1000000000
+                } else if (component.value[0].includes("u")) {
+                    value /= 1000000
+                } else if (component.value[0].includes("m")) {
+                    value /= 1000
+                } else if (component.value[0].includes("k")) {
+                    value *= 1000
+                } else if (component.value[0].includes("M")) {
+                    value *= 1000000
+                } else if (component.value[0].includes("G")) {
+                    value *= 1000000000
+                }
+            }
+
             // Output as json
             var compJson = {
                 "name": component.id,
-                "value": component.value[0],
+                "value": value,
                 "node1": component.connect[0],
                 "node2": component.connect[1],
             }
