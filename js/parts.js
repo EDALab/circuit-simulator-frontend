@@ -808,7 +808,7 @@ PartClass.prototype = {
   // Drawing Related
   // Create a SVG on paper
   createPart() {
-    // zhaoshinan
+
     this.name = this.id
     const group = $('<g>', SVG_NS, {
       class: 'editor-parts',
@@ -1557,7 +1557,7 @@ PartClass.prototype = {
   },
   //变更当前器件ID
   exchangeID(label) {
-    // zhaoshinan
+  
     if (label === this.name) return false
     const last = this.name
     //删除旧器件
@@ -1911,7 +1911,7 @@ for (const i in originalElectronic) {
 
 //添加器件图标
 $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
-  // zhaoshinan
+ 
   const elem = $(n),
     special = {
       reference_ground: 'scale(1.3, 1.3)',
