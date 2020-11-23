@@ -761,11 +761,7 @@ const originalElectronic = {
 // Part Class (Class for the components)
 function PartClass(data) {
   const type = data.partType || data
-<<<<<<< HEAD
-
-=======
-  // zhaoshinan
->>>>>>> master
+  // New Identification
   this.partType = type
 
   this.extend(Object.clone(originalElectronic[type].readWrite))
@@ -812,11 +808,7 @@ PartClass.prototype = {
   // Drawing Related
   // Create a SVG on paper
   createPart() {
-<<<<<<< HEAD
-
-=======
-    // zhaoshinan
->>>>>>> master
+    // New Identification
     this.name = this.id
     const group = $('<g>', SVG_NS, {
       class: 'editor-parts',
@@ -1565,11 +1557,7 @@ PartClass.prototype = {
   },
   //变更当前器件ID
   exchangeID(label) {
-<<<<<<< HEAD
-  
-=======
-    // zhaoshinan
->>>>>>> master
+    // New Identification
     if (label === this.name) return false
     const last = this.name
     //删除旧器件
@@ -1923,11 +1911,7 @@ for (const i in originalElectronic) {
 
 //添加器件图标
 $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
-<<<<<<< HEAD
- 
-=======
-  // zhaoshinan
->>>>>>> master
+  // New Identification
   const elem = $(n),
     special = {
       reference_ground: 'scale(1.3, 1.3)',
@@ -1976,7 +1960,3 @@ $('#menu-add-parts-close').attr(
 
 //模块对外的接口
 export { PartClass }
-<<<<<<< HEAD
- 
-=======
->>>>>>> master
