@@ -297,6 +297,52 @@ const originalElectronic = {
         },
       ],
       introduction: 'AC Voltage Source',
+    //diode
+    diode: {
+        readWrite: {
+            id: 'VD_',
+            input: ['1', '0.5', '5M']
+        },
+        readOnly: {
+            partType: 'diode',
+            inputTxt: ['Breakover V: ', 'Breakover R: ', 'Shutoff R：'],
+            parameterUnit: ['V', 'Ω', 'Ω'],
+            visionNum: 1,
+            txtLocate: 18,
+            padding: [1, 0],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [0, -40],
+                    direction: [0, -1]
+                },
+                {
+                    position: [0, 40],
+                    direction: [0, 1]
+                }
+            ],
+            aspectInfor: [
+                {
+                    'name': 'path',
+                    'attribute': {
+                        'd': 'M0,-40V40M-13,-11H13'
+                    }
+                },
+                {
+                    'name': 'polygon',
+                    'attribute': {
+                        'points': '0,-11 -13,11 13,11', 'class': 'fill-whole'//'fill' : '#3B4449', 'stroke-width' : '1'
+                    }
+                },
+                {
+                    'name': 'rect',
+                    'attribute': {
+                        'x': '-13', 'y': '-30', 'width': '26', 'height': '60', 'class': 'focus-part'
+                    }
+                }
+            ],
+            introduction: 'Diode'
+        }
     },
   },
   // DC Current Source
