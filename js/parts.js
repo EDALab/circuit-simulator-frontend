@@ -457,7 +457,7 @@ const originalElectronic = {
         },
         readOnly: {
             partType: 'diode',
-            inputTxt: ['Breakover V:', 'Breakover R', 'Shutoff R：'],
+            inputTxt: ['Breakover V: ', 'Breakover R: ', 'Shutoff R：'],
             parameterUnit: ['V', 'Ω', 'Ω'],
             visionNum: 1,
             txtLocate: 18,
