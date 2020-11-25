@@ -6,7 +6,7 @@ const filter = (jsonString) => {
   output["-1"] = { id: 'GND_Abs', type: 'REF', value: 0, connect: [""] }
 
   for (const [key, value] of Object.entries(object)) {
-    let temp = { id: '', type: '', value: [], connect: [] }
+    let temp = { id: '', type: '', value: [], connect: [], name: value.name }
 
     const id = value.id
     temp.id = id

@@ -324,10 +324,11 @@ function nodeId(input) {
 
             // Output as json
             var compJson = {
-                "name": component.id,
-                "value": value,
-                "node1": component.connect[0],
-                "node2": component.connect[1],
+                id: component.id,
+                name: component.name,
+                value: value,
+                node1: component.connect[0],
+                node2: component.connect[1],
             }
 
             if (output[component.type]) {
