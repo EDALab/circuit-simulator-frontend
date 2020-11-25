@@ -720,9 +720,9 @@ action.on('click', '#fab-run', function (event) {
             }
 
             var filteredCircuit = JSON.stringify(n_copy);
-            //console.log('input json is ' + filteredCircuit);
+            // console.log('input json is ' + filteredCircuit);
             filteredCircuit = filter(filteredCircuit);
-           // console.log('filter result is ' + JSON.stringify(filteredCircuit));
+            // console.log('filter result is ' + JSON.stringify(filteredCircuit));
             var output = nodeId(filteredCircuit);
             console.log(JSON.stringify(output));
 
