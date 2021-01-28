@@ -1,7 +1,7 @@
-//单个器件的最大数量
+//Maximum number of single devices
 const maxNumber = 50;
 
-//器件堆栈类
+//Device stack class
 function PartsCollection(parts) {
     if (parts instanceof PartsCollection) {
         return (parts);
@@ -11,7 +11,7 @@ function PartsCollection(parts) {
     this.hash = {};
     this.current = {};
     this.length = 0;
-    //输入不为空
+    //Input cannot be empty
     if (parts !== undefined) {
         if (!(parts instanceof Array)) {
             this.push(parts);
@@ -39,7 +39,7 @@ function PartsCollection(parts) {
 }
 PartsCollection.prototype = {
     constructor: PartsCollection,
-    //器件压栈
+    //Device push
     push(part) {
         if (!part.elementDOM) {
             return (false);
@@ -59,7 +59,7 @@ PartsCollection.prototype = {
         }
         return (this);
     },
-    //栈顶器件弹出
+    //Top device pop
     pop() {
         const temp = Array.prototype.pop.call(this);
         if (temp) {
@@ -67,7 +67,7 @@ PartsCollection.prototype = {
             return (temp);
         }
     },
-    //根据器件ID返回器件对象
+    //Return device object based on device ID
     findPart(tempid) {
         if (!tempid) {
             return (false);
@@ -79,7 +79,7 @@ PartsCollection.prototype = {
         }
         return (this[this.hash[id]]);
     },
-    //删除器件
+    //Delete device
     deletePart(part) {
         let tempid = void 0;
         if (typeof part === 'string') {
@@ -87,24 +87,24 @@ PartsCollection.prototype = {
         } else if ((part.elementDOM && part.input) || (part.id.indexOf('line') !== -1)) {
             tempid = part.id;
         } else {
-            throw ('输入参数必须是字符串或者器件对象');
+            throw ('The input parameter must be a string or device object');
         }
 
         if (this.hash[tempid] === undefined) {
             return (false);
         }
-        //要删除的器件下标
+        //Device index to be deleted
         const sub = this.hash[tempid];
         this.splice(sub, 1);
 
-        //被删除器件之后的全部器件在hash表中的记录全部减1
+        //All the records in the hash table of all devices after the deleted device are reduced by 1
         for (let i = sub; i < this.length; i++) {
             this.hash[this[i].id]--;
         }
-        //删除hash表中的记录
+        //Delete records in the hash table
         delete this.hash[tempid];
     },
-    //删除器件集合
+    //Delete device collection
     deleteParts(input) {
         let func = void 0,
             temp = void 0,
@@ -113,7 +113,7 @@ PartsCollection.prototype = {
             func = input;
         } else {
             temp = new PartsCollection(input);
-            func = function(n) {
+            func = function (n) {
                 return (!temp.has(n));
             };
         }
@@ -122,27 +122,27 @@ PartsCollection.prototype = {
         this.deleteAll();
         set.forEach((n) => this.push(n));
     },
-    //集合是否包含该器件
+    //Does the collection contain the device
     has(part) {
         let tempid = '';
-        if (typeof  part === 'string') {
+        if (typeof part === 'string') {
             tempid = part.split('-')[0];
         } else {
             tempid = part.id;
         }
         return (this.hash[tempid] !== undefined);
     },
-    //从已有器件中推算新ID
+    //Calculate new ID from existing devices
     newId(input) {
         const temp = input.match(/^[^_]+(_[^_]+)?/),
             id = temp && temp[0];
 
         if (!temp) {
-            throw ('器件ID格式错误');
+            throw ('Device ID format error');
         }
 
         let tempid = '', ans = void 0;
-        //输入字符串没有下划线
+        //The input string is not underlined
         if (id.indexOf('_') === -1) {
             tempid = id + '_';
         } else if (!this.has(input)) {
@@ -157,9 +157,9 @@ PartsCollection.prototype = {
                 return (ans);
             }
         }
-        throw ('器件数量超出最大限制');
+        throw ('The number of devices exceeds the maximum limit');
     },
-    //器件堆栈清空
+    //Device stack empty
     deleteAll() {
         for (let i = 0; i < this.length; i++) {
             this[i].toNormal();
@@ -169,28 +169,28 @@ PartsCollection.prototype = {
         this.length = 0;
         this.current = {};
     },
-    //分割连通图，返回连通图数组
+    //Split connected graph and return connected graph array
     connectGraph() {
-        const partsArea = [],   //电路连通区域
-            partsHash = {};     //电路所有器件Hash查询表
+        const partsArea = [],   //Circuit connection area
+            partsHash = {};     //Hash lookup table for all components of the circuit
 
-        //连接表初始化
+        //Connection table initialization
         this.forEach((n) => partsHash[n.id] = true);
-        //扫描所有器件，分割电路连通图区域
-        this.forEach(function(n) {
+        //Scan all devices and divide the circuit connection map area
+        this.forEach(function (n) {
             if (partsHash[n.id]) {
-                //当前连通区域初始化
+                //Initialization of current connected region
                 const parts = new PartsCollection(n),
                     ans = new PartsCollection();
-                //由初始器件搜索当前连通区域
+                //Search the current connected area by the initial device
                 while (parts.length) {
-                    const item = parts.pop();       //栈顶元素弹出
-                    partsHash[item.id] = false;     //当前器件访问标志
-                    ans.push(item);                 //当前区域器件入栈
-                    item.connect.join(' ').split(' ').forEach(function(n) {
+                    const item = parts.pop();       //Top element pop
+                    partsHash[item.id] = false;     //Current device access flag
+                    ans.push(item);                 //Current area device push into the stack
+                    item.connect.join(' ').split(' ').forEach(function (n) {
                         const tempPart = partsAll.findPart(n);
                         //attention:
-                        if (tempPart.partType === '网络标号') {
+                        if (tempPart.partType === 'Network label') {
 
                         } else {
                             if (partsHash[tempPart.id] && !parts.has(tempPart))
@@ -203,12 +203,12 @@ PartsCollection.prototype = {
         });
         return (partsArea);
     },
-    //所有器件的几何中心点
+    //Geometric center point of all devices
     center() {
-        //所有器件的节点集合
+        //Node collection of all devices
         let nodes = [];
         for (let i = 0; i < this.length; i++) {
-            //导线为所有节点集合，器件则是它本身的几何中心
+            //The wire is a collection of all nodes, and the device is its own geometric center
             const node = this[i].way
                 ? this[i].way.nodeCollection()
                 : this[i].position.round();
@@ -224,13 +224,13 @@ PartsCollection.prototype = {
             (Math.minOfArray(nodeY) + Math.maxOfArray(nodeY)) / 2
         ]);
     },
-    //同Array的forEach
+    //Same as forEach of Array
     forEach(callback) {
         for (let i = 0; i < this.length; i++) {
             callback(this[i], i, this);
         }
     },
-    //同Array的every
+    //Same as Array of every
     every(callback) {
         for (let i = 0; i < this.length; i++) {
             if (!callback(this[i], i, this)) {
@@ -239,7 +239,7 @@ PartsCollection.prototype = {
         }
         return (true);
     },
-    //同Array的filter
+    //Same as Array filter
     filter(callback) {
         const ans = new PartsCollection();
         for (let i = 0; i < this.length; i++) {
@@ -252,7 +252,7 @@ PartsCollection.prototype = {
 };
 Object.setPrototypeOf(PartsCollection.prototype, Array.prototype);
 
-//全局器件集合
+//Global device collection
 const partsAll = new PartsCollection(),
     partsNow = new PartsCollection();
 

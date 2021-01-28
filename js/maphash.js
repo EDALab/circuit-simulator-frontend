@@ -1,20 +1,20 @@
-//图纸记录对象
+//Drawing record object
 const map = {},
     schMap = {};
 
 schMap.extend({
-    //以小坐标取得节点属性
+    //Get node attributes with small coordinates
     getValueBySmalle(node) {
         if (!map[node[0]] || !map[node[0]][node[1]]) {
             return (false);
         }
         return (map[node[0]][node[1]]);
     },
-    //以原坐标取得节点属性
+    //Get node attributes with original coordinates
     getValueByOrigin(node) {
         return (schMap.getValueBySmalle([node[0] / 20, node[1] / 20]));
     },
-    //以小坐标强制设定节点属性，默认为覆盖模式
+    //Forced setting of node attributes with small coordinates, the default is overwrite mode
     setValueBySmalle(node, attribute, flag = false) {
         const i = node[0], j = node[1];
 
@@ -22,24 +22,25 @@ schMap.extend({
             map[i] = [];
         }
         if (flag) {
-            //删除原来的属性
+            //Delete the original attribute
             map[i][j] = {};
         } else if (!map[i][j]) {
-            //覆盖模式下只有当节点为空的之后才会重新创建
+            //Delete the original attribute
             map[i][j] = {};
         }
 
         map[i][j].extend(attribute);
     },
-    //以原坐标强制设定节点属性，节点已经有的被新的覆盖，旧的不删除
+    //Forcibly set the node attributes with the original coordinates, 
+    // the existing nodes are overwritten by the new ones, and the old ones are not deleted
     setValueByOrigin(node, attribute, flag = false) {
         schMap.setValueBySmalle([node[0] / 20, node[1] / 20], attribute, flag);
     },
-    //以小坐标删除节点
+    //Delete node with small coordinates
     deleteValueBySmalle(node) {
         const status = schMap.getValueBySmalle(node);
         if (status && status.connect) {
-            //删除与当前点相连的点的连接信息
+            //Delete the connection information of the point connected to the current point
             for (let i = 0; i < status.connect.length; i++) {
                 schMap.deleteConnectBySmalle(status.connect[i], node);
             }
@@ -51,11 +52,11 @@ schMap.extend({
             delete map[node[0]];
         }
     },
-    //以原坐标删除节点
+    //Delete node with original coordinates
     deleteValueByOrigin(node) {
         return (schMap.deleteValueBySmalle([node[0] / 20, node[1] / 20]));
     },
-    //添加连接关系，如果重复那么就忽略
+    //Add connection relationship, if repeated then ignore
     pushConnectBySmalle(node, connect) {
         let status = schMap.getValueBySmalle(node);
 
@@ -80,7 +81,7 @@ schMap.extend({
 
         return schMap.pushConnectBySmalle(node, connect);
     },
-    //删除连接关系，如果没有那么忽略
+    //Delete the connection relationship, if not exist then ignore
     deleteConnectBySmalle(node, connect) {
         const status = schMap.getValueBySmalle(node);
 
@@ -102,7 +103,7 @@ schMap.extend({
 
         return schMap.deleteConnectBySmalle(node, connect);
     },
-    //node和connect是否在同一个导线上
+    //check if node and connect exist on the same wire
     nodeInConnectBySmall(node, connect) {
         const status = schMap.getValueBySmalle(node);
         if (status && (status.form === 'line' || status.form === 'cross-point')) {
@@ -120,7 +121,7 @@ schMap.extend({
 
         return schMap.nodeInConnectBySmall(node, connect);
     },
-    //当前点是否是导线
+    //check if the node is a wire
     isLine(node, flag) {
         const tempStatus = (flag === 'small')
             ? schMap.getValueBySmalle(node)
@@ -133,7 +134,7 @@ schMap.extend({
             tempStatus.form === 'cover-point'
         );
     },
-    //当前点是否是器件引脚
+    //check if the node is the pin of a device
     isPartPoint(node, flag) {
         const tempStatus = (flag === 'small')
             ? schMap.getValueBySmalle(node)
@@ -144,27 +145,29 @@ schMap.extend({
             tempStatus.form === 'part-point'
         );
     },
-    //在[start、end]范围中沿着vector直行，求最后一点的坐标
+    //Go straight along the vector in the range of [start, end], find the coordinates of the last point
     alongTheLineBySmall(start, end, vector) {
-        //非法坐标为无限大
+        //Invalid coordinates are infinite
         end = end ? end : [3000, 3000];
-        //没有方向，则方向为起点到终点
+        //If there is no direction, the direction is from start to end
         vector = vector
             ? vector
             : [end[0] - start[0], end[1] - start[1]];
 
-        //单位向量
+        //unit vector
         vector[0] = vector[0].toUnit();
         vector[1] = vector[1].toUnit();
 
-        //起点并不是导线或者起点等于终点，直接返回
+        // if the starting point is not a wire or the starting point is equal to the ending point, 
+        // return directly
         if (!schMap.isLine(start, 'small') || start.isEqual(end)) {
             return (start);
         }
 
         let node = [start[0], start[1]],
             next = [node[0] + vector[0], node[1] + vector[1]];
-        //当前点没有到达终点，还在导线所在直线内部，那就前进
+        //If the current point has not reached the end point, 
+        // and it is still inside the line where the wire is located, then go forward
         while (schMap.isLine(next, 'small') && !node.isEqual(end)) {
             if (schMap.nodeInConnectBySmall(node, next)) {
                 node = next;
@@ -183,7 +186,8 @@ schMap.extend({
 
         return ([ans[0] * 20, ans[1] * 20]);
     },
-    //以node为中心，寻找最近的可行点，callback为判断标准函数，由外部输入
+    //search the nearest feasible point around the node,
+    //callback is a judging function, it has an external input
     nodeRound(node, mouse, callback) {
         const ans = [];
         let m = 0;
@@ -206,7 +210,7 @@ schMap.extend({
         const vectors = ans.map((item) => [item[0] - node[0], item[1] - node[1]]);
         return (ans[node.add(-1, mouse).similar(vectors).sub]);
     },
-    //返回已经记录的全部节点
+    //return all the nodes
     toSmallNodes() {
         const ans = [];
         for (const i in map) {
@@ -220,7 +224,7 @@ schMap.extend({
         }
         return (ans);
     },
-    //返回交错节点到指定导线的方向
+    //Returns the direction of the staggered node to the specified wire
     cross2line(node, line) {
         const status = schMap.getValueByOrigin(node);
         if (!status || status.form !== 'cross-point') {

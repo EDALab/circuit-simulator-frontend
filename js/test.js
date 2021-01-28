@@ -6,9 +6,9 @@ import { partsAll, partsNow } from './collection';
 import { PartClass } from './parts';
 import { LineClass } from './lines';
 
-//由数据绘制图纸
+//Use data to draw on canvas
 function loadData(data) {
-    //第一遍，加载器件和设置
+    //The first pass, load the device and settings
     for (let i = 0; i < data.length; i++) {
         if ((data[i].partType !== 'line') && (data[i].partType !== 'config')) {
             const device = new PartClass(data[i]);
@@ -21,7 +21,7 @@ function loadData(data) {
             }
         }
     }
-    //第二遍，加载导线
+    //The second time, load the wire
     for (let i = 0; i < data.length; i++) {
         if (data[i].partType === 'line') {
             const devices = new LineClass(data[i].way[0]);
@@ -35,17 +35,17 @@ function loadData(data) {
                 const node = devices.way[j * (devices.way.length - 1)];
                 const nodeStatus = schMap.getValueByOrigin(node);
                 if (nodeStatus.form === 'part-point') {
-                    //器件引脚
+                    //Device pin
                     const connectpart = partsAll.findPart(nodeStatus.id.slice(0, nodeStatus.id.search('-')));
                     connectpart.setConnect(nodeStatus.id.slice(nodeStatus.id.search('-') + 1), devices.id);
                     devices.setConnect(j, nodeStatus.id);
                 } else if (nodeStatus.form === 'line-point') {
-                    //导线临时节点
-                    //在临时节点相交，那么此点必定是交错节点
+                    //Temporary wire node
+                    //If a point is intersected at a temporary node, the it must be a "cross-point"
                     nodeStatus.form = 'cross-point';
                     nodeStatus.id += ' ' + devices.id;
                 } else if (nodeStatus.form === 'cross-point') {
-                    //交错节点
+                    //"cross-point"
                     nodeStatus.id += ' ' + devices.id;
                 }
             }
@@ -53,12 +53,12 @@ function loadData(data) {
             devices.markSign();
         }
     }
-    //第三遍，扫描图纸的交错节点
+    //The third pass, scan the "cross-point" nodes of the drawing
     for (const i in schMap) if (schMap.hasOwnProperty(i)) {
         for (const j in schMap[i]) if (schMap[i].hasOwnProperty(j)){
             const nodeStatus = schMap[i][j];
             if (nodeStatus.form === 'cross-point') {
-                //查询所有连接的导线
+                //Query all connected wires
                 const node = [parseInt(i) * 20, parseInt(j) * 20],
                     lines = nodeStatus.id.split(' ').map(function(item){
                         const line = partsAll.findPart(item),
@@ -78,7 +78,7 @@ function loadData(data) {
 
 const schematic = $('#area-of-parts');
 
-//图纸测试
+//Map test
 function MapTest() {
     this.test = $('#container-grid > svg > #area-of-parts').append($('<g>', SVG_NS, {
         'id': 'maptest'
@@ -153,10 +153,10 @@ MapTest.prototype = {
                 tempstatus = schMap.getValueBySmalle(mapNodes[k]);
 
             if (tempstatus.form === 'part-point') {
-                //红色
+                //red
                 this.point([i, j], '#ff0000', 20, 4);
             } else if (tempstatus.form === 'part') {
-                //黑色
+                //black
                 this.point([i, j], '#000000', 20, 4);
             }
 
@@ -176,16 +176,16 @@ MapTest.prototype = {
                     }
                 }
                 if (tempstatus.form === 'line') {
-                    //蓝色
+                    //blue
                     this.point([i, j], '#0000ff', 20, 4);
                 } else if (tempstatus.form === 'cross-point') {
-                    //黄色
+                    //yellow
                     this.point([i, j], '#dcfc02', 20, 4);
                 } else if (tempstatus.form === 'line-point') {
-                    //绿色
+                    //green
                     this.point([i, j], '#02fc31', 20, 4);
                 } else if (tempstatus.form === 'cover-point') {
-                    //绿色
+                    //green
                     this.point([i, j], '#E9967A', 20, 4);
                 }
             }
@@ -206,19 +206,19 @@ MapTest.prototype = {
     },
 };
 
-//导线寻路测试
+//Wire path finding test
 const lineTestData = {
-    //从管脚开始绘制导线
+    //Draw wires from the pins
     pin2draw: {
         initMap: [
             { partType: 'resistance', id: 'R_1', input: ['10k'], position: [420, 240], rotate:[[1, 0], [0, 1]] },
             { partType: 'resistance', id: 'R_2', input: ['10k'], position: [700, 220], rotate:[[1, 0], [0, 1]] }
         ],
         action:[
-            //点击R_1-1管脚
+            //Click the pin of R_1-1
             {
                 event: {type:'mousedown', which: 1, currentTarget: 'g#R_1-1', pageX: 460, pageY: 240},
-                describe: '在R_1的引脚1处按下鼠标',
+                describe: 'Click at pin 1 of R_1',
                 data: [
                     {
                         id: 'line_1',
@@ -228,7 +228,7 @@ const lineTestData = {
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 690, pageY: 250},
-                describe: '移动鼠标至[690, 250]',
+                describe: 'Move mouse to [690, 250]',
                 data: [
                     {
                         id: 'line_1',
@@ -236,7 +236,7 @@ const lineTestData = {
                     }
                 ]
             },
-            //移动至R_2上
+            //Move to R_2
             {
                 event: {
                     type:'mouseenter',
@@ -244,12 +244,12 @@ const lineTestData = {
                     relatedTarget: 'g#line_1-1 > circle',
                     target: 'g#R_2 > rect.focus-part'
                 },
-                describe: '鼠标进入R_2的范围',
+                describe: 'Mouse is inside R_2 area',
                 data: []
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 690, pageY: 234},
-                describe: '移动鼠标至[690, 234]',
+                describe: 'Move mouse to [690, 234]',
                 data: [
                     {
                         id: 'line_1',
@@ -259,7 +259,7 @@ const lineTestData = {
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 710, pageY: 230},
-                describe: '移动鼠标至[710, 234]',
+                describe: 'Move mouse to [710, 234]',
                 data: [
                     {
                         id: 'line_1',
@@ -267,10 +267,10 @@ const lineTestData = {
                     }
                 ]
             },
-            //移出R_2
+            //Move away from R_2 area
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 690, pageY: 234},
-                describe: '移动鼠标至[690, 234]',
+                describe: 'Move mouse to [690, 234]',
                 data: [
                     {
                         id: 'line_1',
@@ -285,12 +285,12 @@ const lineTestData = {
                     relatedTarget: 'div#container-grid > svg',
                     target: 'g#R_2 > rect.focus-part'
                 },
-                describe: '鼠标离开R_2的范围',
+                describe: 'Mouse is away from R_2 area',
                 data: []
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 430, pageY: 260},
-                describe: '移动鼠标至[420, 260]',
+                describe: 'Move mouse to [420, 260]',
                 data: [
                     {
                         id: 'line_1',
@@ -298,7 +298,7 @@ const lineTestData = {
                     }
                 ]
             },
-            //移动至R_1上
+            //Move to R_1
             {
                 event: {
                     type:'mouseenter',
@@ -306,12 +306,12 @@ const lineTestData = {
                     relatedTarget: 'g#line_1-1 > circle',
                     target: 'g#R_1 > rect.focus-part'
                 },
-                describe: '鼠标进入R_1的范围',
+                describe: 'Mouse is inside R_1 area',
                 data: []
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 430, pageY: 254},
-                describe: '移动鼠标至[420, 254]',
+                describe: 'Move mouse to [420, 254]',
                 data: [
                     {
                         id: 'line_1',
@@ -321,7 +321,7 @@ const lineTestData = {
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 410, pageY: 230},
-                describe: '移动鼠标至[410, 230]',
+                describe: 'Move mouse to [410, 230]',
                 data: [
                     {
                         id: 'line_1',
@@ -329,10 +329,10 @@ const lineTestData = {
                     }
                 ]
             },
-            //鼠标mouseup
+            //mouseup
             {
                 event: {type:'mouseup', which: 1, currentTarget: 'div#container-grid', pageX: 410, pageY: 230},
-                describe: '在R_1上放开鼠标',
+                describe: 'Mouse up at R_1',
                 data: [
                     {
                         id: 'line_1',
@@ -340,10 +340,10 @@ const lineTestData = {
                     }
                 ]
             },
-            //点击R_2-1管脚
+            //Click the pin of R_2-1
             {
                 event: {type:'mousedown', which: 1, currentTarget: 'g#R_2-0', pageX: 660, pageY: 220},
-                describe: '在R_2的引脚0处按下鼠标',
+                describe: 'Click at pin 0 of R_2',
                 data: [
                     {
                         id: 'line_2',
@@ -353,7 +353,7 @@ const lineTestData = {
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 410, pageY: 220},
-                describe: '移动鼠标至[410, 220]',
+                describe: 'Move mouse to [410, 220]',
                 data: [
                     {
                         id: 'line_2',
@@ -361,7 +361,7 @@ const lineTestData = {
                     }
                 ]
             },
-            //移动鼠标至R_1上
+            //Move to R1
             {
                 event: {
                     type:'mouseenter',
@@ -369,12 +369,12 @@ const lineTestData = {
                     relatedTarget: 'g#line_1-1 > circle',
                     target: 'g#R_1 > rect.focus-part'
                 },
-                describe: '鼠标进入R_1的范围',
+                describe: 'Mouse is inside R_1 area',
                 data: []
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 410, pageY: 230},
-                describe: '移动鼠标至[410, 230]',
+                describe: 'Move mouse to [410, 230]',
                 data: [
                     {
                         id: 'line_2',
@@ -384,7 +384,7 @@ const lineTestData = {
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 410, pageY: 245},
-                describe: '移动鼠标至[410, 245]',
+                describe: 'Move mouse to [410, 245]',
                 data: [
                     {
                         id: 'line_2',
@@ -394,7 +394,7 @@ const lineTestData = {
             },
             {
                 event: {type:'mousemove', currentTarget: 'div#container-grid', pageX: 430, pageY: 245},
-                describe: '移动鼠标至[430, 245]',
+                describe: 'Move mouse to [430, 245]',
                 data: [
                     {
                         id: 'line_2',
@@ -403,25 +403,25 @@ const lineTestData = {
                 ]
             },
 
-            //鼠标mouseup
+            //mouseup
 
         ]
     },
-    //单个器件移动
+    //Move single device
     part2move: {
 
     },
-    //多个器件移动
+    //Move multiple device
     parts2move: {
 
     },
-    //导线变形
+    //Shape change of wire
     linetrans: {
 
     }
 };
 const lineTest = {
-    //触发动作
+    //Trigger action
     action(data) {
         const event = Object.clone(data.event),
             target = ['currentTarget', 'relatedTarget', 'target'];
@@ -434,7 +434,7 @@ const lineTest = {
 
         $(event.currentTarget).trigger(event);
     },
-    //数据校验
+    //Data validation
     dataCheck(data) {
         for (let i = 0; i < data.length; i++) {
             const line = partsAll.findPart(data[i].id);
@@ -444,9 +444,9 @@ const lineTest = {
         }
         return (true);
     },
-    //初始化
+    //Initialization
     init(map) {
-        //清空图纸和器件集合
+        //Clear drawings and device collections
         schematic.childrens().remove();
         partsAll.deleteAll();
         partsNow.deleteAll();
@@ -457,7 +457,7 @@ function LineTest(type) {
     const test = lineTestData[type];
     lineTest.init(test.initMap);
 
-    //初始化
+    //Initialization
     let promise = new Promise(function(res, rej) {
         lineTest.action(test.action[0]);
         if (lineTest.dataCheck(test.action[0].data)) {
@@ -466,13 +466,13 @@ function LineTest(type) {
             rej(0);
         }
     });
-    //异步触发
+    //Trigger asynchronous
     for (let i = 1; i < test.action.length; i++) {
         promise = promise.then(function(){
             return new Promise(function(res, rej) {
                 setTimeout(function() {
                     if (i === 100) {
-                        console.log('暂停');
+                        console.log('stop');
                     }
                     lineTest.action(test.action[i]);
                     if (lineTest.dataCheck(test.action[i].data)) {
@@ -485,16 +485,16 @@ function LineTest(type) {
         });
     }
 
-    //正常结束，以及错误捕获
+    //Normal end, and error capture
     promise.then(function(){
-        console.log('校验完成，没有发现错误。');
+        console.log('Verification is complete, error not found');
     }).catch(function(e) {
-        console.log('发生错误：第' + e + '步');
-        console.log('操作：' + test.action[e].describe);
+        console.log('Error：The' + e + 'step');
+        console.log('Operation: ' + test.action[e].describe);
     });
 }
 
-//测试时部分变量需要在全局使用
+//Some variables need to be used globally during testing
 window.mapTest = new MapTest();
 window.lineTest = LineTest;
 window.partsAll = partsAll;

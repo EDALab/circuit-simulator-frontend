@@ -1,4 +1,4 @@
-//在备选值中选出最大或者最小的
+//Choose the largest or smallest among the alternative values
 function selectMax(ref, alts, func) {
     let max = -Infinity, sub;
     for (let i = 0; i < alts.length; i++) {
@@ -47,14 +47,14 @@ function nodeDistance(node, end) {
     return exPoint.prototype.distance.call(node, end);
 }
 
-//点和向量
+//Point and vector
 function exPoint(arr) {
     if (Point.isPoint(arr)) {
-        //输入是点
+        //Input is point
         this[0] = arr[0];
         this[1] = arr[1];
     } else if (Point.isVector(arr)){
-        //输入是向量
+        //Input is vector
         this[0] = arr[1][0] - arr[0][0];
         this[1] = arr[1][1] - arr[0][1];
     }
@@ -66,7 +66,7 @@ function exPoint(arr) {
     });
 }
 exPoint.prototype = {
-    //加法，如果输入数组，那么逐个相加
+    //For add, if input is array, then add one by one (element-wise)
     add(label = 1, a) {
         const sum = [],
             sign = (a === undefined) ? 1 : label,
@@ -90,7 +90,7 @@ exPoint.prototype = {
         }
         return (new exPoint(sum));
     },
-    //乘法，如果输入数组，那么逐个相乘
+    //For mul (multiply)，if input is array, then multiply one by one (element-wise)
     mul(label = 1, a) {
         const sum = [],
             sign = (a === undefined) ? 1 : label;
@@ -116,18 +116,18 @@ exPoint.prototype = {
         }
         return (new exPoint(sum));
     },
-    //向量相乘
+    //Vector multiplication
     product(a) {
         return (this[0] * a[0] + this[1] * a[1]);
     },
-    //绝对值
+    //Absolute value
     abs() {
         return (new exPoint([
             Math.abs(this[0]),
             Math.abs(this[1])
         ]));
     },
-    //单位化，符号不变，数值变为1
+    //Unitization, the sign does not change, the value becomes 1
     toUnit(x) {
         const a = Number(this[0]), b = Number(this[1]);
         if (!a && !b) {
@@ -139,7 +139,7 @@ exPoint.prototype = {
 
         return (new exPoint([a * scale * factor, b * scale * factor]));
     },
-    //是否是整数点
+    //Whether it is an integer point
     isInteger() {
         if (this.length !== 2 ||
             this[0] !== Math.floor(this[0]) ||
@@ -148,29 +148,29 @@ exPoint.prototype = {
         }
         return (true);
     },
-    //是否平行
+    //Whether it is in parallel
     isParallel(vector) {
         return (this[0]*vector[1] === this[1]*vector[0]);
     },
-    //是否垂直
+    //Whether it is vertical
     isVertical(vector) {
         return (!(this[0]*vector[0] + this[1]*vector[1]));
     },
-    //方向相同，0向量输出false
+    //If direction is the same, 0 vector will output false
     isSameDire(vector) {
         const vc1 = this.toUnit(),
             vc2 = Point.prototype.toUnit.call(vector);
         return (vc1.isEqual(vc2));
     },
-    //方向相反，0向量输出false
+    //If direction is opposite, 0 vector will output false
     isOppoDire(vector) {
         const vc1 = this.toUnit().mul(-1),
             vc2 = Point.prototype.toUnit.call(vector);
         return (vc1.isEqual(vc2));
     },
-    //在某线段范围内
+    //Within a certain line segment
     inLine(line, sign) {
-        //sign为强制比较标志
+        //"sign" is a mandatory comparison condition
         if (sign === 'y' || line[0][0] === line[1][0] && line[0][0] === this[0]) {
             return (
                 (this[1] >= line[0][1] && this[1] <= line[1][1]) ||
@@ -183,29 +183,29 @@ exPoint.prototype = {
             );
         }
     },
-    //点到点或线的距离
+    //Distance from point to point or line
     distance(end) {
         if (end[0].length) {
-            //end是线段
-            //垂直为1，水平为0
+            //end is line segment
+            //vertical -> 1, parallel -> 0
             const sub = +(end[0][1] !== end[1][1]);
             if (((this[sub] <= end[0][sub]) && (this[sub] >= end[1][sub])) ||
                 ((this[sub] >= end[0][sub]) && (this[sub] <= end[1][sub]))) {
-                //this在线段x或y轴范围内
+                //this. is inside line segment x or y-axis
                 return (Math.abs(this[1 - sub] - end[0][1 - sub]));
             } else {
-                //否则，取线段起点或终点中和this距离小的
+                //Otherwise, take the line segment end that has smaller distance to this.
                 return (Math.min(
                     Math.abs(this[0] - end[0][0]) + Math.abs(this[1] - end[0][1]),
                     Math.abs(this[0] - end[1][0]) + Math.abs(this[1] - end[1][1])
                 ));
             }
         } else {
-            //end是点
+            //end is point
             return (Math.abs(this[0] - end[0]) + Math.abs(this[1] - end[1]));
         }
     },
-    //四舍五入
+    //Round
     round(n = 20) {
         return (new exPoint([
             Math.round(this[0] / n) * n,
@@ -218,7 +218,7 @@ exPoint.prototype = {
             Math.round(this[1] / n)
         ]));
     },
-    //向下取整
+    //Round down
     floor(n = 20) {
         return (new exPoint([
             Math.floor(this[0] / n) * n,
@@ -231,7 +231,7 @@ exPoint.prototype = {
             Math.floor(this[1] / n)
         ]));
     },
-    //以当前点为左上角，生成四方格坐标
+    //Take the current point as the upper left corner to generate square coordinates
     toGrid() {
         return ([
             new exPoint(this),
@@ -240,19 +240,19 @@ exPoint.prototype = {
             new exPoint([this[0] + 20, this[1] + 20])
         ]);
     },
-    //在vectors中与this夹角最小的向量
+    //Among all vectors, the vector with the smallest angle to this.
     similar(vectors) {
         return selectMax(this, vectors, vectorProduct);
     },
-    //在points中与this距离最短的点
+    //Among all points, the point with the shortest distance to this.
     closest(points) {
         return selectMin(this, points, nodeDistance);
     },
-    //在points中与this距离最远的点
+    //Among all points, the point with the longest distance to this.
     farest(points) {
         return selectMax(this, points, nodeDistance);
     },
-    //旋转
+    //Rotate
     rotate(matrix, center) {
         center = center || (new exPoint([0, 0]));
 
@@ -265,7 +265,7 @@ exPoint.prototype = {
 };
 Object.setPrototypeOf(exPoint.prototype, Array.prototype);
 
-//对外暴露的构造函数
+//Public constructor
 function Point(...args) {
     return (new exPoint(...args));
 }

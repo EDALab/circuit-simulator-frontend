@@ -756,6 +756,67 @@ const originalElectronic = {
             introduction: 'Single Point Voltmeter',
         },
     },
+    // Node_Label device
+    NDLB_Voltmeter: {
+        readWrite: {
+            id: 'NDLB_',
+        },
+        readOnly: {
+            partType: 'NDLB_Voltmeter',
+            inputTxt: [],
+            visionNum: 0,
+            pointInfor: [
+                {
+                    position: [0, -40],
+                    direction: [0, -1],
+                },
+            ],
+            padding: 1,
+            margin: [1, 0],
+            txtLocate: 24,
+            aspectInfor: [
+                {
+                    name: 'circle',
+                    attribute: {
+                        cx: '0',
+                        cy: '0',
+                        r: '19',
+                        class: 'white-fill',
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M0,-40V-20',
+                    },
+                },
+                {
+                    name: 'text',
+                    attribute: {
+                        d: 'M0,-40V-20',
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-7,-6L0,7L7,-6',
+                        class: 'part-rotate',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-20',
+                        y: '-30',
+                        width: '40',
+                        height: '60',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'Node Label',
+        },
+    },
 }
 
 // Part Class (Class for the components)
@@ -1214,7 +1275,7 @@ PartClass.prototype = {
 
         return false
     },
-    //器件内边距中的所有节点和管脚节点
+    //All nodes and pin nodes in the device margin
     nodeCollection() {
         const ans = [],
             position = this.position.floorToSmall(),
@@ -1241,7 +1302,7 @@ PartClass.prototype = {
 
         return ans
     },
-    //计算器件当前引脚坐标及方向
+    //Calculate the current pin coordinates and direction of the device
     pointRotate() {
         const ans = []
         for (let i = 0; i < this.pointInfor.length; i++) {
@@ -1253,7 +1314,7 @@ PartClass.prototype = {
         }
         return ans
     },
-    //当前器件边距
+    //Current device margin
     marginRotate() {
         const ans = {},
             attr = ['padding', 'margin']
@@ -1268,7 +1329,7 @@ PartClass.prototype = {
                     [data.right, 0],
                 ]
 
-            //四方向计算
+            //Four directions calculation
             for (let j = 0; j < 4; j++) {
                 const ma = this.rotate.multo([tempMargin[j]])[0]
                 if (ma[0] !== 0) {
@@ -1289,7 +1350,7 @@ PartClass.prototype = {
         }
         return ans
     },
-    //按照标准格式输出
+    //Output in standard format
     toSimpleData() {
         const text = this.visionNum
             ? $('text', this.elementDOM).attr(['x', 'y'])
@@ -1305,16 +1366,16 @@ PartClass.prototype = {
             id: this.id,
         }
     },
-    //当前器件是否还存在
+    //Does the current device still exist
     isExist() {
         return actionArea.contains(this.elementDOM) && partsAll.has(this)
     },
 
-    //操作
-    //直接设置导线连接，会影响端点形状
+    //operating
+    //Setting the wire connection directly will affect the shape of the end point
     setConnect(mark, id) {
         if (arguments.length === 2) {
-            //没有输入连接导线的时候，连接表不变
+            //When there is no input connecting wire, the connection table remains unchanged
             this.connect[mark] = id
         }
 
@@ -1326,29 +1387,29 @@ PartClass.prototype = {
         }
         this.shrinkCircle(mark)
     },
-    //器件高亮
+    //Device focus
     toFocus() {
         this.elementDOM.addClass('focus')
         partsNow.push(this)
         return this
     },
-    //器件取消高亮
+    //Device cancel focus
     toNormal() {
         this.elementDOM.removeClass('focus')
         this.current = {}
         return this
     },
-    //显示器件参数菜单
+    //Display device parameter menu
     viewParameter(zoom, SVG) {
-        //确定DOM部分
+        //Determine the DOM part
         const parameterDiv = $('#parameter-menu'),
             parameterBottom = $('.parameter-bottom-line', parameterDiv)
 
         let inputGroup = $('.st-menu-input-group', parameterDiv)
 
-        //移除全部group
+        //Remove all groups
         inputGroup.remove()
-        //添加group
+        //Add group
         for (let i = 0; i < this.inputTxt.length + 1; i++) {
             const inputGroup = $('<div>', { class: 'st-menu-input-group' })
             inputGroup.append($('<span>', { class: 'st-menu-input-introduce' }))
@@ -1357,20 +1418,20 @@ PartClass.prototype = {
             inputGroup.append($('<span>', { class: 'st-menu-input-unit' }))
             parameterDiv.preappend(inputGroup, parameterBottom)
         }
-        //添加之后重新匹配DOM
+        //Rematch DOM after adding
         inputGroup = $('.st-menu-input-group', parameterDiv)
-        //器件属性与说明文字的最大宽度
+        //Maximum width of device attributes and description text
         let introWidth = 3,
             unitWidth = 0
         for (let i = 0; i < inputGroup.length; i++) {
             const intro = i ? this.inputTxt[i - 1] : 'Name：',
                 input = i ? this.input[i - 1] : this.name,
                 unit = i ? this.parameterUnit[i - 1] : ''
-            //把输入的u替换成μ
+            //Replace the input u with μ
             if (this.input) {
                 this.input[i] = this.input[i] ? this.input[i].replace('μ', 'u') : false
             }
-            //添加器件属性
+            //Add device properties
             const group = $(inputGroup[i]),
                 groupIntro = group.childrens(0),
                 groupUnit = group.childrens(3),
@@ -1380,14 +1441,14 @@ PartClass.prototype = {
             groupIntro.text(intro)
             groupUnit.text(unit)
             groupInput.attr('value', input)
-            //求属性说明文字的最大宽度
+            //Find the maximum width of the attribute description text
             introWidth =
                 groupIntro.width() > introWidth ? groupIntro.width() : introWidth
             unitWidth = groupUnit.width() > unitWidth ? groupUnit.width() : unitWidth
         }
-        //inputDOM比器件的input数组多了一个器件ID
+        //inputDOM has one more device ID than the input array of the device
         this.input.length--
-        //DOM位置调整
+        //DOM position adjustment
         inputGroup
             .childrens('span.st-menu-input-unit')
             .attr('style', 'left:' + (introWidth + 100) + 'px')
@@ -1395,7 +1456,7 @@ PartClass.prototype = {
             .childrens('input, span.st-menu-input-bar')
             .attr('style', 'left:' + introWidth + 'px')
 
-        //显示定位
+        //Show positioning
         let boxWidth,
             boxLeftBegin,
             boxLeftEnd,
@@ -1405,38 +1466,42 @@ PartClass.prototype = {
             sharpposy,
             triangledown
 
-            //输入框的宽度最小175
+            //The minimum width of the input box is 175
             ; (boxWidth =
                 120 + introWidth + unitWidth < 175 ? 175 : 120 + introWidth + unitWidth),
-                (boxLeftBegin = -boxWidth / 2), //输入框宽度的一半
+                //Half the width of the input box
+                (boxLeftBegin = -boxWidth / 2),
                 (boxLeftEnd = boxLeftBegin),
-                (boxTopEnd = -parameterDiv.height() - 20), //输入框高度加上倒三角
+                //Input box height plus inverted triangle
+                (boxTopEnd = -parameterDiv.height() - 20),
                 (boxTopBegin = boxTopEnd / 2 + 20),
-                (sharpposx = this.position[0] * zoom + SVG[0]), //器件中心点在屏幕中实际的位置
+                //The actual position of the device center point on the screen
+                (sharpposx = this.position[0] * zoom + SVG[0]),
                 (sharpposy = this.position[1] * zoom + SVG[1]),
-                (triangledown = $('#parameter-menu-triangle-down')) //参数框的小倒三角
+                //The small inverted triangle of the parameter box
+                (triangledown = $('#parameter-menu-triangle-down'))
 
-        //倒三角默认在对话框中间
+        //The inverted triangle is in the middle of the dialog by default
         triangledown.css('left', '50%')
-        //参数框最上端超过屏幕
+        //The top of the parameter box exceeds the screen
         if (sharpposy + boxTopEnd < 0) {
             triangledown.addClass('triangle-up')
             boxTopEnd = 20
         } else {
             triangledown.attr('class', '')
         }
-        //参数框最左端超过屏幕
+        //The leftmost end of the parameter box exceeds the screen
         if (sharpposx + boxLeftBegin < 0) {
             boxLeftEnd = 10 - sharpposx
             triangledown.css('left', sharpposx - 10 + 'px')
         }
-        //参数框右端超过屏幕
+        //The right end of the parameter box exceeds the screen
         if (sharpposx + boxWidth / 2 > window.outerWidth) {
             boxLeftEnd = $(window).width() - 10 - boxWidth - sharpposx
             triangledown.css('left', -boxLeftEnd + 'px')
         }
 
-        //参数框的打开关闭动画
+        //Parameter box opening and closing animation
         const keyframeOpen = new styleRule('parameter-open'),
             keyframeEnd = new styleRule('parameter-close')
 
@@ -1473,18 +1538,18 @@ PartClass.prototype = {
         parameterDiv.removeClass('parameter-close')
         $('body').addClass('open-gray')
     },
-    //输入属性之后显示
+    //Display after entering attributes
     inputVision() {
         const parameter = $('#parameter-menu'),
             idMatch = /[A-Za-z]+_[0-9A-Za-z]+/i,
             dataMatch = /\d+(.\d+)?[GMkmunp]?/
 
-        //取消全部错误标志
+        //Cancel all error flags
         parameter.attr('class', 'parameter-open')
         let error = true
-        //判断数据格式是否正确
+        //Determine whether the data format is correct
         const inputID = $('#parameter-0 input', parameter).prop('value')
-        //匹配器件代号
+        //Matching device code
         if (!inputID.match(idMatch)) {
             parameter.addClass('parameter-error-0')
             error = false
@@ -1500,9 +1565,9 @@ PartClass.prototype = {
             }
         }
         if (!error) return false
-        //变更当前器件的ID
+        //Change the ID of the current device
         this.exchangeID(inputID)
-        //改变输入参数
+        //Change input parameters
         const temptext = $('text.features-text > tspan', this.elementDOM)
         for (let i = 0; i < this.inputTxt.length; i++) {
             this.input[i] = $('#parameter-' + (i + 1) + ' input', parameter).prop(
@@ -1513,14 +1578,14 @@ PartClass.prototype = {
                 temptext[i + 2].textContent = this.input[i] + this.parameterUnit[i]
             }
         }
-        //修正属性的显示位置
+        //Fix the display position of the attribute
         this.textVisition()
         return true
     },
-    //移动之后放下器件
+    //Put down the device after moving
     putDown(isNew) {
         if (isNew) {
-            //新建器件需要检测是否可行
+            //New devices need to be tested for feasibility
             this.position = Point(
                 schMap.nodeRound(
                     this.position.round(),
@@ -1534,17 +1599,17 @@ PartClass.prototype = {
         this.move()
         this.markSign()
     },
-    //删除器件
+    //Delete device
     deleteSelf() {
         if (!this.isExist()) {
             return false
         }
-        //删除与之相连的导线
+        //Delete the wire connected to it
         for (let i = 0; i < this.connect.length; i++) {
             if (this.connect[i]) {
                 const line = partsAll.findPart(this.connect[i])
 
-                //有可能该导线已经被删除
+                //It is possible that the wire has been deleted
                 if (line) {
                     line.deleteSelf()
                 }
@@ -1555,22 +1620,22 @@ PartClass.prototype = {
         this.elementDOM.remove()
         partsAll.deletePart(this)
     },
-    //变更当前器件ID
+    //Change the current device ID
     exchangeID(label) {
         // New Identification
         if (label === this.name) return false
         const last = this.name
-        //删除旧器件
+        //Delete old device
         partsAll.deletePart(this)
         partsNow.deletePart(this)
         const temptspan = $('tspan', this.elementDOM)
         const points = $('.part-point', this.elementDOM)
-        //变更ID及显示
+        //Change ID and display
         this.name = label
         this.elementDOM.attr('id', this.id)
         temptspan.get(0).text(this.name.slice(0, this.name.search('_')))
         temptspan.get(1).text(this.name.slice(this.name.search('_') + 1))
-        //修正与之相连的器件连接表中的ID
+        //Correct the ID in the connection table of the connected device
         for (let i = 0; i < this.connect.length; i++) {
             const point = points.get(i)
             const pointLabel = point.attr('id').split('-')
@@ -1586,15 +1651,15 @@ PartClass.prototype = {
                 }
             }
         }
-        //图纸重新标记
+        //Remark the drawing
         this.markSign()
-        //新器件入栈
+        //New device on the stack
         partsAll.push(this)
         partsNow.push(this)
     },
 }
 
-//器件移动相关的方法
+//Device movement related methods
 partsNow.extend({
     // Check if the component is connected to the wire
     checkConn() {
@@ -1608,36 +1673,36 @@ partsNow.extend({
             return true
         }
     },
-    //由器件开始回溯导线，确定导线状态
+    //Trace back the wire from the device to determine the wire state
     checkLine() {
         const self = this
-        //当前没有器件，那么退出
+        //There is no device currently, then exit
         if (!self.length) {
             return false
         }
-        //递归标记器件所连接的导线
+        //Recursively mark the wires connected to the device
         for (let i = 0; i < self.length; i++) {
             ; (function DFS(part) {
-                //非法器件
+                //Invalid device
                 if (!part) {
                     return false
                 }
-                //已经确定整体移动的器件
+                //Devices that have been determined to move as a whole
                 if (part.current.status === 'move') {
                     return true
                 }
 
                 if (part.partType !== 'line' && self.has(part)) {
-                    //标记当前器件
+                    //Mark the current device
                     part.current = {}
                     part.current.status = 'move'
-                    //当前器件是被选中的器件
+                    //The current device is the selected device
                     for (let i = 0; i < part.connect.length; i++) {
                         DFS(partsAll.findPart(part.connect[i]))
                     }
                 } else if (part.partType === 'line') {
-                    //当前器件是导线
-                    //标记当前导线
+                    //Current device is wire
+                    //Mark current wire
                     if (!part.current.status) {
                         part.current = {}
                         part.current.status = 'half'
@@ -1645,7 +1710,7 @@ partsNow.extend({
                         part.current.status = 'move'
                         return true
                     }
-                    //导线回溯
+                    //Trace back
                     if (
                         part.connect.every((con) =>
                             con
@@ -1654,7 +1719,7 @@ partsNow.extend({
                                 .some((item) => !item || self.has(item) || item.current.status)
                         )
                     ) {
-                        //当前导线整体移动
+                        //Current wire overall movement
                         part.current.status = 'move'
                         part.connect
                             .join(' ')
@@ -1664,7 +1729,7 @@ partsNow.extend({
                 }
             })(self[i])
         }
-        //器件数据初始化
+        //Device data initialization
         partsAll.forEach((item) => {
             const type = item.partType,
                 status = item.current.status
@@ -1672,11 +1737,11 @@ partsNow.extend({
             if (status === 'move') {
                 item.toFocus()
                 if (type === 'line') {
-                    //导线初始位置为原点，记录当前路径
+                    //The initial position of the wire is the origin, and the current path is recorded
                     item.current.bias = Point([0, 0])
                     item.current.wayBackup = Array.clone(item.way)
                 } else {
-                    //器件初始位置为其几何中心当前坐标
+                    //The initial position of the device is the current coordinates of its geometric center
                     item.current.bias = Point(item.position)
                 }
             }
@@ -1684,45 +1749,45 @@ partsNow.extend({
         partsAll.forEach((item) => {
             if (item.current.status === 'half') {
                 item.toFocus()
-                //导线变形数据初始化
+                //Wire deformation data initialization
                 item.startPath(false, 'movePart')
             }
         })
     },
-    //器件准备移动
+    //Device ready to move
     moveStart() {
-        //拔起全部器件以及变形导线转换模式
+        //Unplug all devices and transform wire conversion mode
         this.forEach((n) => {
             n.current.status !== 'move' && n.toGoing()
             n.deleteSign()
         })
     },
-    //器件移动
+    //move a device
     moveParts(event) {
         const self = this,
             cur = self.current,
             mouse = cur.mouse(event),
             bias = mouse.add(-1, cur.pageL)
 
-        //器件移动
+        //move a device
         this.forEach((item) => {
             if (item.current.status === 'move') {
-                //整体移动
+                //move as a whole
                 item.move(item.current.bias.add(bias))
             } else {
-                //移动变形
+                //move while transform
                 item.setPath(item.current.startPoint.add(bias), 'movePart')
             }
         })
     },
-    //放下所有器件
+    //Put down all devices
     putDownParts(opt) {
         const self = this,
             cur = self.current,
             mouse = cur.mouse(event),
             bias = mouse.add(-1, cur.pageL)
 
-        //整体移动的器件对齐网格
+        //Alignment of the whole moving device to the grid
         self.forEach((part) => {
             if (part.current.status === 'move') {
                 if (part.partType === 'line') {
@@ -1733,24 +1798,24 @@ partsNow.extend({
                 }
             }
         })
-        //是否能放置器件
+        //Can the device be placed
         if (
             self.every((n) => (n.current.status === 'move' ? !n.isCover() : true))
         ) {
-            //首先放置整体移动的器件
+            //First place the whole moving device
             self.forEach((n) => {
                 if (n.current.status === 'move') {
                     n.putDown(opt, 'movePart')
                     n.elementDOM.removeAttr('opacity')
                 }
             })
-            //然后放置变形导线
+            //Then place the deformed wire
             self.forEach((n) => {
                 if (n.current.status !== 'move') {
                     n.putDown(false, 'movePart')
                 }
             })
-            //粘贴器件时还需要再次确定导线连接关系
+            //When pasting the device, you need to determine the wire connection relationship again
             if (opt === 'paste') {
                 self.forEach((n) => {
                     if (n.partType === 'line' && n.isExist()) {
@@ -1761,25 +1826,25 @@ partsNow.extend({
                     }
                 })
             }
-            //删除所有导线以及被删除的器件，重新确定状态
+            //Delete all wires and deleted devices, re-determine the status
             const temp = self.filter((n) => n.partType !== 'line' && n.isExist())
             self.forEach((n) => n.toNormal())
             self.deleteAll()
             temp.forEach((n) => (n.toFocus(), self.push(n)))
             self.checkLine()
-            //放置成功
+            //place successfully
             return true
         } else {
-            //非粘贴状态，当前所有器件恢复原装
+            //Non-pasted state, all current devices are restored to original
             if (opt !== 'paste') {
-                //器件
+                //device
                 self.forEach((part) => {
                     if (part.partType !== 'line') {
                         part.move(part.current.bias)
                         part.markSign()
                     }
                 })
-                //导线
+                //wire
                 self.forEach((line) => {
                     if (line.partType === 'line') {
                         line.way.clone(line.current.wayBackup)
@@ -1789,14 +1854,14 @@ partsNow.extend({
                 })
             }
 
-            //放置失败
+            //place failed
             return false
         }
     },
-    //旋转检测
+    //rotation check
     isRotate(sub) {
         const move = this.filter((n) => n.current && n.current.status === 'move')
-        //节点集合
+        //Node collection
         let nodes = []
         for (let i = 0; i < move.length; i++) {
             const node = move[i].way
@@ -1805,7 +1870,7 @@ partsNow.extend({
 
             nodes = nodes.concat(node)
         }
-        //中心点
+        //center point
         const nodeX = nodes.map((n) => n[0]),
             nodeY = nodes.map((n) => n[1]),
             center = Point([
@@ -1813,7 +1878,7 @@ partsNow.extend({
                 (Math.minOfArray(nodeY) + Math.maxOfArray(nodeY)) / 2,
             ]).round()
 
-        //搜索
+        //search
         const ans = Array(4).fill(true),
             start = sub === u ? 0 : sub,
             end = sub === u ? 3 : sub
@@ -1833,7 +1898,7 @@ partsNow.extend({
 
         return sub === u ? ans : ans[sub]
     },
-    //旋转
+    //rotate
     rotate(sub) {
         this.moveStart()
 
@@ -1841,13 +1906,13 @@ partsNow.extend({
             center = Point(this.center.call(move)).round(),
             ma = rotateMatrix[sub]
 
-        //整体移动的器件旋转
+        //overall rotate
         move.forEach((item) => {
             item.rotateSelf(ma, center)
             item.markSign()
         })
 
-        //导线变形
+        //wire transform
         this.forEach((n) => {
             if (n.current.status !== 'move') {
                 n.current.initTrend = n.current.initTrend.rotate(ma)
@@ -1855,15 +1920,15 @@ partsNow.extend({
             }
         })
 
-        //检查当前集合元素是否存在
+        //Check if the current collection element exists
         this.deleteParts((n) => n.isExist())
-        //重新确定连接关系
+        //Re-determine the connection relationship
         this.checkLine()
     },
 })
 Object.freezeMethod(partsNow)
 
-//处理器件原型的格式
+//Processing device prototype format
 function css2obj(css) {
     if (css instanceof Array) {
         if (css.length === 2) {
@@ -1895,21 +1960,21 @@ for (const i in originalElectronic) {
     const data = originalElectronic[i].readOnly,
         pointInfor = data.pointInfor
 
-    //内外边距
+    //Inner and outer margins
     data.padding = css2obj(data.padding)
     data.margin = css2obj(data.margin)
-    //管脚方向矩阵
+    //Pin direction matrix
     for (let j = 0; j < pointInfor.length; j++) {
         pointInfor[j].direction = new Matrix([pointInfor[j].direction])
     }
-    //器件原型链链接只读属性，并冻结只读属性
+    //Link the read-only attribute of the device prototype chain and freeze the read-only attribute
     if (originalElectronic.hasOwnProperty(i)) {
         Object.setPrototypeOf(data, PartClass.prototype)
         Object.freezeAll(data)
     }
 }
 
-//添加器件图标
+//Add device icon
 $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
     // New Identification
     const elem = $(n),
@@ -1952,11 +2017,11 @@ $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
         }
     }
 })
-//菜单关闭按钮位置
+//Menu close button position
 $('#menu-add-parts-close').attr(
     'style',
     'top:' + ($('.st-menu-title').prop('clientHeight') - 50) + 'px;'
 )
 
-//模块对外的接口
+//Module external interface
 export { PartClass }

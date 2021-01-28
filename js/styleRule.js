@@ -1,6 +1,6 @@
 import { $ } from './jquery';
 
-//css动画属性类
+//css animation attribute class
 class styleRule {
     constructor(name) {
         let styleSheet = document.styleSheets;
@@ -14,16 +14,16 @@ class styleRule {
                 }
             }
         }
-        //当前样式表中没有搜索到以index为名的样式，那么在本地样式表中创建一个以index为名的样式
-        //没有本地样式表，那么就创建一个
+        //If there is no style named index in the current style sheet, then create a style named index in the local style sheet
+        //There is no local style sheet, then create one
         if (index === -1) {
             const head = $('head');
             head.append($('<style>'));
-            //更新列表
+            //Update list
             styleSheet = document.styleSheets;
             index = styleSheet.length - 1;
         }
-        //css规则集合
+        //css rule collection
         const cssStyleSheet = styleSheet[index];
         cssStyleSheet.insertRule('@keyframes ' + name + '{}', cssStyleSheet.cssRules.length);
         this.original = cssStyleSheet.cssRules[cssStyleSheet.cssRules.length - 1];

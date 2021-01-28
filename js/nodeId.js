@@ -164,7 +164,7 @@ function nodeListToString() {
         }
         retVal = retVal.concat("\n");
     }
-    console.log("retVal: \n" + retVal);
+    // console.log("retVal: \n" + retVal);
     return retVal;
 }
 
@@ -326,6 +326,7 @@ function nodeId(input) {
             var compJson = {
                 id: component.id,
                 name: component.name,
+                // id: component.name,
                 value: value,
                 node1: component.connect[0],
                 node2: component.connect[1],

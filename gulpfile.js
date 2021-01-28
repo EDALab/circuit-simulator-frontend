@@ -16,10 +16,10 @@ const fs = require('fs'),
     sourcemaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
 
-    //默认发布文件夹
+    // Default output folder
     _push = path.join(__dirname, '.deploy_git');
 
-//webpack设置
+// webpack settings
 const webpackConfig = {
     output: {
         filename: 'script.min.js'
@@ -39,7 +39,7 @@ const webpackConfig = {
     }
 };
 
-//缓存类
+// Cache class
 class Cache extends Writable {
     constructor() {
         super();
@@ -60,15 +60,15 @@ class Cache extends Writable {
         return buf.toString(encoding).trim();
     }
 }
-//从Buffer创建读取流
+// generate a read stream from buffer 
 class readRam extends Readable {
     constructor(buf) {
         super();
-        //保存读取的buffer
+        // save the reading buffer
         this._cache = buf;
-        //读取的起点
+        // the start index of the reading buffer
         this._index = 0;
-        //每次读取60kb
+        // read 60kb each time
         this._peer = 61440;
     }
     _read() {
@@ -83,7 +83,7 @@ class readRam extends Readable {
         this.push(frag);
     }
 }
-//文件内容替换
+// replace the text
 function replace(search, replacement) {
     const ans = Transform({ objectMode: true });
 
@@ -102,7 +102,7 @@ function replace(search, replacement) {
 
     return (ans);
 }
-//集合数据流
+// concatenated data stream
 function toVariable(obj) {
     const ans = Writable({ objectMode: true });
 
@@ -124,7 +124,7 @@ function toVariable(obj) {
     return (ans);
 }
 
-//特殊字符转义
+// Escape character
 function escape(html) {
     return html
         .replace(/&/g, '&amp;')
@@ -133,7 +133,7 @@ function escape(html) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 }
-//合并对象
+// merge object
 function merge(base, from) {
     for (const i in from) {
         if (from.hasOwnProperty(i)) {
@@ -141,7 +141,7 @@ function merge(base, from) {
         }
     }
 }
-//内存中间件
+// Ram middle ware
 function ramMiddleware(files) {
     const url = require('url'),
         etag = require('etag'),
@@ -150,7 +150,7 @@ function ramMiddleware(files) {
         destroy = require('destroy');
 
     return (req, res, next) => {
-        //不允许GET或HEAD以外的方法
+        // dont allow methods other than GET and HEAD
         // if (req.method !== 'GET' && req.method !== 'HEAD') {
         //     res.statusCode = 405;
         //     res.setHeader('Allow', 'GET, HEAD');
@@ -166,7 +166,7 @@ function ramMiddleware(files) {
             file = files[pathkey],
             resStream = new readRam(file);
 
-        //设置响应的Header
+        // setting response Header
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Cache-Control', 'max-age=0');
         res.setHeader('Last-Modified', (new Date).toUTCString());
@@ -174,14 +174,14 @@ function ramMiddleware(files) {
         res.setHeader('Content-Type', mime.lookup(pathkey) + ';charset:utf-8');
         res.setHeader('Content-Length', file.length);
 
-        //数据流连接至http响应
+        // data stream connect to http request
         resStream.pipe(res)
             .on('finish', () => destroy(resStream));
 
         next();
     };
 }
-//Git子进程
+// Git subtask
 function promiseSpawn(command, args, options) {
     if (!command) { throw new TypeError('command is required!'); }
 
@@ -201,16 +201,16 @@ function promiseSpawn(command, args, options) {
                 ? options.encoding
                 : 'utf8';
 
-        //流管道连接
+        // stream pipline
         task.stdout.pipe(stdoutCache);
         task.stderr.pipe(stderrCache);
 
-        //子进程结束
+        // subtask complete
         task.on('close', () => {
             console.log(stdoutCache.getCache(encoding));
             resolve();
         });
-        //子进程发生错误
+        // error in subtask
         task.on('error', (code) => {
             const e = new Error(stderrCache.getCache(encoding));
             e.code = code;
@@ -218,35 +218,35 @@ function promiseSpawn(command, args, options) {
         });
     });
 }
-//Git操作入口
+// Git operating interface
 function git() {
     const opt = { cwd: _push },
         args = [].slice.call(arguments);
 
     if (args[0] === 'init') {
-        //初始化
-        //检查文件夹是否存在
+        // initialization
+        // check if the forder exists
         if (!fs.existsSync(_push)) {
             fs.mkdirSync(_push);
         }
-        //检查是否初始化git
+        // check if the git is initialized
         if (!fs.existsSync(path.join(_push, '/.git'))) {
             return promiseSpawn('git', ['init'], opt);
         } else {
             return new Promise((n) => n());
         }
     } else {
-        //子进程运行git命令
+        // subtask run git command
         return (() => promiseSpawn('git', args, opt));
     }
 }
-//提示信息
+// Prompt information
 function INFO() {
     console.log(chalk.green('INFO:') + ' Virtual Circuit Simulator established on http://localhost:5500/');
     console.log(chalk.green('INFO:') + ' CTRL + C to exist the program');
     console.log(chalk.green('INFO:') + ' Note that this progrom does not accepts heat exchange');
 }
-//清空屏幕
+// clear screen
 function clearScreen() {
     console.log('\x1Bc');
 }
@@ -286,7 +286,7 @@ gulp.task('build', function () {
             const temp = {};
             new Promise((res) => {
                 clearScreen();
-                console.log(chalk.green('INFO:') + ' 正在编译文件……\n');
+                console.log(chalk.green('INFO:') + ' compiling……\n');
                 func(temp).on('finish', res);
             }).then(() => {
                 merge(source, temp);
@@ -296,17 +296,17 @@ gulp.task('build', function () {
         });
     }
 
-    //设置静态服务器，以及初次编译
+    // set static server, and first compile
     const source = {},
         express = require('express'),
         app = express(),
         promises = [html, image, css, js]
             .map((task) => new Promise((res) => task(source).on('finish', res)));
 
-    //服务器挂载文件
+    // server Mount file
     app.use(ramMiddleware(source));
 
-    //初次编译完成后，建立虚拟网站，端口5500
+    // after first compiling, create a virtual website at port 5500
     Promise.all(promises)
         .then(() => {
             clearScreen();
@@ -366,6 +366,6 @@ gulp.task('push', function () {
         .then(git('add', '-A'))
         .then(git('commit', '-m', 'update'))
         .then(git('push', '-u', url, 'master:' + branch, '--force'))
-        .then(() => console.log(chalk.green('\nINFO:') + ' 文件上传完毕'))
-        .catch((err) => console.log(chalk.red('\nERROR:') + ' 发生错误，意外中止\n' + err));
+        .then(() => console.log(chalk.green('\nINFO:') + ' uploading complete'))
+        .catch((err) => console.log(chalk.red('\nERROR:') + ' error detected, terminating\n' + err));
 });

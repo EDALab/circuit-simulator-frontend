@@ -8,83 +8,83 @@ module.exports = {
         'node': true,
         'es6': true
     },
-    // 自定义规则
+    // customize rules
     'rules': {
-        //允许扩展原生数据结构
+        //Allow extension of native data structure
         'no-extend-native': 0,
-        //允许debugger语句
+        //Allow debugger statements
         'no-debugger': 0,
-        //箭头表达式的括号不可省
+        //The parentheses of the arrow expression cannot be omitted
         'arrow-parens': [2, 'always'],
-        //箭头表达式前后空格
+        //Space before and after arrow expression
         'arrow-spacing': 2,
-        //禁止在条件中使用常量表达式
+        //Prohibit the use of constant expressions in conditions
         'no-constant-condition': 2,
-        //生成器表达式 *号前有空格，后没有空格
+        //Generator expression * has a space before and no space after it
         'generator-star-spacing': [2, 'before'],
-        //表达式后必须有分号
+        //There must be a semicolon after the expression
         'semi': [2, 'always'],
-        //不能存在多余的分号
+        //No extra semicolons
         'no-extra-semi': 2,
-        //允许存在不保存值的new表达式
+        //New expressions that do not save values ​​are allowed
         'no-new': 0,
-        //默认退格为4个空格
+        //The default backspace is 4 spaces
         'indent': [2, 4, { 'SwitchCase': 1 }],
-        //声明可以不合并
+        //The statement can not be combined
         'one-var': 0,
-        //函数名或function关键字之后与括号之间不需要空格
+        //No space is required after the function name or function keyword and between the parentheses
         'space-before-function-paren': [2, 'never'],
-        //代码块允许单独一行；多行代码时，起始大括号不换行，终止大括号独立成行
+        //The code block allows a single line; when there are multiple lines of code, the opening brace does not wrap, and the terminating brace is independent
         'brace-style': [2, '1tbs', { 'allowSingleLine': true }],
-        //允许在if,for,while,do...while的条件语句中赋值
+        //Assignment in conditional statements of if, for, while, do...while is allowed
         'no-cond-assign': 0,
-        //允许等号前后有多个空格
-        'no-multi-spaces' : 0,
-        //禁用 alert、confirm 和 prompt
+        //Allow multiple spaces before and after the equal sign
+        'no-multi-spaces': 0,
+        //Disable alert, confirm and prompt
         'no-alert': 0,
-        //禁用 arguments.caller 或 arguments.callee
+        //Disable arguments.caller or arguments.callee
         'no-caller': 2,
-        //禁止使用类似 eval() 的方法
+        //Prohibit the use of methods like eval()
         'no-implied-eval': 2,
-        //警告使用未声明的变量
+        //Warn about the use of undeclared variables
         'no-undef': 1,
-        //禁止将undefined作为标识符
+        //Disallow undefined as an identifier
         'no-undefined': 0,
-        //不允许在变量定义之前使用它们
+        //They are not allowed to be used before the variable definition
         'no-use-before-define': 0,
-        //禁止混合常规 var 声明和 require 调用
+        //It is forbidden to mix regular var declarations and require calls
         'no-mixed-requires': 0,
-        //禁止调用 require 时使用 new 操作符
+        //Disallow the use of the new operator when calling require
         'no-new-require': 2,
-        //禁止对 __dirname 和 __filename进行字符串连接
+        //String concatenation of __dirname and __filename is prohibited
         'no-path-concat': 0,
-        //逗号后空格，前不空格
+        //Space after comma, no space before
         'comma-spacing': [2, { 'before': false, 'after': true }],
-        //以方括号取对象属性时，内部不需要空格
+        //When taking object properties in square brackets, no spaces are required inside
         'computed-property-spacing': [2, 'never'],
-        //强制使用具名函数表达式
+        //Force the use of named function expressions
         'func-names': 0,
-        //文件末尾强制换行
+        //Force line break at the end of the file
         'eol-last': 2,
-        //不允许空格和 tab 混合缩进
+        //Do not allow mixed indentation of spaces and tabs
         'no-mixed-spaces-and-tabs': 2,
-        //禁用行尾空格
-        'no-trailing-spaces':2,
-        //关键字前后需要空格
+        //Disable trailing spaces
+        'no-trailing-spaces': 2,
+        //Spaces are required before and after keywords
         'keyword-spacing': 2,
-        //禁用var
+        //Disable var
         'no-var': 2,
-        //字符串全部为单引号
+        //Strings are all single quotes
         'quotes': [2, 'single'],
-        //变量未改变时强制使用const
+        //Mandatory use of const when the variable has not changed
         'prefer-const': 2,
-        //强制使用ES6缩写
+        //Mandatory use of ES6 abbreviations
         'object-shorthand': 2,
-        //类继承的构造函数强制使用super
+        //The constructor of class inheritance forces the use of super
         'constructor-super': 2,
-        //super之前禁止使用this
+        //'this.' is prohibited before super
         'no-this-before-super': 2,
-        //除函数外，变量和类都在定义前使用时警告
+        //In addition to functions, variables and classes are warned when used before definition
         'no-use-before-define': [1, { 'functions': false }]
     }
 }

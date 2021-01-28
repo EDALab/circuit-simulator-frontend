@@ -1,19 +1,19 @@
-//多项式、传递函数类
+//Polynomial, transfer function class
 class Polynomial {
-    //构造函数
+    //Constructor
     constructor(...args) {
-        //格式检查
-        if (args.length > 2) throw ('输入最多有分子和分母两个元素');
-        if (!args.length) throw ('输入不能为空');
+        //Format check
+        if (args.length > 2) throw ('The input has at most two elements: numerator and denominator');
+        if (!args.length) throw ('Input can not be empty');
         let num = (typeof args[0][0] === 'number') ? args : args[0];
         for (let i = 0; i < num.length; i++) {
-            if (!Polynomial.isPolynomial(num[i])) throw ('格式错误');
+            if (!Polynomial.isPolynomial(num[i])) throw ('Wrong format');
         }
-        this.numerator = Array.clone(num[0]);                       //分子
-        this.denominator = (num[1]) ? Array.clone(num[1]) : [1];    //分母
+        this.numerator = Array.clone(num[0]);                       //Numerator
+        this.denominator = (num[1]) ? Array.clone(num[1]) : [1];    //Denominator
     }
 
-    //多项式格式检查
+    //Polynomial format check
     static isPolynomial(input) {
         if (!(input instanceof Array)) return (false);
         for (let i = 0; i < input.length; i++) {
@@ -21,12 +21,12 @@ class Polynomial {
         }
         return (true);
     }
-    //省略分母（为1）的多项式相乘，默认不检查格式
+    //Ignore polynomial multiplication with denominator equal to 1, the format is not checked by defualt
     static conv(a, b, flag = false) {
         if (flag) {
             for (let i = 0; i < 2; i++) {
                 const input = [a, b][i];
-                if (!Polynomial.isPolynomial(input)) throw ('多项式元素必须是数字数组');
+                if (!Polynomial.isPolynomial(input)) throw ('Polynomial elements must be numeric arrays');
             }
         }
         const ans = [];
@@ -37,19 +37,19 @@ class Polynomial {
                 ans[sub] += a[i] * b[j];
             }
         }
-        //空位补0
+        //Put 0 in empty spaces
         for (let i = 0; i < ans.length; i++) {
             if (!ans[i]) ans[i] = 0;
         }
-        //最高次数不能为0
+        //The highest power cannot be 0
         while (!ans[ans.length - 1]) {
             ans.pop();
         }
         return (ans);
     }
-    //多项式次方
+    //Power of polynomial
     static exp(a, e) {
-        if ((!Polynomial.isPolynomial(a)) || (typeof e !== 'number')) throw ('格式错误');
+        if ((!Polynomial.isPolynomial(a)) || (typeof e !== 'number')) throw ('Worng format');
         let ans = [1];
         for (let i = 0; i < e; i++) {
             ans = Polynomial.conv(ans, a);
@@ -57,27 +57,27 @@ class Polynomial {
         return (ans);
     }
 
-    //多项式化简
+    //Simplify polynomial
     simple() {
-        //有单个公共未知数，可以降阶
+        //If there exist common divisor, reduce
         while ((!this.numerator[0]) && (!this.denominator[0])) {
             this.numerator.shift();
             this.denominator.shift();
         }
-        //attention：提取公因式和系数的公约数
+        //attention：extract common factors and common divisors of coefficients
 
         return (this);
     }
-    //多项式的倒数
+    //Reciprocal of polynomial
     inverse() {
         [this.numerator, this.denominator] = [this.denominator, this.numerator];
         return (this);
     }
-    //多项式相乘
+    //Polynomial multiplication
     mul(input) {
-        //被乘数
+        //Multiplicand
         const multiplicand = (input instanceof Polynomial) ? input : new Polynomial(input);
-        //分子分母分别相乘
+        //Multiply the numerator and denominator separately
         const ans = new Polynomial(
             Polynomial.conv(this.numerator, multiplicand.numerator),
             Polynomial.conv(this.denominator, multiplicand.denominator)
@@ -85,12 +85,12 @@ class Polynomial {
         ans.simple();
         return (ans);
     }
-    //多项式相加
+    //Polynomial addition
     add(input) {
-        //被加数
+        //Summand
         const summand = (input instanceof Polynomial) ? input : new Polynomial(input);
         let numerator, denominator;
-        //分母相同，那么分子直接相加
+        //If the denominator is the same, then the numerators are added directly
         if (this.denominator.isEqual(summand.denominator)) {
             numerator = [this.numerator, input.numerator, []];
             denominator = this.denominator;
@@ -110,9 +110,9 @@ class Polynomial {
         ans.simple();
         return (ans);
     }
-    //分母最高次项系数为1
+    //The coefficient of the highest order term in the denominator is 1
     maxToOne() {
-        //分母最高次系数为1
+        //The coefficient of the highest order term in the denominator is 1
         const number = this.denominator[this.denominator.length - 1];
         for (let i = 0; i < this.numerator.length; i++) {
             this.numerator[i] /= number;
@@ -123,9 +123,9 @@ class Polynomial {
         this.denominator[this.denominator.length - 1] = 1;
         return (this);
     }
-    //替换未知数
+    //Replace variable
     replaceUnknow(input) {
-        //被替换多项式
+        //Replaced polynomial
         const replaced = (input instanceof Polynomial) ? input : new Polynomial(input);
         const ans = [[],[]];
         for (let k = 0; k < 2; k++) {
@@ -143,19 +143,19 @@ class Polynomial {
         }
         const diff = this.numerator.length - this.denominator.length;
         if (diff > 0) {
-            //分子最高次高于分母最高次
+            //The highest order in the numerator is higher than that of the denominator
             const additional = Polynomial.exp(replaced.denominator, diff);
             ans[1] = Polynomial.conv(ans[1], additional);
         }else if (diff < 0) {
-            //分子最高次高于分母最高次
+            //The highest order in the numerator is lower than that of the denominator
             const additional = Polynomial.exp(replaced.denominator, -diff);
             ans[0] = Polynomial.conv(ans[0], additional);
         }
         return ((new Polynomial(ans)).simple());
     }
-    //双线性离散化
+    //Bilinear discretization
     toDiscrete(time) {
-        //用双线性变换离散化
+        //Discretization with bilinear transformation
         const disTransfer = this.replaceUnknow(
             new Polynomial([-2, 2], [time, time])
         ).maxToOne();
@@ -163,18 +163,18 @@ class Polynomial {
             'outputFactor': disTransfer.denominator,
             'inputFactor': disTransfer.numerator
         };
-        //输出差分系数比输入差分系数多，那么输入差分系数需要往高次项补零
+        //If output factor > input factor, add zeros to input factor
         if (ans.outputFactor.length > ans.inputFactor.length) {
             ans.inputFactor.concat(new Array(ans.outputFactor.length - ans.inputFactor.length));
         }
-        //输出差分系数分母删除最高次项（此项就是输出本体）
+        //Pop output factor
         ans.outputFactor.pop();
         ans.outputFactor.reverse();
-        //输出差分系项移相要反号
+        //Inverse output factor
         for (let i = 0; i < ans.outputFactor.length; i++)
             ans.outputFactor[i] *= -1;
         ans.inputFactor.reverse();
-        //差分数据队列初始化
+        //Initialize input and output factor with zero
         ans.input = new Array(ans.inputFactor.length).fill(0);
         ans.output = new Array(ans.outputFactor.length).fill(0);
         return (ans);

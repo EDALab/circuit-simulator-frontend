@@ -130,25 +130,25 @@ const partInternal = {
         //         return function (vd1, vd2) {
         //             const ans = new Array(4).fill(0);
 
-        //             //ans[0] 基极导通压降
-        //             //ans[1] E极导通压降
-        //             //ans[2] 基极电阻
-        //             //ans[3] 电流放大倍数
+        //             //ans[0] Base conduction voltage drop
+        //             //ans[1] E pole conduction pressure drop
+        //             //ans[2] Base resistance
+        //             //ans[3] Current magnification
         //             if (vd1 >= voltageB) {
-        //                 //基极正向偏置
+        //                 //Base forward bias
         //                 ans[0] = voltageB;
         //                 ans[2] = ResB;
         //                 if (vd2 >= voltageCE) {
-        //                     //发射极正向偏置
+        //                     //Emitter forward bias
         //                     ans[1] = voltageCE;
         //                     ans[3] = - currentZoom;
         //                 } else {
-        //                     //发射极反向偏置
+        //                     //Emitter reverse bias
         //                     ans[1] = 0;
         //                     ans[3] = 0;
         //                 }
         //             } else {
-        //                 //基极反向偏置
+        //                 //Base reverse bias
         //                 ans[0] = 0;
         //                 ans[1] = 0;
         //                 ans[2] = 5e9;
@@ -220,7 +220,7 @@ const partInternal = {
         'iterative': {
             'equation' (voltage) {
                 let ans = 0;
-                //当前数据进入“输入数据队列”
+                //The current data enters the "input data queue"
                 this.input.unshift(voltage);
                 this.input.pop();
                 for (let i = 0; i < this.input.length; i++) {
@@ -229,33 +229,33 @@ const partInternal = {
                 for (let i = 0; i < this.output.length; i++) {
                     ans += this.outputFactor[i] * this.output[i];
                 }
-                //输出数据进入“输出数据队列”
+                //The output data enters "output data queue"
                 this.output.unshift(ans);
                 this.output.pop();
                 return ([ans]);
             },
             'create'(part) {
                 const rad = 0.5 / Math.PI;
-                //第一个极点
+                //The first pole
                 const pole = [];
                 let bandWidth = Math.log10(Math.toValue(part.input[1])) * 20;
                 let openLoopGain = parseFloat(part.input[0]);
                 pole[0] = 1 / Math.pow(10, (bandWidth - openLoopGain) / 20);
-                //第二个极点
+                //The second pole
                 pole[1] = 1 / Math.round(Math.pow(10, (bandWidth + 4) / 20));
-                //开环增益转换为普通单位
+                //Convert open loop gain to normal unit
                 openLoopGain = Math.pow(10, openLoopGain / 20);
-                //传递函数
+                //Transfer Function
                 const transfer = new Polynomial(
-                    [openLoopGain],                                             //分子为开环增益常数
-                    Polynomial.conv([1, pole[0] * rad], [1, pole[1] * rad])     //分母为双极点多项式相乘
+                    [openLoopGain],                                             //Numerator is open loop gain constant
+                    Polynomial.conv([1, pole[0] * rad], [1, pole[1] * rad])     //The denominator is a two-pole polynomial multiplication
                 );
-                //采样间隔时间
+                //Sampling interval
                 const stepSize = Math.signFigures(Math.toValue(document.getElementById('stepsize').value));
                 const ans = {
                     'to': []
                 };
-                //差分方程绑定到迭代公式
+                //The difference equation is bound to the iteration formula
                 ans.process = partInternal[part.partType]['iterative']['equation'].bind(transfer.toDiscrete(stepSize));
                 ans.describe = [
                     {'name': 'voltage', 'place': [part.id + '-R1-1', part.id + '-R1-0']}
@@ -376,21 +376,21 @@ function Solver(collection) {
         }
     });
     */
-    //扫描所有器件，部分器件需要拆分，追加nodeHash列表、建立[管脚->支路号]列表
+    //Scan all devices, some devices need to be split, add nodeHash list, establish [pin->branch number] list
     collection.forEach(function (item) {
-        //以下四种是辅助器件，不会建立支路
+        //The following four are auxiliary devices and will not establish branches
         if (item.partType === 'line' ||
             item.partType === 'current_meter' ||
             item.partType === 'voltage_meter' ||
             item.partType === 'reference_ground') {
             return (true);
         }
-        //器件需要拆分
+        //Device needs to be split
         if (partInternal[item.partType] && partInternal[item.partType]['apart']) {
             const external = partInternal[item.partType]['apart']['interface'];
             const internal = partInternal[item.partType]['apart']['connect'];
             const partsPrototype = partInternal[item.partType]['apart']['parts'];
-            //对外管脚号转换为内部标号
+            //Convert external pin number to internal label
             for (let i = 0; i < external.length; i++) {
                 const node = nodeHash[item.id + '-' + i];
                 for (let j = 0; j < external[i].length; j++) {
@@ -398,14 +398,14 @@ function Solver(collection) {
                 }
                 delete nodeHash[item.id + '-' + i];
             }
-            //根据器件内部结构追加nodeHash
+            //Add nodeHash according to the internal structure of the device
             for (let i = 0; i < internal.length; i++) {
                 for (let j = 0; j < internal[i].length; j++) {
                     nodeHash[item.id + '-' + internal[i][j]] = nodeNumber;
                 }
                 nodeNumber++;
             }
-            //根据器件内部结构追加branchHash
+            //Add branchHash according to the internal structure of the device
             for (let i = 0; i < partsPrototype.length; i++) {
                 const part = partsPrototype[i];
                 branchHash[item.id + '-' + part.id + '-0'] = branchNumber;
@@ -413,21 +413,21 @@ function Solver(collection) {
                 branchNumber++;
             }
         } else {
-            //建立[管脚->支路号]列表
+            //Establish [pin->branch number] list
             branchHash[item.id + '-0'] = branchNumber;
             branchHash[item.id + '-1'] = branchNumber;
             branchNumber++;
         }
     });
-    //删除所有的参考节点，合并并且记录电流表入口
+    //Delete all reference nodes, merge and record the current meter entry
     collection.forEach(function (n) {
         if (n.partType === 'reference_ground') {
             const tempNode = nodeHash[n.id + '-0'];
             for (const item in nodeHash) if (nodeHash.hasOwnProperty(item)) {
                 if (nodeHash[item] > tempNode) {
-                    nodeHash[item]--;       //标号比参考节点大的依次减1
+                    nodeHash[item]--;       //If the label is larger than the reference node, decrease by 1
                 } else if (nodeHash[item] === tempNode) {
-                    nodeHash[item] = 0;     //参考节点为0
+                    nodeHash[item] = 0;     //Reference node is 0
                 }
             }
             delete nodeHash[n.id + '-0'];
@@ -437,18 +437,18 @@ function Solver(collection) {
             meter.name = n.id;
             meter.matrix = [];
             meter.data = [];
-            //记录和电流表入口相连的所有管脚
-            const node = nodeHash[n.id + '-0'];     //电流表入口结点
+            //Record all pins connected to the entrance of the ammeter
+            const node = nodeHash[n.id + '-0'];     //Ammeter entry node
             for (const i in nodeHash) if (nodeHash.hasOwnProperty(i)) {
                 if ((nodeHash[i] === node) && (i.search('GND') === -1)) {
                     const temp = partsAll.findPart(i.split('-')[0]);
-                    //此时电压电流表还未删除，所以必须排除
+                    //At this time, the voltage and current meter has not been deleted, so it must be excluded
                     if ((temp.partType !== 'voltage_meter') && (temp.partType !== 'current_meter'))
                         meter.matrix.push(i);
                 }
             }
-            //删除电流表，合并其两端结点
-            //删除数值大的结点
+            //Delete the ammeter and merge the nodes at both ends
+            //Delete nodes with large values
             const node0 = Math.min(nodeHash[n.id + '-0'], nodeHash[n.id + '-1']);
             const node1 = Math.max(nodeHash[n.id + '-0'], nodeHash[n.id + '-1']);
             for (const i in nodeHash) if (nodeHash.hasOwnProperty(i)) {
@@ -459,17 +459,17 @@ function Solver(collection) {
                 }
             }
             observeCurrent.push(meter);
-            tempLines.push(n);              //电流表进入待删除器件集合
-            delete nodeHash[n.id + '-0'];   //删除电流表的hash值
+            tempLines.push(n);              //The ammeter enters the device collection to be deleted
+            delete nodeHash[n.id + '-0'];   //Delete the hash value of the ammeter
             delete nodeHash[n.id + '-1'];
         }
     });
-    //错误检查
+    //Error checking
     if (errorTip = error(nodeHash, branchHash)) {
         this.error = errorTip;
         return (this);
     }
-    //计算结点数量
+    //Calculate the number of nodes
     nodeNumber = function (Hash) {
         let temp = -1;
         for (const i in Hash) {
@@ -480,7 +480,7 @@ function Solver(collection) {
         }
         return (temp);
     }(nodeHash);
-    //电压观测矩阵
+    //Voltage observation matrix
     collection.forEach(function (n) {
         if (n.partType === 'voltage_meter') {
             const temp = {};
@@ -495,10 +495,10 @@ function Solver(collection) {
             tempLines.push(n);
         }
     });
-    //删去所有辅助器件
+    //Delete all auxiliary devices
     collection.deleteParts(tempLines);
     tempLines.deleteAll();
-    //电流观测矩阵
+    //Current observation matrix
     for (let i = 0; i < observeCurrent.length; i++) {
         const currentHash = observeCurrent[i].matrix;
         observeCurrent[i].matrix = new Matrix(1, branchNumber);
@@ -508,17 +508,17 @@ function Solver(collection) {
             matrix[0][branchHash[item]] = Math.pow(-1, parseInt(item[item.length - 1]) + 1);
         }
     }
-    //电路矩阵初始化
-    const A = new Matrix(nodeNumber, branchNumber), //关联矩阵
-        F = new Matrix(branchNumber),               //电导电容矩阵
-        H = new Matrix(branchNumber),               //电阻电感矩阵
-        S = new Matrix(branchNumber, 1);            //独立电压电流源列向量
+    //Circuit matrix initialization
+    const A = new Matrix(nodeNumber, branchNumber), //Incidence matrix
+        F = new Matrix(branchNumber),               //Conductivity capacitance matrix
+        H = new Matrix(branchNumber),               //Resistance inductance matrix
+        S = new Matrix(branchNumber, 1);            //Independent voltage and current source column vector
 
-    //扫描所有支路，建立关联矩阵
+    //Scan all branches and establish an association matrix
     for (const i in branchHash) {
         if (branchHash.hasOwnProperty(i)) {
             const row = nodeHash[i];
-            //不是参考节点
+            //Not a reference node
             if (row) {
                 A[row - 1][branchHash[i]] = Math.pow(-1, parseInt(i[i.length - 1]) + 1);
             }
@@ -532,7 +532,7 @@ function Solver(collection) {
             const index = partToBranch(part.id, branchHash);
 
             // switch (part.partType) {
-            //     //基本器件
+            //     //Basic device
             //     case 'ac_voltage_source': {
             //         F[index][index] = 1;
             //         S[index][0] = 'update-' + parameterUpdate.length + '-0';
@@ -571,29 +571,29 @@ function Solver(collection) {
             //         H[index][branchHash[part.input[1]]] = temp;
             //         break;
             //     }
-            //     //组合器件
+            //     //Combination device
             //     default: {
             //         const apart = partInternal[part.partType].apart;
-            //         //器件需要拆分
+            //         //Device needs to be split
             //         for (let i = 0; apart && i < apart.parts.length; i++) {
             //             const pieces = Object.clone(apart.parts[i]);
 
             //             pieces.id = part.id + '-' + pieces.id;
             //             pieces.input = pieces.input.map(function (n) {
             //                 if (n.search(/^input/) !== -1) {
-            //                     //分割的器件值等于完整器件的某个输入
+            //                     //The divided device value is equal to a certain input of the complete device
             //                     return (part.input[n.split('-')[1]]);
             //                 } else if (n.search(/this/) !== -1) {
-            //                     //等于当前器件和某个器件的关系
+            //                     //Equal to the relationship between the current device and certain device
             //                     return (n.replace(/this/g, part.id));
             //                 } else if (n.search(/^update/) !== -1) {
-            //                     //等于迭代公式的输出
+            //                     //Equal to the output of the iteration function
             //                     return ('update-' + parameterUpdate.length + '-' + n.split('-')[1]);
             //                 } else {
             //                     return (n);
             //                 }
             //             });
-            //             //插入拆分器件
+            //             //Insert split device
             //             insertFactor(pieces);
             //         }
             //     }
@@ -607,11 +607,11 @@ function Solver(collection) {
                 }
             }
 
-            //器件有更新方程
+            //Device has update equation
             if (partInternal[part.partType] && partInternal[part.partType].iterative) {
                 const parameter = partInternal[part.partType].iterative.create(part),
                     describe = parameter.describe;
-                //电流和电压需要建立对应的矩阵
+                //Need to establish a corresponding matrix for current and voltage 
                 describe.forEach(function (n) {
                     if (n.name === 'voltage') {
                         n.matrix = pinToVoltage(n.place, nodeHash, nodeNumber);
@@ -623,17 +623,17 @@ function Solver(collection) {
             }
         })(item);
     });
-    //组合系数矩阵
+    //Combination coefficient matrix
     const factor = Matrix.combination([
         [0, 0, A],
         [A.transpose(), 'E', 0],
         [0, F, H]
     ]);
-    //独立电源列向量
+    //Independent power column vector
     const source = (new Matrix(A.row, 1)).concatDown((new Matrix(A.column, 1)), S);
-    //枚举电源列向量，记录需要迭代的参数
+    //Enumerate power column vectors and record parameters that need to be iterated
     source.forEach(function (item, index) {
-        //字符串为之前的标记
+        //The string is the previous tag
         if (typeof item === 'string') {
             const sub = item.split('-');
             const update = parameterUpdate[sub[1]];
@@ -643,9 +643,9 @@ function Solver(collection) {
             };
         }
     });
-    //枚举方程系数，记录需要迭代的参数
+    //Enumerate equation coefficients and record the parameters that need to be iterated
     factor.forEach(function (item, index) {
-        //字符串为之前的标记
+        //The string is the previous tag
         if (typeof item === 'string') {
             const sub = item.split('-');
             const update = parameterUpdate[sub[1]];
@@ -656,7 +656,7 @@ function Solver(collection) {
         }
     });
 
-    //记录实例元素
+    //Record instance element
     this.factor = factor;
     this.source = source;
     this.update = parameterUpdate;
@@ -666,11 +666,11 @@ function Solver(collection) {
     this.observeVoltage = observeVoltage;
 }
 Solver.prototype.solve = function* () {
-    //取出设置界面的时间设定
+    //Take out the time setting of the setting interface
     const endTime = $('#endtime').prop('value').toVal(),
         stepSize = $('#stepsize').prop('value').toVal(),
         total = Math.round(endTime / stepSize),
-        //取出求解器中的数据
+        //Take out the data in the solver
         update = this.update,
         factor = this.factor,
         source = this.source,
@@ -679,15 +679,15 @@ Solver.prototype.solve = function* () {
         observeCurrent = this.observeCurrent,
         observeVoltage = this.observeVoltage;
 
-    //电路初始状态
-    let nodeVoltage = new Matrix(this.nodeNumber, 1),        //结点电压列向量
-        branchCurrent = new Matrix(this.branchNumber, 1),    //支路电流列向量
+    //Initial state of the circuit
+    let nodeVoltage = new Matrix(this.nodeNumber, 1),        //Node voltage column vector
+        branchCurrent = new Matrix(this.branchNumber, 1),    //Branch current column vector
         factorInverse, factorUpdateFlag;
 
-    //迭代求解
+    //Iterative to solve
     for (let i = 0; i <= total; i++) {
         factorUpdateFlag = false;
-        //更新相关参数
+        //Update related parameters
         for (let j = 0; j < update.length; j++) {
             const item = update[j];
             const args = [];
@@ -721,25 +721,25 @@ Solver.prototype.solve = function* () {
                 matrix[index[0]][index[1]] = ans[k];
             }
         }
-        //如果更新了系数矩阵，那么系数矩阵需要重新求逆
+        //If the coefficient matrix is updated, then the coefficient matrix needs to be inverted again
         if (factorUpdateFlag || !i) factorInverse = factor.inverse();
-        //求解电路
+        //Solve the circuit
         const ans = factorInverse.mul(source);
         nodeVoltage = ans.slice([0, 0], [nodeNumber - 1, 0]);
         branchCurrent = ans.slice([nodeNumber + branchNumber, 0], [ans.length - 1, 0]);
 
-        //输出电压
+        //The output voltage
         for (let i = 0; i < observeVoltage.length; i++) {
             const matrix = observeVoltage[i].matrix;
             observeVoltage[i].data.push(matrix.mul(nodeVoltage));
         }
-        //输出电流
+        //The output current
         for (let i = 0; i < observeCurrent.length; i++) {
             const matrix = observeCurrent[i].matrix;
             observeCurrent[i].data.push(matrix.mul(branchCurrent));
         }
 
-        //对外输计算进度
+        //Output the calculation progress
         yield (Math.round(i / Math.round(endTime / stepSize) * 100));
     }
 };
