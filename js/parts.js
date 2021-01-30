@@ -757,59 +757,48 @@ const originalElectronic = {
         },
     },
     // Node_Label device
-    NDLB_Voltmeter: {
+    Label: {
         readWrite: {
-            id: 'NDLB_',
+            id: 'Label_',
         },
         readOnly: {
-            partType: 'NDLB_Voltmeter',
+            partType: 'Label',
             inputTxt: [],
-            visionNum: 0,
+            visionNum: 1,
+            coordinates: [0, 38],
             pointInfor: [
                 {
-                    position: [0, -40],
+                    position: [-20, -20],
                     direction: [0, -1],
                 },
             ],
             padding: 1,
             margin: [1, 0],
-            txtLocate: 24,
+            txtLocate: 12,
             aspectInfor: [
                 {
-                    name: 'circle',
-                    attribute: {
-                        cx: '0',
-                        cy: '0',
-                        r: '19',
-                        class: 'white-fill',
-                    },
-                },
-                {
                     name: 'path',
                     attribute: {
-                        d: 'M0,-40V-20',
+                        d: 'M-20,-20L3,3H10',
                     },
-                },
-                {
-                    name: 'text',
-                    attribute: {
-                        d: 'M0,-40V-20',
-                    },
-                },
-                {
+                }, {
                     name: 'path',
                     attribute: {
-                        d: 'M-7,-6L0,7L7,-6',
-                        class: 'part-rotate',
+                        d: 'M10,3L12,-0.464L15.464,-0.464L17.464,3L15.464,6.464L12,6.464L10,3',
                     },
-                },
-                {
+                }, {
+                    name: 'polygon',
+                    attribute: {
+                        points: '10,3 12,-0.464 15.464,-0.464 17.464,3 15.464,6.464 12,6.464',
+                        class: 'fill-whole',
+                    },
+                }, {
                     name: 'rect',
                     attribute: {
                         x: '-20',
-                        y: '-30',
+                        y: '-20',
                         width: '40',
-                        height: '60',
+                        height: '40',
                         class: 'focus-part',
                     },
                 },
@@ -928,8 +917,13 @@ PartClass.prototype = {
                 tempDate = $('<text>', SVG_NS, { class: 'features-text' })
 
             // Create component ID
-            tempDate.append($('<tspan>', SVG_NS).text(textMain[0]))
-            tempDate.append($('<tspan>', SVG_NS).text(textMain[1]))
+            if (this.partType == 'Label') {
+                tempDate.append($('<tspan>', SVG_NS).text(textMain[0] + '-' + textMain[1]));
+                tempDate.append($('<tspan>', SVG_NS).text(''));
+            } else {
+                tempDate.append($('<tspan>', SVG_NS).text(textMain[0]))
+                tempDate.append($('<tspan>', SVG_NS).text(textMain[1]));
+            }
 
             // Set parameters of a component
             for (let i = 0; i < propertyVision.length; i++) {

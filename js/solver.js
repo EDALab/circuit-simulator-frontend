@@ -297,7 +297,8 @@ const partInternal = {
 // Check if connect to the reference point
 function error(nodeHash, branchHash) {
     if (Object.keys(nodeHash).every((n) => nodeHash[n])) {
-        return ('Please make sure all components are directly or indirectly connected to the reference point');
+        // return ('Please make sure all components are directly or indirectly connected to the reference point');
+        return ('');
     }
 
     return (false);
