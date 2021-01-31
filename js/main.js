@@ -654,6 +654,13 @@ sidebar.on('click', '#menu-add-parts-close', function (event) {
         sidebar.removeClass('open-menu-config open-add-parts');
     }
 });
+//Open the static output sidebar
+action.on('click', '#fab-staticOutput', function (event) {
+    if (event.which === 1) {
+        $(document.body).addClass('open-sidebar open-gray');
+        sidebar.addClass('open-menu-staticOutput');
+    }
+});
 //Open the settings sidebar
 action.on('click', '#fab-config', function (event) {
     if (event.which === 1) {
@@ -673,10 +680,49 @@ action.on('click', '#fab-adds', function (event) {
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
 
+    var feedback;
+
+    var temp_var = partsAll.connectGraph();
+    if (temp_var.length == 0) {
+        grid.error('Circuit diagram need to contain at least one component!');
+        return (false);
+    }
+    else if (temp_var.length > 1) {
+        grid.error('Cannot simulate more than one separate circuits at the same time!');
+        return (false);
+    } else {
+        temp_var = temp_var[0];
+    }
+    var filteredCircuit = JSON.stringify(temp_var);
+    filteredCircuit = filter(filteredCircuit);
+    var output = nodeId(filteredCircuit);
+    console.log(JSON.stringify(output));
+    var xhr = new XMLHttpRequest();
+    var url = 'http://127.0.0.1:5000/dc_simulate/Test';
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-type', 'application/JSON');
+    // Create a state change callback 
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 201) {
+            // Print received data from server 
+            // xhr.innerHTML = xhr.responseText;
+            feedback = xhr.responseText;
+            // alert(feedback);
+        }
+    };
+    // Converting JSON data to string 
+    var data = JSON.stringify(output);
+    // Sending data with the request 
+    xhr.send(data);
+    $(document.body).addClass('open-sidebar open-gray');
+    sidebar.addClass('open-menu-staticOutput');
+    return;
+
+    /*
+
     // Create a diagram consisting the circuit
     const diagrams = partsAll.connectGraph()
         .map(function (n) {
-            // alert(n);
             const n_copy = n
             // var filteredCircuit = filter(n_copy);
 
@@ -737,7 +783,7 @@ action.on('click', '#fab-run', function (event) {
                 if (xhr.readyState === 4 && xhr.status === 201) {
                     // Print received data from server 
                     // xhr.innerHTML = xhr.responseText;
-                    alert(xhr.responseText);
+                    feedback = xhr.responseText;
                 }
             };
             // Converting JSON data to string 
@@ -749,24 +795,25 @@ action.on('click', '#fab-run', function (event) {
             ans.iteration = ans.solver.solve();
             return (ans);
         });
+
+    */
+
+    /*
+    
     //Error code
     let error = '';
+     if (!diagrams.length) {
+         //The circuit diagram is empty
+         grid.error('circuit diagram need to contain at least one component!');
+         return (false);
+     } else if (diagrams.some((n) => (error = n.solver.error))) {
+         //Encounter some error in the circuit diagram
+         grid.error(error);
+         return (false);
+     }
+     */
 
-    // alert(diagrams[0]);
-    // alert("This graph contains " + diagrams.length + " Components");
-    // alert("First part's id is " + diagrams[0].id);
-
-    if (!diagrams.length) {
-        //The circuit diagram is empty
-        grid.error('circuit diagram need to contain at least one component!');
-        return (false);
-    } else if (diagrams.some((n) => (error = n.solver.error))) {
-        //Encounter some error in the circuit diagram
-        grid.error(error);
-        return (false);
-    }
-
-    // The following code is for 
+    // The following code is believed to be the original code
     /*
     if (event.which !== 1) { return (false); }
     clearStatus();
@@ -849,6 +896,7 @@ action.on('click', '#fab-run', function (event) {
             }, 1000);
         }
     }, delayTime);
+
     */
 });
 //Cancel button of device property menu
@@ -920,9 +968,9 @@ mainPage.on('mousewheel', function (event) {
 });
 //Mouse click shady
 $('#shade-gray').on('click', function () {
-    if (sidebar.hasClass('open-menu-config') && !parameter.hasClass('parameter-open')) {
+    if ((sidebar.hasClass('open-menu-staticOutput') || sidebar.hasClass('open-menu-config')) && !parameter.hasClass('parameter-open')) {
         $(doc.body).removeClass('open-gray open-sidebar');
-        sidebar.removeClass('open-menu-config open-add-parts');
+        sidebar.removeClass('open-menu-staticOutput open-menu-config open-add-parts');
     }
 });
 
@@ -1662,7 +1710,7 @@ $('body').on('keydown', function (event) {
         case (event.keyCode === 13): {
             if ($('#parameter-menu').hasClass('parameter-open')) {
                 trigger('#parameter-bottom-accept');
-            } else if (sidebar.hasClass('open-menu-config')) {
+            } else if ((sidebar.hasClass('open-menu-staticOutput') || sidebar.hasClass('open-menu-config'))) {
                 trigger('#shade-gray');
             }
             break;
