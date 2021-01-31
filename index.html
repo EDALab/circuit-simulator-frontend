@@ -166,28 +166,8 @@
 				<span class="st-menu-input-bar"></span>
 				<label>Step Size：</label>
 			</div>
-			<!-- 
-			<div class="st-menu-input-title">
-				<span class="st-menu-sign">F</span>
-				<span class="st-menu-description">Frequency Setting</span>
-			</div>
-			<div class="st-menu-input-group">
-				<input id="minfrequency" type="st-menu-input-text" value="1" required>
-				<span class="st-menu-input-highlight"></span>
-				<span class="st-menu-input-bar"></span>
-				<label>Initial Frequency</label>
-				<span class="st-menu-unit">Hz</span>
-			</div>
-			<div class="st-menu-input-group">
-				<input id="maxfrequency" type="st-menu-input-text" value="1M" required>
-				<span class="st-menu-input-highlight"></span>
-				<span class="st-menu-input-bar"></span>
-				<label>Terminal Frequency</label>
-				<span class="st-menu-unit">Hz</span>
-			</div> 
-			-->
 		</div>
-		<div class="st-menu" id="staticOutput">
+		<div class="st-menu" id="menu-staticOutput">
 			<div class="st-menu-title">
 				<h1>Static Output</h1>
 				<h2>For DC Analysis Only</h2>
@@ -197,34 +177,46 @@
 				<span>Voltmeters</span>
 			</div>
 			<div class="st-menu-input-group">
-				<input id="endtime" type="st-menu-input-text" value="20m" required>
-				<span class="st-menu-unit">Seconds</span>
+				<input id="endtime" type="st-menu-input-text" value="15" required>
+				<span class="st-menu-unit">Volt</span>
 				<span class="st-menu-input-bar"></span>
-				<label>Time Interval：</label>
+				<label>Voltmeter A：</label>
 			</div>
 			<div class="st-menu-input-group">
-				<input id="stepsize" type="st-menu-input-text" value="5u" required>
-				<span class="st-menu-unit">Seconds</span>
+				<input id="stepsize" type="st-menu-input-text" value="20" required>
+				<span class="st-menu-unit">Volt</span>
 				<span class="st-menu-input-bar"></span>
-				<label>Step Size：</label>
+				<label>Voltmeter B：</label>
 			</div>
 			<div class="st-menu-input-title">
 				<span class="st-menu-sign">I</span>
 				<span class="st-menu-description">Ammeters</span>
 			</div>
 			<div class="st-menu-input-group">
-				<input id="minfrequency" type="st-menu-input-text" value="1" required>
-				<span class="st-menu-input-highlight"></span>
+				<input id="endtime" type="st-menu-input-text" value="1.5" required>
+				<span class="st-menu-unit">Amp</span>
 				<span class="st-menu-input-bar"></span>
-				<label>Initial Frequency</label>
-				<span class="st-menu-unit">Hz</span>
+				<label>Ammeter A：</label>
 			</div>
 			<div class="st-menu-input-group">
-				<input id="maxfrequency" type="st-menu-input-text" value="1M" required>
-				<span class="st-menu-input-highlight"></span>
+				<input id="stepsize" type="st-menu-input-text" value="760m" required>
+				<span class="st-menu-unit">Amp</span>
 				<span class="st-menu-input-bar"></span>
-				<label>Terminal Frequency</label>
-				<span class="st-menu-unit">Hz</span>
+				<label>Ammeter B：</label>
+			</div>
+			<div class="st-menu-input-title">
+				<span class="st-menu-sign">M</span>
+				<span class="st-menu-description">Quick Measurement</span>
+			</div>
+			<div class="st-menu-input-group">
+				<input id="endtime" type="st-menu-input-text" value="A" required>
+				<span class="st-menu-input-bar"></span>
+				<label>First Node：</label>
+			</div>
+			<div class="st-menu-input-group">
+				<input id="stepsize" type="st-menu-input-text" value="B" required>
+				<span class="st-menu-input-bar"></span>
+				<label>Second Node：</label>
 			</div>
 		</div>
 	</div>

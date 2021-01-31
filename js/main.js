@@ -707,7 +707,7 @@ action.on('click', '#fab-run', function (event) {
             // Print received data from server 
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
-            // alert(feedback);
+            alert(feedback);
         }
     };
     // Converting JSON data to string 
