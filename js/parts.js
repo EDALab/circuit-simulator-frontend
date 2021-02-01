@@ -1639,7 +1639,9 @@ PartClass.prototype = {
                 const tempPart = partsAll.findPart(this.connect[i])
                 for (let j = 0; j < tempPart.connect.length; j++) {
                     if ((tempPart.connect[j] = last + '-' + i)) {
-                        tempPart.connect[j] = label + '-' + i
+                        //tempPart.connect[j] = label + '-' + i
+                        //Xiaoboost's code changes ID after each changes in lines' connect.
+                        //After doing this, the ID will stay fixed and will not interfere connect. 
                         break
                     }
                 }
