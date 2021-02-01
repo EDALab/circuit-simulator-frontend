@@ -14,29 +14,29 @@ import { nodeId } from './nodeID';
 import filter from './filter';
 import './test';
 
-//Global variable definition
+//全局变量定义
 const doc = document,
     u = undefined;
-//Drawing grid module
+//图纸网格模块
 const grid = (function SchematicsGrid() {
-    //Module object
+    //模块对象
     const self = {};
-    //Persistent status flag
+    //持续型状态标志位
     let flag = 0;
     const continuous = [
-        'newMark',      //New device flag
-        'moveParts',    //moveable device flag
-        'pasteParts',   //Paste the device
-        'moveMap',      //Move the drawing mark
-        'selectBox',    //Draw check box flag
-        'deformLine',   //Wire deformation flag
-        'moveText',     //Move the txt flag
-        'drawLine',     //Draw wire flag
-        'graphSelecte'  //Waveform selection box flag
+        'newMark',      //新建器件标志位
+        'moveParts',    //移动器件标志位
+        'pasteParts',   //粘贴器件
+        'moveMap',      //移动图纸标志位
+        'selectBox',    //绘制复选框标志位
+        'deformLine',   //导线变形标志位
+        'moveText',     //移动txt标志位
+        'drawLine',     //绘制导线标志位
+        'graphSelecte'  //波形选择框标志位
     ];
-    //Flag part
+    //标志位
     for (let i = 0; i < continuous.length; i++) {
-        //This is a block-level scope, so there is no need to save the value of i internally
+        //这是块级作用域，所以不必在内部再保存i的值
         Object.defineProperty(self, continuous[i], {
             enumerable: true,
             configurable: true,
@@ -46,7 +46,7 @@ const grid = (function SchematicsGrid() {
             }
         });
         const setValue = 'set' + continuous[i].substring(0, 1).toUpperCase() + continuous[i].substring(1);
-        //The operation of the flag bit must pass this function
+        //对标志位的操作必须通过此函数
         self[setValue] = function (value) {
             value = Number(!!value);
             if (value) {
@@ -56,7 +56,7 @@ const grid = (function SchematicsGrid() {
             }
         };
     }
-    //total mark
+    //总标志位
     Object.defineProperty(self, 'totalMarks', {
         enumerable: true,
         configurable: true,
@@ -64,35 +64,35 @@ const grid = (function SchematicsGrid() {
         get() {
             return (!!flag);
         },
-        //Prohibit direct manipulation of attributes
+        //禁止直接操作属性
         //set() {}
     });
 
-    let size = 20,      //Background grid size
-        rate = 1,       //The magnification ratio compared to the previous grid
-        zoom = 1,       //The magnification ratio relative to the original size
-        placeX = 0,     //Grid coordinates
+    let size = 20,      //背景网格大小
+        rate = 1,       //相比上一次网格的放大比率
+        zoom = 1,       //相对于原始大小的放大比率
+        placeX = 0,     //网格坐标
         placeY = 0,
-        SVGX = 0,       //Offset of drawing area
+        SVGX = 0,       //绘图区偏移量
         SVGY = 0,
 
-        mouseLastX = 0, //Temporary mouse offset
+        mouseLastX = 0, //鼠标偏移量暂存
         mouseLastY = 0;
 
-    const copyStack = [],   //Copy device stack
-        revocation = [],    //Undo the stack, keep up to 10 operations
+    const copyStack = [],   //复制器件堆栈
+        revocation = [],    //撤销堆栈，最多保留10次操作
         textTip = $('<div>', { id: 'error-tip', class: 'disappear' });
 
     $('#editor-container').append(textTip);
 
-    //Current mouse position
+    //当前鼠标位置
     function mouse(event) {
         return (Point([
             (event.pageX - SVGX) / zoom,
             (event.pageY - SVGY) / zoom
         ]));
     }
-    //Mouse offset position
+    //鼠标偏移位置
     function mouseBias(event) {
         const ans = Point([
             (event.pageX - mouseLastX) / zoom,
@@ -102,7 +102,7 @@ const grid = (function SchematicsGrid() {
         mouseLastY = event.pageY;
         return (ans);
     }
-    //Save device properties
+    //保存器件属性
     function save(arr) {
         const ans = [];
 
@@ -160,10 +160,10 @@ const grid = (function SchematicsGrid() {
         return (mouse(event));
     };
     self.createData = function (event) {
-        //Offset initialization
+        //偏移量初始化
         mouseBias(event);
 
-        //Initial data
+        //初始数据
         const ans = {
             zoom: self.zoom(),
             SVG: self.SVG(),
@@ -178,7 +178,7 @@ const grid = (function SchematicsGrid() {
         return (ans);
     };
 
-    //copy
+    //复制
     self.copy = function (arr) {
         const data = arr ? arr : partsNow;
 
@@ -195,11 +195,11 @@ const grid = (function SchematicsGrid() {
             copyStack.push(move[i]);
         }
     };
-    //cut
+    //剪切
     self.cut = function () {
         let half = [];
         const move = [];
-        //Save deformed wire
+        //保存变形导线
         for (let i = 0; i < partsNow.length; i++) {
             if (partsNow[i].current.status === 'move') {
                 move.push(partsNow[i]);
@@ -207,13 +207,13 @@ const grid = (function SchematicsGrid() {
                 half.push(partsNow[i]);
             }
         }
-        //copy
+        //复制
         self.copy(partsNow);
-        //save the data
+        //记录数据
         half = save(half);
-        //delete
+        //删除
         move.forEach((n) => n.deleteSelf());
-        //paste part of the wire
+        //再粘贴部分导线
         self.paste(half);
         partsNow.forEach((n) => {
             n.elementDOM.removeAttr('opacity');
@@ -222,7 +222,7 @@ const grid = (function SchematicsGrid() {
             n.markSign();
         });
     };
-    //copy
+    //粘贴
     self.paste = function (arr) {
         const now = arr ? arr : copyStack, name = [];
 
@@ -243,7 +243,7 @@ const grid = (function SchematicsGrid() {
             }
 
             const part = partsNow.get(-1), id = {};
-            //Record old and new id
+            //记录新旧id
             if (data.id && data.id !== part.id) {
                 id.old = data.id;
                 id.new = partsNow.get(-1).id;
@@ -255,7 +255,7 @@ const grid = (function SchematicsGrid() {
             part.elementDOM.attr('opacity', 0.4);
         }
 
-        //Replace the old id with new id
+        //替换新旧id
         for (let i = 0; i < name.length; i++) {
             for (let j = 0; j < partsNow.length; j++) {
                 for (let k = 0; k < partsNow[j].connect.length; k++) {
@@ -268,7 +268,7 @@ const grid = (function SchematicsGrid() {
                 }
             }
         }
-        //Delete non-existent device connection
+        //删除不存在的器件连接
         for (let i = 0; i < partsNow.length; i++) {
             const part = partsNow[i],
                 con = part.connect;
@@ -278,7 +278,7 @@ const grid = (function SchematicsGrid() {
                     .join(' ');
             }
         }
-        //Combine some wires
+        //合并部分导线
         for (let i = 0; i < partsNow.length; i++) {
             const line = partsNow[i],
                 con = line.connect;
@@ -293,10 +293,10 @@ const grid = (function SchematicsGrid() {
                 }
             }
         }
-        //Clean up the device collection
+        //清理器件集合
         partsNow.deleteParts((n) => n.isExist());
     };
-    //Record the current state of all devices
+    //记录当前所有器件状态
     self.now = function () {
         const ans = [];
         for (let i = 0; i < partsAll.length; i++) {
@@ -309,29 +309,29 @@ const grid = (function SchematicsGrid() {
             revocation.splice(0, 1);
         }
     };
-    //revoke
+    //撤销
     self.revocate = function (arr) {
-        //obtain the last operation
+        //取出上次的操作
         const last = arr ? arr : revocation.pop();
         if (!last) { return (false); }
 
-        //delete device
+        //删除图中所有器件
         partsNow.deleteAll();
         partsAll.forEach((n) => partsNow.push(n));
         partsNow.forEach((n) => n.deleteSelf());
         partsNow.deleteAll();
         partsAll.deleteAll();
 
-        //Load specified data
+        //加载指定数据
         grid.paste(last);
         partsNow.deleteAll();
-        //place the device
+        //放置器件
         for (let i = 0; i < partsAll.length; i++) {
             partsAll[i].elementDOM.removeAttr('opacity');
             partsAll[i].render && partsAll[i].render();
             partsAll[i].markSign();
         }
-        //Determine the connection relationship
+        //确定连接关系
         for (let i = 0; i < partsAll.length; i++) {
             if (partsAll[i].partType === 'line') {
                 partsAll[i].nodeToConnect(0);
@@ -339,35 +339,35 @@ const grid = (function SchematicsGrid() {
             }
         }
     };
-    //Whether there is data in the copy stack
+    //复制堆栈中是否有数据
     self.isPaste = function () {
         return (!!copyStack.length);
     };
-    //Record whether there is data in the stack
+    //记录堆栈是否有数据
     self.isRevocate = function () {
         return (!!revocation.length);
     };
-    //error notation
+    //错误提示
     self.error = function (text) {
         textTip.text(text);
         textTip.attr('style', '');
         textTip.removeClass('disappear');
 
-        //disappear in 5 seconds
+        //5秒后消失
         setTimeout(() => textTip.addClass('disappear'), 5000);
-        //Leave the document stream after 6 seconds
+        //6秒后脱离文档流
         setTimeout(() => textTip.css('z-index', '-10'), 6000);
     };
 
-    //Reserved global temporary variables
+    //保留的全局临时变量
     self.current = [];
-    //Closed module
+    //封闭模块
     Object.seal(self);
 
-    //Return module object
+    //返回模块对象
     return (self);
 })();
-//Global jquary element definition
+//全局jq元素定义
 const sidebar = $('#sidebar-menu'),
     action = $('#action-container'),
     mainPage = $('#container-grid'),
@@ -375,21 +375,21 @@ const sidebar = $('#sidebar-menu'),
     graphPage = $('#graph-page'),
     context = $('#right-button-menu');
 
-//Entry function for mouse movement
+//鼠标移动的入口函数
 function mousemoveEvent(event) {
     if (!grid.totalMarks) { return (false); }
 
     switch (true) {
-        //Device movement
+        //器件移动
         case grid.newMark:
         case grid.pasteParts:
         case grid.moveParts: {
             partsNow.moveParts(event);
             break;
         }
-        //canvas move
+        //图纸移动
         case grid.moveMap: {
-            //No need to zoom the mouse distance when moving the drawing
+            //移动图纸时不需要对鼠标距离做缩放
             const bias = grid.current.mouseBias(event)
                 .mul(grid.current.zoom);
 
@@ -397,7 +397,7 @@ function mousemoveEvent(event) {
                 return (false);
             }
 
-            //The mouse will be deformed only if it does move
+            //只有确实移动了，才会让鼠标变形
             mainPage.attr('class', 'mouse-movemap');
 
             let SVGPos = grid.SVG();
@@ -414,7 +414,7 @@ function mousemoveEvent(event) {
 
             break;
         }
-        //Draw a checkbox
+        //绘制多选框
         case grid.selectBox: {
             const node = grid.mouse(event),
                 start = grid.current.selectionBoxStart,
@@ -432,27 +432,27 @@ function mousemoveEvent(event) {
             (maxLen > 3) && mainPage.attr('class', 'mouse-selectBox');
             break;
         }
-        //Wire deformation
+        //导线变形
         case grid.deformLine: {
             partsNow[0].setPath(event, 'deformation');
             break;
         }
-        //Mobile device description text
+        //移动器件说明文字
         case grid.moveText: {
             partsNow[0].move(event, 'text');
             break;
         }
-        //Draw wire
+        //绘制导线
         case grid.drawLine: {
             partsNow.get(-1).setPath(event, 'draw');
             break;
         }
-        //Draw waveform interface selection box
+        //绘制波形界面选择框
         case grid.graphSelecte: {
             grid.current.graph.drawSelect(event, grid.current);
             break;
         }
-        //other
+        //其他
         default: {
             break;
         }
@@ -460,7 +460,7 @@ function mousemoveEvent(event) {
 
     return (false);
 }
-//Clear all current status
+//清除当前所有状态
 function clearStatus() {
     contextSet();
     for (let i = 0; i < partsNow.length; i++) {
@@ -469,7 +469,7 @@ function clearStatus() {
     partsNow.deleteAll();
     partsNow.current = {};
 }
-//Right click menu
+//右键菜单
 function contextSet(event, status) {
     const contextMenu = $('#right-button-menu'),
         rotateId = [
@@ -479,7 +479,7 @@ function contextSet(event, status) {
             '#Y-Mirror'
         ];
 
-    //Close right-click menu
+    //关闭右键菜单
     if (status === 'close' || status === u) {
         contextMenu.attr('class', '');
         $('.right-button-option', contextMenu).each((n) => $(n).removeClass('disable'));
@@ -487,13 +487,13 @@ function contextSet(event, status) {
     }
 
     contextMenu.attr('class', 'right-' + status);
-    //Place it in the upper left corner first, with 0 transparency
+    //先放置在左上角，透明度为0
     contextMenu.css({
         'left': 0,
         'top': 0,
         'opacity': 0
     });
-    //Force refresh the menu and get the size of the menu
+    //强制刷新菜单，并获取菜单大小
     const win = $(window),
         Height = win.height(),
         Width = sidebar.hasClass('open-add-parts')
@@ -515,7 +515,7 @@ function contextSet(event, status) {
     });
 
     if (status.indexOf('part') !== -1) {
-        //Device part, feasibility of rotating function
+        //器件部分，旋转功能可行性
         const rotate = partsNow.isRotate();
         for (let i = 0; i < 4; i++) {
             const elem = $(rotateId[i]);
@@ -524,7 +524,7 @@ function contextSet(event, status) {
                 : elem.addClass('disable');
         }
     } else if (status === 'map') {
-        //Drawing part, whether the undo and paste functions are available
+        //图纸部分，撤销和粘帖功能是否可用
         let elem = $('#right-undo');
         grid.isRevocate()
             ? elem.removeClass('disable')
@@ -537,30 +537,30 @@ function contextSet(event, status) {
     }
 
 }
-//Display waveform
+//显示波形
 function createGraph(data) {
-    const ratio = 1.6,                                  //Page aspect ratio
-        otherHeight = 61,                               //Top reserved height
-        totalHeight = $(window).height(),               //Window height
-        totalWidth = $(window).width(),                 //Window width
-        maxForm = !!(data.voltage.length) +             //How many waveform interfaces are needed
+    const ratio = 1.6,                                  //页面宽高比
+        otherHeight = 61,                               //顶部预留高度
+        totalHeight = $(window).height(),               //窗口高度
+        totalWidth = $(window).width(),                 //窗口宽度
+        maxForm = !!(data.voltage.length) +             //需要多少个波形界面
             !!(data.current.length),
-        graphHeight = totalHeight - otherHeight,        //Waveform page height
-        boxHeight = graphHeight / maxForm,              //Height of each panel
+        graphHeight = totalHeight - otherHeight,        //波形页面高度
+        boxHeight = graphHeight / maxForm,              //每个面板的高度
         graphMain = $('#graph-main'),
         graphWidth = (totalHeight * ratio < totalWidth) ? totalHeight * ratio : totalWidth,
         graphForm = graphMain.childSelect('div.graph-individual', maxForm);
 
-    //Delete all elements in the DOM
+    //删除DOM中的所有元素
     for (let i = 0; i < graphForm.length; i++) {
         const form = graphForm.get(i);
         form.childrens().remove();
         form.css('height', boxHeight + 'px');
     }
 
-    //Set the waveform page width
+    //设置波形页面宽度
     graphPage.attr('style', 'width: ' + graphWidth + 'px');
-    //Create waveform
+    //创建波形
     for (let i = 0; i < 2; i++) {
         const label = ['voltage', 'current'][i];
         if (data[label].length) {
@@ -569,7 +569,7 @@ function createGraph(data) {
             graphForm.get(sub).prop('_data', new Graph(data[label], graphForm[sub], label));
         }
     }
-    //Data preparation is complete, ready for page change
+    //数据准备完成，准备页面变换
     const height = graphPage.height(),
         width = graphPage.width(),
         actionRight = 66,
@@ -609,8 +609,8 @@ function createGraph(data) {
     }, 600);
 }
 
-//Web page element related events
-//Add all events of the device in the device menu
+//网页元素相关事件
+//添加器件菜单中器件的所有事件
 sidebar.on({
     mousemove(event) {
         $('#float-tool-tip').css({
@@ -646,7 +646,7 @@ sidebar.on({
         }
     }
 }, '.parts-list');
-//Click the close button in the add device menu bar
+//点击添加器件菜单栏的关闭按钮
 sidebar.on('click', '#menu-add-parts-close', function (event) {
     if (event.which === 1) {
         $('#menu-add-parts-close').addClass('disappear');
@@ -654,14 +654,7 @@ sidebar.on('click', '#menu-add-parts-close', function (event) {
         sidebar.removeClass('open-menu-config open-add-parts');
     }
 });
-//Open the static output sidebar
-action.on('click', '#fab-staticOutput', function (event) {
-    if (event.which === 1) {
-        $(document.body).addClass('open-sidebar open-gray');
-        sidebar.addClass('open-menu-staticOutput');
-    }
-});
-//Open the settings sidebar
+//打开设置边栏
 action.on('click', '#fab-config', function (event) {
     if (event.which === 1) {
         $(document.body).addClass('open-sidebar open-gray');
@@ -680,49 +673,10 @@ action.on('click', '#fab-adds', function (event) {
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
 
-    var feedback;
-
-    var temp_var = partsAll.connectGraph();
-    if (temp_var.length == 0) {
-        grid.error('Circuit diagram need to contain at least one component!');
-        return (false);
-    }
-    else if (temp_var.length > 1) {
-        grid.error('Cannot simulate more than one separate circuits at the same time!');
-        return (false);
-    } else {
-        temp_var = temp_var[0];
-    }
-    var filteredCircuit = JSON.stringify(temp_var);
-    filteredCircuit = filter(filteredCircuit);
-    var output = nodeId(filteredCircuit);
-    console.log(JSON.stringify(output));
-    var xhr = new XMLHttpRequest();
-    var url = 'http://127.0.0.1:5000/dc_simulate/Test';
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader('Content-type', 'application/JSON');
-    // Create a state change callback 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 201) {
-            // Print received data from server 
-            // xhr.innerHTML = xhr.responseText;
-            feedback = xhr.responseText;
-            alert(feedback);
-        }
-    };
-    // Converting JSON data to string 
-    var data = JSON.stringify(output);
-    // Sending data with the request 
-    xhr.send(data);
-    $(document.body).addClass('open-sidebar open-gray');
-    sidebar.addClass('open-menu-staticOutput');
-    return;
-
-    /*
-
-    // Create a diagram consisting the circuit
+    // Create a diagram consisting the 
     const diagrams = partsAll.connectGraph()
         .map(function (n) {
+
             const n_copy = n
             // var filteredCircuit = filter(n_copy);
 
@@ -766,9 +720,9 @@ action.on('click', '#fab-run', function (event) {
             }
 
             var filteredCircuit = JSON.stringify(n_copy);
-            // console.log('input json is ' + filteredCircuit);
+            //console.log('input json is ' + filteredCircuit);
             filteredCircuit = filter(filteredCircuit);
-            // console.log('filter result is ' + JSON.stringify(filteredCircuit));
+           // console.log('filter result is ' + JSON.stringify(filteredCircuit));
             var output = nodeId(filteredCircuit);
             console.log(JSON.stringify(output));
 
@@ -783,7 +737,7 @@ action.on('click', '#fab-run', function (event) {
                 if (xhr.readyState === 4 && xhr.status === 201) {
                     // Print received data from server 
                     // xhr.innerHTML = xhr.responseText;
-                    feedback = xhr.responseText;
+                    alert(xhr.responseText);
                 }
             };
             // Converting JSON data to string 
@@ -795,57 +749,56 @@ action.on('click', '#fab-run', function (event) {
             ans.iteration = ans.solver.solve();
             return (ans);
         });
-
-    */
-
-    /*
-    
     //Error code
     let error = '';
-     if (!diagrams.length) {
-         //The circuit diagram is empty
-         grid.error('circuit diagram need to contain at least one component!');
-         return (false);
-     } else if (diagrams.some((n) => (error = n.solver.error))) {
-         //Encounter some error in the circuit diagram
-         grid.error(error);
-         return (false);
-     }
-     */
 
-    // The following code is believed to be the original code
+    // alert(diagrams[0]);
+    // alert("This graph contains " + diagrams.length + " Components");
+    // alert("First part's id is " + diagrams[0].id);
+
+    if (!diagrams.length) {
+        //The circuit diagram is empty
+        grid.error('circuit diagram need to contain at least one component!');
+        return (false);
+    } else if (diagrams.some((n) => (error = n.solver.error))) {
+        //Encounter some error in the circuit diagram
+        grid.error(error);
+        return (false);
+    }
+
+    // The following code is for 
     /*
     if (event.which !== 1) { return (false); }
     clearStatus();
 
-    const delayTime = 10,   //Delay time in milliseconds
+    const delayTime = 10,   //延迟时间，单位毫秒
         fabs = action.childrens(),
         fabRun = $('#fab-run'),
         fabText = $('#fab-text'),
         text = fabText.childrens(0),
         data = {voltage: [], current: []};
 
-    //Build a circuit solver
+    //建立电路求解器
     const diagrams = partsAll.connectGraph()
         .map(function(n) {
             const ans = { solver: new Solver(n) };
             ans.iteration = ans.solver.solve();
             return (ans);
         });
-    //error code
+    //错误代码
     let error = '';
 
     if (!diagrams.length) {
-        //Circuit diagram is empty
-        grid.error('Circuit diagram cannot be empty');
+        //电路图为空
+        grid.error('电路图不能为空');
         return (false);
     } else if (diagrams.some((n) => (error = n.solver.error))) {
-        //There is an error in a circuit network
+        //某电路网络有错误
         grid.error(error);
         return (false);
     }
 
-    //Change icon before solving
+    //求解前先变换图标
     for (let i = 1; i < fabs.length; i++) {
         fabs.get(i).css('display', 'none');
     }
@@ -853,10 +806,10 @@ action.on('click', '#fab-run', function (event) {
     fabText.css('display', '');
     text.text('0%');
 
-    //Solve the main process, (asynchronous)
+    //求解主进程，异步进行
     setTimeout(function process() {
         const startTime = (new Date()).getTime(),
-            timeInterval = 500;     //Refresh the progress in the lower right corner every 500ms
+            timeInterval = 500;     //每隔500ms刷新右下角的进度
 
         let timeLag = 0, endFlag = false;
 
@@ -876,16 +829,16 @@ action.on('click', '#fab-run', function (event) {
                 data.voltage = data.voltage.concat(diagrams[i].solver.observeVoltage);
                 data.current = data.current.concat(diagrams[i].solver.observeCurrent);
             }
-            //Finish time
+            //终点时间
             data.voltage.time = diagrams[0].solver.observeVoltage.time;
             data.voltage.stepTime = diagrams[0].solver.observeVoltage.stepTime;
             data.current.time = diagrams[0].solver.observeCurrent.time;
             data.current.stepTime = diagrams[0].solver.observeCurrent.stepTime;
-            //Delayed display waveform
+            //延迟显示波形图
             setTimeout(function(){
                 createGraph(data);
             }, delayTime);
-            //Delay 1 second to restore the button shape
+            //延迟1秒，恢复按钮形状
             setTimeout(function() {
                 text.text('');
                 fabRun.css('display', '');
@@ -896,10 +849,9 @@ action.on('click', '#fab-run', function (event) {
             }, 1000);
         }
     }, delayTime);
-
     */
 });
-//Cancel button of device property menu
+//器件属性菜单的取消键
 parameter.on('click', '#parameter-bottom-cancel', function () {
     $(doc.body).removeClass('open-gray');
     parameter.css('z-index', '20');
@@ -909,11 +861,11 @@ parameter.on('click', '#parameter-bottom-cancel', function () {
         parameter.css('z-index', '');
     }, 350);
 });
-//OK button of device property menu
+//器件属性菜单的确定键
 parameter.on('click', '#parameter-bottom-accept', function () {
-    //Record data
+    //记录数据
     grid.now();
-    //Check the format of the input data
+    //检查输入数据的格式
     if (partsNow[0].inputVision()) {
         $(doc.body).removeClass('open-gray');
         parameter.css('z-index', '20');
@@ -923,7 +875,7 @@ parameter.on('click', '#parameter-bottom-accept', function () {
         }, 350);
     }
 });
-//Mouse wheel event
+//鼠标滚轮事件
 mainPage.on('mousewheel', function (event) {
     if (!$(doc.body).hasClass('open-gray')) {
         const mousePosition = [event.pageX, event.pageY];
@@ -966,25 +918,25 @@ mainPage.on('mousewheel', function (event) {
         $('#area-of-parts').attr('transform', 'translate(' + SVGPos.join(', ') + ') scale(' + grid.zoom() + ')');
     }
 });
-//Mouse click shady
+//鼠标点击黑幕
 $('#shade-gray').on('click', function () {
-    if ((sidebar.hasClass('open-menu-staticOutput') || sidebar.hasClass('open-menu-config')) && !parameter.hasClass('parameter-open')) {
+    if (sidebar.hasClass('open-menu-config') && !parameter.hasClass('parameter-open')) {
         $(doc.body).removeClass('open-gray open-sidebar');
-        sidebar.removeClass('open-menu-staticOutput open-menu-config open-add-parts');
+        sidebar.removeClass('open-menu-config open-add-parts');
     }
 });
 
-//Device related events
-//Device mousedown event
+//器件相关事件
+//器件mousedown事件
 mainPage.on('mousedown', 'g.editor-parts .focus-part, g.editor-parts path, g.editor-parts .features-text', function (event) {
     if (grid.totalMarks) {
         return false;
     }
-    //Find the object of the current device
+    //寻找当前器件的对象
     const clickpart = partsAll.findPart(event.currentTarget.parentNode.id);
     if (event.which === 1) {
         if (event.currentTarget.tagName === 'text') {
-            //Click the device description text
+            //单击器件说明文本
             clearStatus();
             const text = $(this);
             clickpart.toFocus();
@@ -998,13 +950,13 @@ mainPage.on('mousedown', 'g.editor-parts .focus-part, g.editor-parts path, g.edi
                 });
             grid.setMoveText(true);
         } else {
-            //Click ontology
+            //单击本体
             if (!partsNow.has(clickpart.id)) {
-                //Single device
+                //单个器件
                 clearStatus();
                 clickpart.toFocus();
             } else {
-                //Multiple devices
+                //多个器件
                 contextSet();
             }
             partsNow.checkLine();
@@ -1013,30 +965,30 @@ mainPage.on('mousedown', 'g.editor-parts .focus-part, g.editor-parts path, g.edi
             grid.now();
             grid.setMoveParts(true);
         }
-        //Bind global mobile events
+        //绑定全局移动事件
         mainPage.on('mousemove', mousemoveEvent);
     } else if (event.which === 3) {
         const parts = partsNow.filter((n) => n.partType !== 'line');
 
         if (parts.has(clickpart.id) && (parts.length > 1)) {
-            //Right click of multiple devices
+            //多个器件的右键
             partsNow.checkLine();
             contextSet(event, 'parts');
         } else {
-            //Right button of a single device
+            //单个器件的右键
             clearStatus();
             clickpart.toFocus();
             partsNow.checkLine();
-            //When you right click on the reference ground, hide the "Edit parameters" option
+            //参考地的右键时，隐藏“编辑参数”选项
             (clickpart.partType === 'reference_ground')
                 ? contextSet(event, 'parts')
                 : contextSet(event, 'part');
         }
     }
-    //Stop event bubbling
+    //阻止事件冒泡
     return (false);
 });
-//Device double-click event
+//器件双击事件
 mainPage.on('dblclick', 'g.editor-parts .focus-part, g.editor-parts path, g.editor-parts .features-text', function (event) {
     const clickpart = partsAll.findPart(event.currentTarget.parentNode.id);
     if (event.which === 1 && !grid.totalMarks &&
@@ -1044,7 +996,7 @@ mainPage.on('dblclick', 'g.editor-parts .focus-part, g.editor-parts path, g.edit
         clickpart.viewParameter(grid.zoom(), grid.SVG());
     }
 });
-//Mouse over device and wire
+//鼠标经过器件和导线
 mainPage.on({
     mouseenter(event) {
         const tagName = event.currentTarget.tagName.toLowerCase(),
@@ -1052,18 +1004,18 @@ mainPage.on({
 
         if (!grid.totalMarks) {
             if (tagName === 'rect' || tagName === 'text') {
-                //Through wires and devices
+                //经过导线和器件
                 mainPage.attr('class', 'mouse-movepart');
             } else if (tagName === 'g' && elem.hasClass('point-close')) {
-                //pass a closed pin
+                //经过关闭的引脚
                 mainPage.attr('class', 'mouse-closepoint');
             } else if (tagName === 'g' && elem.hasClass('point-open')) {
-                //pass a opened pin
+                //经过开放的引脚
                 mainPage.attr('class', 'mouse-line');
             }
         } else if (grid.drawLine) {
             if (tagName !== 'text' && !elem.hasClass('line-rect')) {
-                //The mouse passes over the device when drawing wires
+                //绘制导线时鼠标经过器件
                 const line = partsNow.get(-1);
                 line.current.enforceAlign.extend({
                     flag: true,
@@ -1075,7 +1027,7 @@ mainPage.on({
     },
     mouseleave() {
         if (!grid.totalMarks) {
-            //No state, the mouse returns to the default
+            //没有状态，鼠标恢复默认
             mainPage.attr('class', '');
         } else if (grid.drawLine) {
             const line = partsNow.get(-1);
@@ -1089,7 +1041,7 @@ mainPage.on({
         }
     },
 }, 'g.editor-parts rect.focus-part, g.editor-parts g.part-point, g.editor-parts text, g.line rect.line-rect');
-//wire mousedown task
+//导线mousedown事件
 mainPage.on('mousedown', 'g.line rect.line-rect', function (event) {
     if (grid.totalMarks) { return false; }
 
@@ -1106,11 +1058,11 @@ mainPage.on('mousedown', 'g.line rect.line-rect', function (event) {
         contextSet(event, 'line');
     }
 
-    //Stop event bubbling
+    //阻止事件冒泡
     return (false);
 });
 
-//Left click the device pin mousedown, start drawing wires
+//左键器件引脚mousedown，绘制导线开始
 mainPage.on('mousedown', 'g.editor-parts g.part-point', function (event) {
     if (event.which === 1 && !grid.totalMarks) {
         clearStatus();
@@ -1142,7 +1094,7 @@ mainPage.on('mousedown', 'g.editor-parts g.part-point', function (event) {
     }
     return (false);
 });
-//Mousedown operation of temporary wire node
+//导线临时结点的mousedown操作
 mainPage.on('mousedown', 'g.line g.draw-open', function (event) {
     if (event.which === 1 && !grid.totalMarks) {
         const line = partsAll.findPart(event.currentTarget.parentNode.id);
@@ -1158,7 +1110,7 @@ mainPage.on('mousedown', 'g.line g.draw-open', function (event) {
     }
     return (false);
 });
-//Staggered node event
+//交错节点事件
 mainPage.on({
     mousemove(event) {
         if (!grid.totalMarks) {
@@ -1231,39 +1183,39 @@ mainPage.on({
         }
     }
 }, 'g.line g.cross-point');
-//Mousedown operation of drawings
+//图纸全局的mousedown操作
 mainPage.on('mousedown', function (event) {
-    //There are continuous events, then return directly
+    //有持续性事件，那么直接返回
     if (grid.totalMarks) { return (false); }
 
     clearStatus();
     if (event.which === 1) {
-        //left click
+        //左键
         $('#area-of-parts').append($('<polygon>', SVG_NS, { id: 'select-box' }));
         grid.current.selectionBoxStart = grid.mouse(event);
         grid.setSelectBox(true);
     } else if (event.which === 3) {
-        //right click
+        //右键
         grid.current = grid.createData(event);
         grid.setMoveMap(true);
     }
     mainPage.on('mousemove', mousemoveEvent);
 });
-//Global mouseup operation of drawings
+//图纸的全局mouseup操作
 mainPage.on('mouseup', function (event) {
-    //Whether to cancel the mousemove event mark
+    //是否取消mousemove事件标志位
     let offEvent = true, offMouse = true;
     if (event.which === 1) {
-        //left click
+        //左键
         switch (true) {
-            //new devide
+            //新建器件
             case grid.newMark: {
                 grid.setNewMark(false);
                 partsNow.putDownParts('new');
                 offMouse = false;
                 break;
             }
-            //copy device
+            //粘贴器件
             case grid.pasteParts: {
                 if (partsNow.putDownParts('paste')) {
                     grid.setPasteParts(false);
@@ -1273,13 +1225,13 @@ mainPage.on('mouseup', function (event) {
                 }
                 break;
             }
-            //move device
+            //移动器件
             case grid.moveParts: {
                 grid.setMoveParts(false);
                 partsNow.putDownParts();
                 break;
             }
-            //Draw a checkbox
+            //绘制多选框
             case grid.selectBox: {
                 const node = grid.mouse(event),
                     top = Math.min(grid.current.selectionBoxStart[1], node[1]),
@@ -1301,48 +1253,47 @@ mainPage.on('mouseup', function (event) {
                 grid.setSelectBox(false);
                 break;
             }
-            //Wire deformation
+            //导线变形
             case grid.deformLine: {
                 grid.setDeformLine(false);
                 partsNow[0].putDown(event, 'deformation');
                 break;
             }
-            //Mobile device attribute description text
+            //移动器件属性说明文字
             case grid.moveText: {
                 grid.setMoveText(false);
                 partsNow[0].textVisition(partsNow[0].current.text.attr(['x', 'y']));
                 break;
             }
-            //Wire drawing
+            //导线绘制
             case grid.drawLine: {
                 grid.setDrawLine(false);
                 partsNow.get(-1).putDown(event, 'draw');
                 break;
             }
-            //other
+            //其他
             default: {
                 clearStatus();
             }
         }
     } else if ((event.which === 3) && (grid.moveMap)) {
-        //Right-click and release, stop moving the map
+        //右键放开，且正在移动图纸移动整个图纸结束
         grid.setMoveMap(false);
         grid.current = [];
-        //If there is no such label, it means that the mouse has not moved, 
-        // then the right-click menu will pop up
+        //如果没有这个标签，说明鼠标没有移动，那么弹出右键菜单
         if (!mainPage.hasClass('mouse-movemap')) {
             clearStatus();
             contextSet(event, 'map');
         }
     }
-    //Dismiss mobile event globally
+    //全局解除移动事件
     offEvent && mainPage.off('mousemove', mousemoveEvent);
-    //The mouse is restored
+    //鼠标恢复原样
     offMouse && mainPage.attr('class', '');
 });
 
-//Curve panel event
-//Cancel zoom
+//曲线面板事件
+//取消缩放
 graphPage.on('click', '#waveRecover', function () {
     $('#graph-main .graph-individual').each((n) => {
         const graph = n._data,
@@ -1357,7 +1308,7 @@ graphPage.on('click', '#waveRecover', function () {
         graph.drawCurve();
     });
 });
-//Convert to picture
+//转换成图片
 graphPage.on('click', '#waveToImage', function () {
     const graphImg = $(window.open('about:blank').document.body);
     graphImg.css({
@@ -1368,7 +1319,7 @@ graphPage.on('click', '#waveToImage', function () {
         'src': Graph.toImage()
     }));
 });
-//Output Data
+//输出数据
 graphPage.on('click', '#waveToData', function () {
     const data = [],
         dataPage = window.open('about:blank'),
@@ -1395,7 +1346,7 @@ graphPage.on('click', '#waveToData', function () {
     }
     dataPage.document.body.innerHTML = ans;
 });
-//Close panel
+//关闭面板
 graphPage.on('click', '#waveClose', function () {
     graphPage.attr('class', 'disappear');
     setTimeout(function () {
@@ -1405,27 +1356,27 @@ graphPage.on('click', '#waveClose', function () {
         });
     }, 500);
 });
-//Click on the legend of the panel
+//点击面板的图例
 graphPage.on('click', 'tr.graph-table-row', function (event) {
     const id = event.currentTarget.id.split('-').pop(),
         graph = $('#graph-' + id),
         display = [/display *: *none/, /display *: *block/];
 
-    //Waveform display
+    //波形显示
     const attribute = graph.attr('style');
     if (attribute.search(display[0]) !== -1) {
         graph.attr('style', attribute.replace(display[0], 'display:block'));
     } else if (attribute.search(display[1]) !== -1) {
         graph.attr('style', attribute.replace(display[1], 'display:none'));
     }
-    //Label strikethrough
+    //标签删除线
     const text = event.currentTarget.querySelector('.graph-table-legend-label');
     if (text.innerHTML.search('strike') !== -1) {
         text.innerHTML = text.innerHTML.replace(/<\/?strike>/g, '');
     } else {
         text.innerHTML = text.innerHTML.strike();
     }
-    //Waveform display flag
+    //波形显示标志位
     const data = event.currentTarget.parentNode.parentNode.parentNode._data;
     for (let i = 0; i < data.output.length; i++) {
         if (data.output[i].name === id) {
@@ -1433,7 +1384,7 @@ graphPage.on('click', 'tr.graph-table-row', function (event) {
         }
     }
 });
-//Mouse over the panel
+//面板之上鼠标移动
 graphPage.on('mousemove', '.graph-action', function (event) {
     if (!grid.totalMarks) {
         const graphTarget = event.currentTarget.parentNode._data,
@@ -1445,23 +1396,23 @@ graphPage.on('mousemove', '.graph-action', function (event) {
                 graphs[i].drawMove(event.offsetX, vision);
             }
         }
-        //No bubbling after running here
+        //这里运行之后禁止冒泡
         return (false);
     }
 });
-//Mouse moves out of the panel
+//鼠标移出面板
 graphPage.on('mouseleave', '.graph-action', function () {
     if (!grid.totalMarks) {
         $('#graph-main .graph-individual').each((n) => n._data.clearActionCanvas());
         return (false);
     }
 });
-//Click the mouse on the waveform interface
+//波形界面鼠标点下
 graphPage.on('mousedown', '.graph-action', function (event) {
     if (event.which !== 1) { return (false); }
 
     if (!grid.totalMarks) {
-        //Clear all panel canvases
+        //清空所有面板画布
         $('#graph-main .graph-individual').each((n) => n._data.clearActionCanvas());
 
         grid.current = {
@@ -1470,21 +1421,21 @@ graphPage.on('mousedown', '.graph-action', function (event) {
             canvas: event.currentTarget.querySelector('.graph-action-canvas')
         };
         grid.setGraphSelecte(true);
-        //Bind mouse movement events
+        //绑定鼠标移动事件
         graphPage.on('mousemove', mousemoveEvent);
         graphPage.addClass('mouse-select');
     }
 });
-//Mouse movement of the waveform interface
+//波形界面的鼠标移动
 graphPage.on('mouseup', function () {
     if (grid.totalMarks && grid.graphSelecte) {
-        //Cancel mobile event binding
+        //取消移动事件绑定
         graphPage.off('mousemove', mousemoveEvent);
         graphPage.removeClass('mouse-select');
-        //Low sign
+        //标志位置低
         grid.setGraphSelecte(false);
 
-        //Redraw the current panel
+        //重绘当前面板
         const graph = grid.current.graph,
             [time, value] = graph.pixel2Value(grid.current.select);
 
@@ -1492,7 +1443,7 @@ graphPage.on('mouseup', function () {
         graph.drawBackground(time, value);
         graph.drawCurve();
 
-        //The remaining panels need to be scaled according to the timeline
+        //其余面板需要根据时间轴缩放
         $('#graph-main .graph-individual').each(function (n) {
             if (n._data !== graph) {
                 const range = n._data.backgroundStartToEnd();
@@ -1504,13 +1455,13 @@ graphPage.on('mouseup', function () {
             }
         });
 
-        //Temporary variable empty
+        //临时变量清空
         grid.current = [];
     }
 });
 
-//Right click menu
-//Edit parameters
+//右键菜单
+//编辑参数
 context.on('click', '#edit-parameters', function (event) {
     const clickpart = partsNow.get(0);
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
@@ -1519,21 +1470,21 @@ context.on('click', '#edit-parameters', function (event) {
     }
     return (false);
 });
-//clockwise rotation
+//顺时针旋转
 context.on('click', '#clockwise-direction', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         if (partsNow.checkConn()) {
             grid.error('Please disconnect the component before rotate!');
             return (false);
         }
-        contextSet();
+        contextSet(
         if (partsNow.isRotate(0)) {
             partsNow.rotate(0);
         }
     }
     return (false);
 });
-//Anticlockwise rotation
+//逆时针旋转
 context.on('click', '#anticlockwise-direction', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         if (partsNow.checkConn()) {
@@ -1547,7 +1498,7 @@ context.on('click', '#anticlockwise-direction', function (event) {
     }
     return (false);
 });
-//Mirror along the X axis
+//沿X轴镜像
 context.on('click', '#X-Mirror', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         if (partsNow.checkConn()) {
@@ -1561,7 +1512,7 @@ context.on('click', '#X-Mirror', function (event) {
     }
     return (false);
 });
-//Mirror along the Y axis
+//沿Y轴镜像
 context.on('click', '#Y-Mirror', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         if (partsNow.checkConn()) {
@@ -1575,7 +1526,7 @@ context.on('click', '#Y-Mirror', function (event) {
     }
     return (false);
 });
-//copy
+//复制
 context.on('click', '#parts-copy', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         contextSet();
@@ -1583,7 +1534,7 @@ context.on('click', '#parts-copy', function (event) {
     }
     return (false);
 });
-//cut
+//剪切
 context.on('click', '#parts-cut', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         contextSet();
@@ -1591,7 +1542,7 @@ context.on('click', '#parts-cut', function (event) {
     }
     return (false);
 });
-//paste
+//粘贴
 context.on('click', '#parts-paste', function (event) {
     if (event.which === 1 && !grid.totalMarks && grid.isPaste()) {
         contextSet();
@@ -1606,7 +1557,7 @@ context.on('click', '#parts-paste', function (event) {
     }
     return (false);
 });
-//select all
+//全选
 context.on('click', '#parts-all', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         contextSet();
@@ -1615,7 +1566,7 @@ context.on('click', '#parts-all', function (event) {
     }
     return (false);
 });
-//delete
+//删除
 context.on('click', '#parts-delete', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         contextSet();
@@ -1624,7 +1575,7 @@ context.on('click', '#parts-delete', function (event) {
     }
     return (false);
 });
-//revoke
+//撤销
 context.on('click', '#right-undo', function (event) {
     if (event.which === 1 && !grid.totalMarks && !$(this).hasClass('disable')) {
         contextSet();
@@ -1635,11 +1586,11 @@ context.on('click', '#right-undo', function (event) {
     return (false);
 });
 
-//keyboard event
+//键盘事件
 $('body').on('keydown', function (event) {
     if (grid.totalMarks) { return (false); }
 
-    //trigger right click event function
+    //触发右键事件函数
     function trigger(selector) {
         $(selector).trigger({
             type: 'click',
@@ -1649,68 +1600,68 @@ $('body').on('keydown', function (event) {
     }
 
     switch (true) {
-        //ctrl + D, rotate CW
+        //ctrl + D，顺时针旋转
         case (event.ctrlKey && (event.keyCode === 68)): {
             trigger('#clockwise-direction');
             break;
         }
-        //ctrl + alt + D, rotate CCW
+        //ctrl + alt + D，逆时针旋转
         case (event.ctrlKey && event.altKey && (event.keyCode === 68)): {
             trigger('#anticlockwise-direction');
             break;
         }
-        //alt + X, Mirror along the X axis
+        //alt + X，X轴镜像
         case (event.altKey && (event.keyCode === 88)): {
             trigger('#X-Mirror');
             break;
         }
-        //alt + C, Mirror along the Y axis
+        //alt + C，Y轴镜像
         case (event.altKey && (event.keyCode === 67)): {
             trigger('#Y-Mirror');
             break;
         }
-        //ctrl + A, SELECT ALL
+        //ctrl + A，全选
         case (event.ctrlKey && (event.keyCode === 65)): {
             trigger('#parts-all');
             break;
         }
-        //ctrl + V, paste
+        //ctrl + V，粘贴
         case (event.ctrlKey && (event.keyCode === 86)): {
             trigger('#parts-paste');
             break;
         }
-        //ctrl + C copy
+        //ctrl + C，复制
         case (event.ctrlKey && (event.keyCode === 67)): {
             trigger('#parts-copy');
             break;
         }
-        //ctrl + X cut
+        //ctrl + X，剪切
         case (event.ctrlKey && (event.keyCode === 88)): {
             trigger('#parts-cut');
             break;
         }
-        //ctrl + Z revoke
+        //ctrl + Z，撤销操作
         case (event.ctrlKey && (event.keyCode === 90)): {
             trigger('#right-undo');
             break;
         }
-        //Delete delete
+        //Delete，删除
         case (event.keyCode === 46): {
             trigger('#parts-delete');
             break;
         }
-        //Esc cancel
+        //Esc，取消
         case (event.keyCode === 27): {
             if ($('#parameter-menu').hasClass('parameter-open')) {
                 trigger('#parameter-bottom-cancel');
             }
             break;
         }
-        //Enter 
+        //Enter，回车
         case (event.keyCode === 13): {
             if ($('#parameter-menu').hasClass('parameter-open')) {
                 trigger('#parameter-bottom-accept');
-            } else if ((sidebar.hasClass('open-menu-staticOutput') || sidebar.hasClass('open-menu-config'))) {
+            } else if (sidebar.hasClass('open-menu-config')) {
                 trigger('#shade-gray');
             }
             break;
@@ -1718,14 +1669,14 @@ $('body').on('keydown', function (event) {
     }
 });
 
-//Run initialization after the page is loaded
+//页面加载完毕之后运行初始化
 doc.body.onload = function () {
-    //Read address information
+    //读取地址信息
     const cover = $('#load-cover'),
         src = window.location.href.split('?')[1],
         parameters = {};
 
-    //Decompose input parameters
+    //分解输入参数
     if (src && src.length) {
         const data = src.split('&');
         for (let i = 0; i < data.length; i++) {
@@ -1734,12 +1685,12 @@ doc.body.onload = function () {
         }
     }
 
-    //load parameter
+    //加载参数
     if (parameters.init) {
         grid.revocate(iniData[parameters.init]);
     }
 
-    //Remove the gray screen
+    //去掉灰幕
     cover.css('opacity', 0);
     const timer = setInterval(function () {
         if (cover.css('display') === 'none') {

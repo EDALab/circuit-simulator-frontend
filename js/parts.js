@@ -1641,7 +1641,7 @@ PartClass.prototype = {
                     if ((tempPart.connect[j] = last + '-' + i)) {
                         //tempPart.connect[j] = label + '-' + i
                         //Xiaoboost's code changes ID after each changes in lines' connect.
-                        //After doing this, the ID will stay fixed and will not interfere connect. 
+                        //the ID will stay fixed and will not interfere connect. 
                         break
                     }
                 }
