@@ -1639,7 +1639,10 @@ PartClass.prototype = {
                 const tempPart = partsAll.findPart(this.connect[i])
                 for (let j = 0; j < tempPart.connect.length; j++) {
                     if ((tempPart.connect[j] = last + '-' + i)) {
-                        tempPart.connect[j] = label + '-' + i
+                        //tempPart.connect[j] = label + '-' + i
+                        //Originally, Xiaoboost did not update the ID in line's connect after renaming, causing the bug 
+                        //that json output will be seperated into two paragraphs.
+                        //After this change, the ID will stay fixed and will not interfere connect. 
                         break
                     }
                 }
