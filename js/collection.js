@@ -8,7 +8,7 @@ function PartsCollection(parts) {
     } else if (typeof parts === 'number') {
         return (new PartsCollection());
     }
-    this.hash = {};
+    this.hash = {}; // hashmap where object properties are going to be the parts' ids!!
     this.current = {};
     this.length = 0;
     //Input cannot be empty
@@ -44,6 +44,9 @@ PartsCollection.prototype = {
         if (!part.elementDOM) {
             return (false);
         }
+        // insertElem: the new part to be inserted?
+        // top: index of the top element in device stack
+        // topElem: obtaining the top element in this devie stack thru the index "top"
         if (this.has(part)) {
             const insert = this.hash[part.id],
                 insertElem = part,
@@ -253,6 +256,7 @@ PartsCollection.prototype = {
 Object.setPrototypeOf(PartsCollection.prototype, Array.prototype);
 
 //Global device collection
+// TODO: what is the diff betw partsAll and partsNow? does partsAll store all the circuits we made recently? 
 const partsAll = new PartsCollection(),
     partsNow = new PartsCollection();
 

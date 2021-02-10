@@ -23,6 +23,8 @@ const grid = (function SchematicsGrid() {
     const self = {};
     //Persistent status flag
     let flag = 0;
+
+    // properties of the self object to signal permissible actions with it?
     const continuous = [
         'newMark',      //New device flag
         'moveParts',    //moveable device flag
@@ -34,6 +36,9 @@ const grid = (function SchematicsGrid() {
         'drawLine',     //Draw wire flag
         'graphSelecte'  //Waveform selection box flag
     ];
+
+    // TODO: understand the flag methods below
+    // !! casts to boolean
     //Flag part
     for (let i = 0; i < continuous.length; i++) {
         //This is a block-level scope, so there is no need to save the value of i internally
@@ -48,7 +53,7 @@ const grid = (function SchematicsGrid() {
         const setValue = 'set' + continuous[i].substring(0, 1).toUpperCase() + continuous[i].substring(1);
         //The operation of the flag bit must pass this function
         self[setValue] = function (value) {
-            value = Number(!!value);
+            value = Number(!!value); // coercing boolean into number (false -> 0, true -> 1)
             if (value) {
                 flag |= 1 << i;
             } else {
@@ -56,6 +61,8 @@ const grid = (function SchematicsGrid() {
             }
         };
     }
+
+    // Seems to simply be a boolean to indicate if flag value is 0 or 1 (truthy or falsy) 
     //total mark
     Object.defineProperty(self, 'totalMarks', {
         enumerable: true,
@@ -81,18 +88,18 @@ const grid = (function SchematicsGrid() {
 
     const copyStack = [],   //Copy device stack
         revocation = [],    //Undo the stack, keep up to 10 operations
-        textTip = $('<div>', { id: 'error-tip', class: 'disappear' });
+        textTip = $('<div>', { id: 'error-tip', class: 'disappear' }); // div to display errors
 
     $('#editor-container').append(textTip);
 
-    //Current mouse position
+    // Get current mouse position
     function mouse(event) {
         return (Point([
             (event.pageX - SVGX) / zoom,
             (event.pageY - SVGY) / zoom
         ]));
     }
-    //Mouse offset position
+    //Get Mouse offset position
     function mouseBias(event) {
         const ans = Point([
             (event.pageX - mouseLastX) / zoom,
@@ -113,6 +120,7 @@ const grid = (function SchematicsGrid() {
         return (ans);
     }
 
+    // setting background grid size
     self.size = function (num) {
         if (num === u) {
             return (size);
@@ -120,6 +128,8 @@ const grid = (function SchematicsGrid() {
             size = num;
         }
     };
+
+    // setting magnification ratio compared to previous grid
     self.rate = function (num) {
         if (num === u) {
             return (rate);
@@ -127,6 +137,8 @@ const grid = (function SchematicsGrid() {
             rate = num;
         }
     };
+
+    // setting magnification ratio compared to original size
     self.zoom = function (num) {
         if (num === u) {
             return (zoom);
@@ -134,17 +146,21 @@ const grid = (function SchematicsGrid() {
             zoom = num;
         }
     };
+
+
     self.bias = function (x, y) {
         if (x === u && y === u) {
-            return ([placeX, placeY]);
+            return ([placeX, placeY]); // returning grid coordinates if x, y passed in are undefined
         } else if (x !== u && y !== u) {
             placeX = x;
             placeY = y;
-        } else if (x instanceof Array && u === u) {
+        } else if (x instanceof Array && u === u) { // TODO: what case does this correspond to?
             placeX = x[0];
             placeY = x[1];
         }
     };
+
+    // TODO: similar questions to above
     self.SVG = function (x, y) {
         if (x === u && y === u) {
             return ([SVGX, SVGY]);
@@ -156,6 +172,8 @@ const grid = (function SchematicsGrid() {
             SVGY = x[1];
         }
     };
+
+    // function to return mouse coordinates
     self.mouse = function (event) {
         return (mouse(event));
     };
@@ -163,6 +181,7 @@ const grid = (function SchematicsGrid() {
         //Offset initialization
         mouseBias(event);
 
+        // TODO: what are gridL, gridS, pageL, pageX, pageY? 
         //Initial data
         const ans = {
             zoom: self.zoom(),
@@ -178,6 +197,7 @@ const grid = (function SchematicsGrid() {
         return (ans);
     };
 
+    // TODO: Understand these operations in more depth
     //copy
     self.copy = function (arr) {
         const data = arr ? arr : partsNow;
@@ -195,6 +215,7 @@ const grid = (function SchematicsGrid() {
             copyStack.push(move[i]);
         }
     };
+
     //cut
     self.cut = function () {
         let half = [];
@@ -222,6 +243,7 @@ const grid = (function SchematicsGrid() {
             n.markSign();
         });
     };
+
     //copy
     self.paste = function (arr) {
         const now = arr ? arr : copyStack, name = [];
@@ -309,7 +331,8 @@ const grid = (function SchematicsGrid() {
             revocation.splice(0, 1);
         }
     };
-    //revoke
+
+    //revoke, "undo changes" functionality
     self.revocate = function (arr) {
         //obtain the last operation
         const last = arr ? arr : revocation.pop();
@@ -359,9 +382,10 @@ const grid = (function SchematicsGrid() {
         setTimeout(() => textTip.css('z-index', '-10'), 6000);
     };
 
+    // TODO: what does "current" refer to? the current array of elements forming the current circuit?
     //Reserved global temporary variables
     self.current = [];
-    //Closed module
+    //Closed module; prevents adding new properties to the object and makes the object non-configurable
     Object.seal(self);
 
     //Return module object
