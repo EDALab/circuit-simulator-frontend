@@ -8,9 +8,9 @@ function PartsCollection(parts) {
     } else if (typeof parts === 'number') {
         return (new PartsCollection());
     }
-    this.hash = {}; // hashmap where object properties are going to be the parts' ids!!
-    this.current = {};
-    this.length = 0;
+    this.hash = {}; // hashmap where the keys are going to be the parts' ids!!
+    this.current = {}; // 
+    this.length = 0; // length of the collection of parts
     //Input cannot be empty
     if (parts !== undefined) {
         if (!(parts instanceof Array)) {
@@ -47,6 +47,7 @@ PartsCollection.prototype = {
         // insertElem: the new part to be inserted?
         // top: index of the top element in device stack
         // topElem: obtaining the top element in this devie stack thru the index "top"
+        // TODO: understand meaning of these indices and what is happening here 
         if (this.has(part)) {
             const insert = this.hash[part.id],
                 insertElem = part,

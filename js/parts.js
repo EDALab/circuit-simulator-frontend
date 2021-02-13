@@ -1,3 +1,4 @@
+// Defines the different electronic circuit components offered in the application
 'use strict'
 // Import external packages
 import { $ } from './jquery'
@@ -40,11 +41,12 @@ const originalElectronic = {
      *   inputTxt       The description of the component parameters
      *   visionNum      Number of parameters displayed on the parameter panel
      *   pointInfor     Node position and orientation
+     *   aspectInfor    Design of the SVG component
      *   padding        The component padding
      *   margin         The component margin
      *   txtLocate      The distance between the text and the center of the component
      *   criteriaTrend  Direction of the current with respect to the connection nodes
-     *
+     *   introduction   Official name of the component
      */
 
     // Resistance
@@ -814,6 +816,7 @@ function PartClass(data) {
     // New Identification
     this.partType = type
 
+    // Fetches the corresponding component of same type defined above and sets it as the prototype for Part object we are building
     this.extend(Object.clone(originalElectronic[type].readWrite))
     Object.setPrototypeOf(this, originalElectronic[type].readOnly)
 
