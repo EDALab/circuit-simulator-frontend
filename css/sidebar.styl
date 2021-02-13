@@ -215,48 +215,27 @@
     position relative
     margin 1.5vw 0 1.5vw 3.5vw
     height 40px
-    input
-      color #5264AE
-      font-size 20px
-      padding 10px 5px 3px 5px
-      display inline-block
-      width 7.5vw
-      border none
-      border-bottom 1px solid color-gray
-      &:focus
-        outline:none
-      &:focus ~ .st-menu-input-bar:before
-        width 8vw
-      &:focus ~ label,
-      &:valid ~ label
-        top -13px
-        font-size 14px
-    label
+    .st-menu-name .st-menu-value .st-menu-unit
       color #999999
-      font-family font-text
-      font-size 18px
-      font-weight Lighter
+      font-size 20px
+      margin-right: 20px
+      line-height: 40px
       position absolute
-      pointer-events none
-      left 5px
-      top 10px
-      transition all time-label bezier-input
-    .st-menu-input-bar
-      position relative
-      display block
-      &:before
-        content ''
-        height 2px
-        width 0
-        bottom 0
-        position absolute
-        background #5264AE
-        transition width time-input bezier-aside
-    .st-menu-unit
-      color #999999
-      font-size 20px
-      position relative
       font-weight normal
       left 10px
       cursor default
+      width: 400px;
+    .st-menu-value
+      font-size: 40px
+      width: 60px;
+      right 30%
+      color #5264AE
+      font-size 20px
+      padding 10px 5px 3px 35px
+      display inline-block
+      width 7.5vw
+      border none
+    .st-menu-unit
+      width: 60px;
+      right 10%
 

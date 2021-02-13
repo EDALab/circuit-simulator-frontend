@@ -731,7 +731,7 @@ action.on('click', '#fab-run', function (event) {
             // Print received data from server 
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
-            alert(feedback);
+            staticOutputUpdate(eval("(" + feedback + ")"));
         }
     };
     // Converting JSON data to string 
@@ -741,188 +741,64 @@ action.on('click', '#fab-run', function (event) {
     $(document.body).addClass('open-sidebar open-gray');
     sidebar.addClass('open-menu-staticOutput');
     return;
-
-    /*
-
-    // Create a diagram consisting the circuit
-    const diagrams = partsAll.connectGraph()
-        .map(function (n) {
-            const n_copy = n
-            // var filteredCircuit = filter(n_copy);
-
-            var test_output = {
-                "V": [
-                    {
-                        "name": "V_1",
-                        "value": 20,
-                        "node1": "1",
-                        "node2": "gnd"
-                    }
-                ],
-                "R": [
-                    {
-                        "name": "R_2",
-                        "value": 1,
-                        "node1": "2",
-                        "node2": "gnd"
-                    },
-                    {
-                        "name": "R_1",
-                        "value": 9,
-                        "node1": "1",
-                        "node2": "2"
-                    }
-                ],
-                "VM": [
-                    {
-                        "name": "VM_1",
-                        "value": 0,
-                        "node1": "1",
-                        "node2": "2"
-                    },
-                    {
-                        "name": "VM_2",
-                        "value": 0,
-                        "node1": "2",
-                        "node2": "gnd"
-                    }
-                ]
-            }
-
-            var filteredCircuit = JSON.stringify(n_copy);
-            // console.log('input json is ' + filteredCircuit);
-            filteredCircuit = filter(filteredCircuit);
-            // console.log('filter result is ' + JSON.stringify(filteredCircuit));
-            var output = nodeId(filteredCircuit);
-            console.log(JSON.stringify(output));
-
-            // var output = test_output;
-
-            var xhr = new XMLHttpRequest();
-            var url = 'http://127.0.0.1:5000/dc_simulate/Test';
-            xhr.open('POST', url, true);
-            xhr.setRequestHeader('Content-type', 'application/JSON');
-            // Create a state change callback 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 201) {
-                    // Print received data from server 
-                    // xhr.innerHTML = xhr.responseText;
-                    feedback = xhr.responseText;
-                }
-            };
-            // Converting JSON data to string 
-            var data = JSON.stringify(output);
-            // Sending data with the request 
-            xhr.send(data);
-            // console.log('Message: ' + message);
-            const ans = { solver: new Solver(n) };
-            ans.iteration = ans.solver.solve();
-            return (ans);
-        });
-
-    */
-
-    /*
-    
-    //Error code
-    let error = '';
-     if (!diagrams.length) {
-         //The circuit diagram is empty
-         grid.error('circuit diagram need to contain at least one component!');
-         return (false);
-     } else if (diagrams.some((n) => (error = n.solver.error))) {
-         //Encounter some error in the circuit diagram
-         grid.error(error);
-         return (false);
-     }
-     */
-
-    // The following code is believed to be the original code
-    /*
-    if (event.which !== 1) { return (false); }
-    clearStatus();
-
-    const delayTime = 10,   //Delay time in milliseconds
-        fabs = action.childrens(),
-        fabRun = $('#fab-run'),
-        fabText = $('#fab-text'),
-        text = fabText.childrens(0),
-        data = {voltage: [], current: []};
-
-    //Build a circuit solver
-    const diagrams = partsAll.connectGraph()
-        .map(function(n) {
-            const ans = { solver: new Solver(n) };
-            ans.iteration = ans.solver.solve();
-            return (ans);
-        });
-    //error code
-    let error = '';
-
-    if (!diagrams.length) {
-        //Circuit diagram is empty
-        grid.error('Circuit diagram cannot be empty');
-        return (false);
-    } else if (diagrams.some((n) => (error = n.solver.error))) {
-        //There is an error in a circuit network
-        grid.error(error);
-        return (false);
-    }
-
-    //Change icon before solving
-    for (let i = 1; i < fabs.length; i++) {
-        fabs.get(i).css('display', 'none');
-    }
-    fabRun.css('display', 'none');
-    fabText.css('display', '');
-    text.text('0%');
-
-    //Solve the main process, (asynchronous)
-    setTimeout(function process() {
-        const startTime = (new Date()).getTime(),
-            timeInterval = 500;     //Refresh the progress in the lower right corner every 500ms
-
-        let timeLag = 0, endFlag = false;
-
-        while (timeLag < timeInterval && !endFlag) {
-            for (let i = 0; i < diagrams.length; i++) {
-                diagrams[i].now = diagrams[i].iteration.next();
-                endFlag |= diagrams[i].now.done;
-            }
-            timeLag = (new Date()).getTime() - startTime;
-        }
-        if (!endFlag) {
-            text.text(diagrams[0].now.value + '%');
-            setTimeout(process, delayTime);
-        } else {
-            text.text('100%');
-            for (let i = 0; i < diagrams.length; i++) {
-                data.voltage = data.voltage.concat(diagrams[i].solver.observeVoltage);
-                data.current = data.current.concat(diagrams[i].solver.observeCurrent);
-            }
-            //Finish time
-            data.voltage.time = diagrams[0].solver.observeVoltage.time;
-            data.voltage.stepTime = diagrams[0].solver.observeVoltage.stepTime;
-            data.current.time = diagrams[0].solver.observeCurrent.time;
-            data.current.stepTime = diagrams[0].solver.observeCurrent.stepTime;
-            //Delayed display waveform
-            setTimeout(function(){
-                createGraph(data);
-            }, delayTime);
-            //Delay 1 second to restore the button shape
-            setTimeout(function() {
-                text.text('');
-                fabRun.css('display', '');
-                fabText.css('display', 'none');
-                for (let i = 1; i < fabs.length; i++) {
-                    fabs.get(i).css('display', '');
-                }
-            }, 1000);
-        }
-    }, delayTime);
-
-    */
 });
+
+function staticOutputRefresh() {
+    var staticOutput = $('#menu-staticOutput');
+    staticOutput.childrens().each((n) => n.remove());
+    var stMenuTitle = staticOutput.append($('<div>', { class: 'st-menu-title' }));
+    stMenuTitle.append($('<h1>')).text('Static Output');
+    stMenuTitle.append($('<h2>')).text('For DC Analysis Only');
+    return staticOutput;
+}
+
+//Update the static output panel
+function staticOutputUpdate(feedback) {
+    var staticOutput = staticOutputRefresh();
+
+    var inputTitle;
+    var inputGroup;
+    var result;
+    var resultList;
+    var numVM = feedback.VM ? feedback.VM.length : 0;
+    var numAM = feedback.AM ? feedback.AM.length : 0;
+    // console.log("numVM: " + numVM);
+    // console.log("numAM: " + numAM);
+    if (numVM > 0) {
+        inputTitle = staticOutput.append($('<div>', { class: 'st-menu-input-title' }));
+        inputTitle.append($('<span>')).text('V');
+        inputTitle.append($('<span>')).text('Voltmeters');
+        for (var i = 0; i < numVM; i++) {
+            result = JSON.stringify(feedback.VM[i]);
+            result = result.substring(1, result.length - 1);
+            resultList = result.split(':');
+            resultList[0] = resultList[0].substring(1, resultList[0].length - 1);
+            inputGroup = staticOutput.append($('<div>', { class: 'st-menu-input-group' }));
+            inputGroup.append($('<span>', { class: 'st-menu-name' })).text(resultList[0]);
+            inputGroup.append($('<span>', { class: 'st-menu-value' })).text(resultList[1]);
+            inputGroup.append($('<span>', { class: 'st-menu-unit' })).text('Volt');
+            inputGroup.append($('<span>', { class: 'st-menu-input-bar' }));
+        }
+    }
+    if (numAM > 0) {
+        inputTitle = staticOutput.append($('<div>', { class: 'st-menu-input-title' }));
+        inputTitle.append($('<span>')).text('A');
+        inputTitle.append($('<span>')).text('Ammeters');
+        for (var i = 0; i < numAM; i++) {
+            result = JSON.stringify(feedback.AM[i]);
+            result = result.substring(1, result.length - 1);
+            resultList = result.split(':');
+            resultList[0] = resultList[0].substring(1, resultList[0].length - 1);
+            resultList[1] = resultList[1].substring(0, 8);
+            inputGroup = staticOutput.append($('<div>', { class: 'st-menu-input-group' }));
+            inputGroup.append($('<span>', { class: 'st-menu-name' })).text(resultList[0]);
+            inputGroup.append($('<span>', { class: 'st-menu-value' })).text(resultList[1]);
+            inputGroup.append($('<span>', { class: 'st-menu-unit' })).text('Amp');
+            inputGroup.append($('<span>', { class: 'st-menu-input-bar' }));
+        }
+    }
+};
+
 //Cancel button of device property menu
 parameter.on('click', '#parameter-bottom-cancel', function () {
     $(doc.body).removeClass('open-gray');
