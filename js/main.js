@@ -699,6 +699,7 @@ action.on('click', '#fab-run', function (event) {
     console.log(JSON.stringify(output));
     var xhr = new XMLHttpRequest();
     var url = 'http://127.0.0.1:5000/dc_simulate/Test';
+    // var url = 'http://127.0.0.1:5000/static_simulator/Test';
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/JSON');
     // Create a state change callback 

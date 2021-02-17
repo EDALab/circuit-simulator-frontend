@@ -913,17 +913,10 @@ PartClass.prototype = {
                 this.input[i] = this.input[i].replace('u', 'μ')
                 propertyVision.push(this.input[i] + this.parameterUnit[i])
             }
-            const textMain = this.id.split('_'),
+            const textMain = this.name,
                 tempDate = $('<text>', SVG_NS, { class: 'features-text' })
 
-            // Create component ID
-            if (this.partType == 'Label') {
-                tempDate.append($('<tspan>', SVG_NS).text(textMain[0] + '-' + textMain[1]));
-                tempDate.append($('<tspan>', SVG_NS).text(''));
-            } else {
-                tempDate.append($('<tspan>', SVG_NS).text(textMain[0]))
-                tempDate.append($('<tspan>', SVG_NS).text(textMain[1]));
-            }
+            tempDate.append($('<tspan>', SVG_NS).text(textMain));
 
             // Set parameters of a component
             for (let i = 0; i < propertyVision.length; i++) {
@@ -1027,16 +1020,17 @@ PartClass.prototype = {
             // Text height
             height = 16,
             textRow = elemtspan.length,
-            totalHeight = (height + 2) * (textRow - 1),
+            totalHeight = (height + 2) * (textRow),
             // Length of displayed ID String
-            idWidth = $(elemtspan[0]).STWidth() + $(elemtspan[1]).STWidth()
+            idWidth = $(elemtspan[0]).STWidth();
+        // idWidth = $(elemtspan[0]).STWidth() + $(elemtspan[1]).STWidth()
 
         if (!coordinates[0]) {
             if (coordinates[1] > 0) {
                 // Downward
                 let last = idWidth / 2
                 $(elemtspan[0]).attr({ dx: -last, dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const elem = $(elemtspan[i]),
                         elemWidth = elem.STWidth() / 2
 
@@ -1048,7 +1042,7 @@ PartClass.prototype = {
                 // Upward
                 let last = idWidth / 2
                 $(elemtspan[0]).attr({ dx: -last, dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const elem = $(elemtspan[i]),
                         elemWidth = elem.STWidth() / 2
 
@@ -1065,7 +1059,7 @@ PartClass.prototype = {
                 // Rightward
                 let last = idWidth
                 $(elemtspan[0]).attr({ dx: '0', dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const text = $(elemtspan[i])
                     text.attr({ dx: -last, dy: height })
                     last = text.STWidth()
@@ -1075,7 +1069,7 @@ PartClass.prototype = {
             } else {
                 // Leftward
                 $(elemtspan[0]).attr({ dx: -idWidth, dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const elem = $(elemtspan[i])
                     elem.attr({ dx: -elem.STWidth(), dy: height })
                 }
@@ -1535,7 +1529,7 @@ PartClass.prototype = {
     //Display after entering attributes
     inputVision() {
         const parameter = $('#parameter-menu'),
-            idMatch = /[A-Za-z]+_[0-9A-Za-z]+/i,
+            idMatch = /[0-9A-Za-z]+/i,
             dataMatch = /\d+(.\d+)?[GMkmunp]?/
 
         //Cancel all error flags
@@ -1569,7 +1563,7 @@ PartClass.prototype = {
             )
             this.input[i] = this.input[i].replace('u', 'μ')
             if (i < this.visionNum - 1) {
-                temptext[i + 2].textContent = this.input[i] + this.parameterUnit[i]
+                temptext[i + 1].textContent = this.input[i] + this.parameterUnit[i]
             }
         }
         //Fix the display position of the attribute
@@ -1614,10 +1608,11 @@ PartClass.prototype = {
         this.elementDOM.remove()
         partsAll.deletePart(this)
     },
-    //Change the current device ID
+    //Change the current device Name
     exchangeID(label) {
         // New Identification
         if (label === this.name) return false
+        this.name = label
         const last = this.name
         //Delete old device
         partsAll.deletePart(this)
@@ -1625,10 +1620,9 @@ PartClass.prototype = {
         const temptspan = $('tspan', this.elementDOM)
         const points = $('.part-point', this.elementDOM)
         //Change ID and display
-        this.name = label
         this.elementDOM.attr('id', this.id)
-        temptspan.get(0).text(this.name.slice(0, this.name.search('_')))
-        temptspan.get(1).text(this.name.slice(this.name.search('_') + 1))
+        temptspan.get(0).text(this.name.slice(0));
+        // temptspan.get(1).text(this.name.slice(this.name.search('_') + 1))
         //Correct the ID in the connection table of the connected device
         for (let i = 0; i < this.connect.length; i++) {
             const point = points.get(i)
@@ -1637,15 +1631,6 @@ PartClass.prototype = {
             point.attr('id', pointLabel.join('-'))
             if (this.connect[i]) {
                 const tempPart = partsAll.findPart(this.connect[i])
-                for (let j = 0; j < tempPart.connect.length; j++) {
-                    if ((tempPart.connect[j] = last + '-' + i)) {
-                        //tempPart.connect[j] = label + '-' + i
-                        //Originally, Xiaoboost did not update the ID in line's connect after renaming, causing the bug 
-                        //that json output will be seperated into two paragraphs.
-                        //After this change, the ID will stay fixed and will not interfere connect. 
-                        break
-                    }
-                }
             }
         }
         //Remark the drawing
