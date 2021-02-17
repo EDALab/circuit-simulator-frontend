@@ -30,6 +30,8 @@ const u = undefined,
         ]), //Y-Mirror
     ]
 
+var labelSet = new Set();
+
 // Device Description
 const originalElectronic = {
     /**
@@ -812,7 +814,7 @@ const originalElectronic = {
 function PartClass(data) {
     const type = data.partType || data
     // New Identification
-    this.partType = type
+    this.partType = type;
 
     this.extend(Object.clone(originalElectronic[type].readWrite))
     Object.setPrototypeOf(this, originalElectronic[type].readOnly)
@@ -826,6 +828,15 @@ function PartClass(data) {
     }
 
     this.id = partsAll.newId(this.id)
+    if (this.partType == 'Label') {
+        var temp;
+        while (labelSet.has(this.id)) {
+            temp = this.id.split('_');
+            temp[1] = (parseInt(temp[1]) + 1).toString();
+            this.id = temp.join('_');
+        }
+    }
+    labelSet.add(this.id);
     this.rotate = this.rotate
         ? new Matrix(this.rotate)
         : new Matrix([
@@ -1542,12 +1553,29 @@ PartClass.prototype = {
             parameter.addClass('parameter-error-0')
             error = false
         }
+        if (this.partType == 'Label' && this.name != inputID) {
+            if (labelSet.has(inputID)) {
+                parameter.addClass('parameter-error-0');
+                error = false;
+            } else {
+                var qmNode1inner = document.getElementById("qmNode1");
+                var qmNode2inner = document.getElementById("qmNode2");
+                if (this.name == qmNode1inner.value) {
+                    qmNode1inner.value = '';
+                }
+                if (this.name == qmNode2inner.value) {
+                    qmNode2inner.value = '';
+                }
+                labelSet.delete(this.name);
+                labelSet.add(inputID);
+            }
+        }
         for (let i = 0; i < this.inputTxt.length; i++) {
             const inputData = $('#parameter-' + (i + 1) + ' input', parameter).prop(
                 'value'
             )
             const temp_input_match = inputData.match(dataMatch)
-            if (!temp_input_match || inputData !== temp_input_match[0]) {
+            if ((!temp_input_match || inputData !== temp_input_match[0]) && inputData != this.name) {
                 parameter.addClass('parameter-error-' + (i + 1))
                 error = false
             }
@@ -1604,6 +1632,19 @@ PartClass.prototype = {
             }
         }
 
+
+        if (this.partType == 'Label') {
+            var qmNode1inner = document.getElementById("qmNode1");
+            var qmNode2inner = document.getElementById("qmNode2");
+            if (this.name == qmNode1inner.value) {
+                qmNode1inner.value = '';
+            }
+            if (this.name == qmNode2inner.value) {
+                qmNode2inner.value = '';
+            }
+            labelSet.delete(this.name);
+        }
+
         this.deleteSign()
         this.elementDOM.remove()
         partsAll.deletePart(this)
@@ -1611,7 +1652,7 @@ PartClass.prototype = {
     //Change the current device Name
     exchangeID(label) {
         // New Identification
-        if (label === this.name) return false
+        if (label === this.name) return false;
         this.name = label
         const last = this.name
         //Delete old device
@@ -2006,4 +2047,4 @@ $('#menu-add-parts-close').attr(
 )
 
 //Module external interface
-export { PartClass }
+export { PartClass, labelSet }

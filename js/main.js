@@ -9,6 +9,7 @@ import { Solver } from './solver';
 import { Graph } from './graph';
 import { styleRule } from './styleRule';
 import { PartClass } from './parts';
+import { labelSet } from './parts';
 import { partsAll, partsNow } from './collection';
 import { nodeId } from './nodeID';
 import filter from './filter';
@@ -373,7 +374,10 @@ const sidebar = $('#sidebar-menu'),
     mainPage = $('#container-grid'),
     parameter = $('#parameter-menu'),
     graphPage = $('#graph-page'),
-    context = $('#right-button-menu');
+    context = $('#right-button-menu'),
+    qmNode1Content = $('#qmNode1'),
+    qmNode2Content = $('#qmNode2');
+
 
 //Entry function for mouse movement
 function mousemoveEvent(event) {
@@ -661,6 +665,31 @@ action.on('click', '#fab-staticOutput', function (event) {
         sidebar.addClass('open-menu-staticOutput');
     }
 });
+//Open the quick measurement sidebar
+action.on('click', '#fab-quickMeasure', function (event) {
+    if (event.which === 1) {
+        $(document.body).addClass('open-sidebar open-gray');
+        sidebar.addClass('open-menu-quickMeasure');
+    }
+});
+//Finish setting the nodes 1
+qmNode1Content.on('focusout', function (event) {
+    var qmNode1inner = document.getElementById("qmNode1");
+    var node1Text = qmNode1inner.value;
+    if (node1Text != "" && labelSet && !labelSet.has(node1Text)) {
+        alert("Cannot access this node.");
+        qmNode1inner.focus();
+    }
+})
+//Finish setting the nodes 2
+qmNode2Content.on('focusout', function (event) {
+    var qmNode2inner = document.getElementById("qmNode2");
+    var node2Text = qmNode2inner.value;
+    if (node2Text != "" && labelSet && !labelSet.has(node2Text)) {
+        alert("Cannot access this node.");
+        qmNode2inner.focus();
+    }
+})
 //Open the settings sidebar
 action.on('click', '#fab-config', function (event) {
     if (event.which === 1) {
@@ -845,9 +874,12 @@ mainPage.on('mousewheel', function (event) {
 });
 //Mouse click shady
 $('#shade-gray').on('click', function () {
-    if ((sidebar.hasClass('open-menu-staticOutput') || sidebar.hasClass('open-menu-config')) && !parameter.hasClass('parameter-open')) {
+    if ((sidebar.hasClass('open-menu-quickMeasure')
+        || sidebar.hasClass('open-menu-staticOutput'))
+        || sidebar.hasClass('open-menu-config')
+        && !parameter.hasClass('parameter-open')) {
         $(doc.body).removeClass('open-gray open-sidebar');
-        sidebar.removeClass('open-menu-staticOutput open-menu-config open-add-parts');
+        sidebar.removeClass('open-menu-quickMeasure open-menu-staticOutput open-menu-config open-add-parts');
     }
 });
 

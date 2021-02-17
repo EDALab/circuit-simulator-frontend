@@ -34,12 +34,16 @@
         font-weight normal
         margin 20px
 
+#sidebar-menu.open-menu-quickMeasure,
 #sidebar-menu.open-menu-staticOutput,
 #sidebar-menu.open-menu-config,
 #sidebar-menu.open-add-parts
   transform translateX(-100%)
   opacity 1
 
+#sidebar-menu.open-menu-quickMeasure #menu-quickMeasure
+  transition-delay 0ms
+  visibility visible
 #sidebar-menu.open-menu-staticOutput #menu-staticOutput
   transition-delay 0ms
   visibility visible

@@ -177,54 +177,29 @@
 				<h1></h1>
 				<h5>The results will be shown here after the simulation is finished</h5>
 			</div>
-
-			<!-- 
-			<div class="st-menu-input-title">
-				<span>V</span>
-				<span>Voltmeters</span>
+		</div>
+		<div class="st-menu" id="menu-quickMeasure">
+			<div class="st-menu-title">
+				<h1>Quick Measurement</h1>
+				<h2>Measure Voltage Across Nodes in DC</h2>
 			</div>
 			<div class="st-menu-input-group">
-				<span class="st-menu-name">Voltmeter A：</span>
-				<span class="st-menu-value">15</span>
-				<span class="st-menu-unit">Volt</span>
-			</div>
-			<div class="st-menu-input-group">
-				<input id="stepsize" type="st-menu-input-text" value="20" required>
-				<span class="st-menu-unit">Volt</span>
+				<span>Node 1：</span>
+				<input id="qmNode1" type="st-menu-input-text" value="" required>
+				<span></span>
 				<span class="st-menu-input-bar"></span>
-				<label>Voltmeter B：</label>
-			</div>
-			<div class="st-menu-input-title">
-				<span class="st-menu-sign">I</span>
-				<span class="st-menu-description">Ammeters</span>
 			</div>
 			<div class="st-menu-input-group">
-				<input id="endtime" type="st-menu-input-text" value="1.5" required>
-				<span class="st-menu-unit">Amp</span>
+				<span>Node 2：</span>
+				<input id="qmNode2" type="st-menu-input-text" value="" required>
+				<span></span>
 				<span class="st-menu-input-bar"></span>
-				<label>Ammeter A：</label>
 			</div>
-			<div class="st-menu-input-group">
-				<input id="stepsize" type="st-menu-input-text" value="760m" required>
-				<span class="st-menu-unit">Amp</span>
-				<span class="st-menu-input-bar"></span>
-				<label>Ammeter B：</label>
+			<div class="st-menu-quickMeasure-run">
+				<button id="quickMeasureRun">
+					Update
+				</button>
 			</div>
-			<div class="st-menu-input-title">
-				<span class="st-menu-sign">M</span>
-				<span class="st-menu-description">Quick Measurement</span>
-			</div>
-			<div class="st-menu-input-group">
-				<input id="endtime" type="st-menu-input-text" value="A" required>
-				<span class="st-menu-input-bar"></span>
-				<label>First Node：</label>
-			</div>
-			<div class="st-menu-input-group">
-				<input id="stepsize" type="st-menu-input-text" value="B" required>
-				<span class="st-menu-input-bar"></span>
-				<label>Second Node：</label>
-			</div> -->
-
 		</div>
 	</div>
 	<!--Simulation and Settings-->
@@ -248,6 +223,9 @@
 		</div>
 		<div class="fab-container" tooltip="Static Output">
 			<div class="fab" id="fab-staticOutput"></div>
+		</div>
+		<div class="fab-container" tooltip="Quick Measurement">
+			<div class="fab" id="fab-quickMeasure"></div>
 		</div>
 	</div>
 	<!--Scripts-->
