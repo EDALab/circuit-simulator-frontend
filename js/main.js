@@ -147,7 +147,6 @@ const grid = (function SchematicsGrid() {
         }
     };
 
-
     self.bias = function (x, y) {
         if (x === u && y === u) {
             return ([placeX, placeY]); // returning grid coordinates if x, y passed in are undefined
@@ -178,6 +177,7 @@ const grid = (function SchematicsGrid() {
         return (mouse(event));
     };
     self.createData = function (event) {
+        console.log("in create data");
         //Offset initialization
         mouseBias(event);
 
@@ -200,11 +200,15 @@ const grid = (function SchematicsGrid() {
     // TODO: Understand these operations in more depth
     //copy
     self.copy = function (arr) {
+        console.log("in copy");
+        console.log("printing arr passed in");
+        console.log(arr);
+
         const data = arr ? arr : partsNow;
 
         let move = [];
         for (let i = 0; i < data.length; i++) {
-            if (data[i].current.status === 'move') {
+            if (data[i].current.status === 'move') { // TODO: what is this current property of the parts collection?
                 move.push(data[i]);
             }
         }
@@ -214,6 +218,8 @@ const grid = (function SchematicsGrid() {
         for (let i = 0; i < move.length; i++) {
             copyStack.push(move[i]);
         }
+        console.log("printing copy stack");
+        console.log(copyStack);
     };
 
     //cut
@@ -228,6 +234,13 @@ const grid = (function SchematicsGrid() {
                 half.push(partsNow[i]);
             }
         }
+        console.log("in cut");
+        console.log("move array");
+        console.log(move);
+        console.log("half array");
+        console.log(half);
+        console.log("partsNow array");
+        console.log(partsNow);
         //copy
         self.copy(partsNow);
         //save the data
@@ -318,8 +331,12 @@ const grid = (function SchematicsGrid() {
         //Clean up the device collection
         partsNow.deleteParts((n) => n.isExist());
     };
+
     //Record the current state of all devices
     self.now = function () {
+        console.log("in now function");
+        console.log("printing partsALL");
+        console.log(partsAll);
         const ans = [];
         for (let i = 0; i < partsAll.length; i++) {
             ans.push(partsAll[i].toSimpleData());
@@ -362,6 +379,7 @@ const grid = (function SchematicsGrid() {
             }
         }
     };
+
     //Whether there is data in the copy stack
     self.isPaste = function () {
         return (!!copyStack.length);
@@ -370,6 +388,7 @@ const grid = (function SchematicsGrid() {
     self.isRevocate = function () {
         return (!!revocation.length);
     };
+
     //error notation
     self.error = function (text) {
         textTip.text(text);
@@ -390,8 +409,9 @@ const grid = (function SchematicsGrid() {
 
     //Return module object
     return (self);
-})();
-//Global jquary element definition
+})(); // calls the function we JUST defined called schematicsGrid(), to initialize Grid object
+
+//Global jquery element definition
 const sidebar = $('#sidebar-menu'),
     action = $('#action-container'),
     mainPage = $('#container-grid'),
@@ -439,6 +459,8 @@ function mousemoveEvent(event) {
             break;
         }
         //Draw a checkbox
+        // This gets triggered when clicking and dragging the mouse while left clicking
+        // it changes the css and leads to a + cursor
         case grid.selectBox: {
             const node = grid.mouse(event),
                 start = grid.current.selectionBoxStart,
@@ -458,11 +480,13 @@ function mousemoveEvent(event) {
         }
         //Wire deformation
         case grid.deformLine: {
+            console.log("grid.deformLine");
             partsNow[0].setPath(event, 'deformation');
             break;
         }
         //Mobile device description text
         case grid.moveText: {
+            console.log("grid.moveText");
             partsNow[0].move(event, 'text');
             break;
         }
@@ -538,10 +562,13 @@ function contextSet(event, status) {
         'opacity': 1
     });
 
-    if (status.indexOf('part') !== -1) {
+    // TODO: compile and document a list of potential statuses... to understand and document the functionality of the code for the future
+
+    if (status.indexOf('part') !== -1) { // this says: find the index of the substring 'part' in the status string, and if it
+    // is not -1, it means 'part' is a substring of status
         //Device part, feasibility of rotating function
         const rotate = partsNow.isRotate();
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) { // TODO: why is the number strictly 4?
             const elem = $(rotateId[i]);
             rotate[i]
                 ? elem.removeClass('disable')
@@ -633,6 +660,7 @@ function createGraph(data) {
     }, 600);
 }
 
+// TODO: Understand this and ask about it: because in jquery, the function definition of 'on' is diff
 //Web page element related events
 //Add all events of the device in the device menu
 sidebar.on({
@@ -672,6 +700,7 @@ sidebar.on({
 }, '.parts-list');
 //Click the close button in the add device menu bar
 sidebar.on('click', '#menu-add-parts-close', function (event) {
+    console.log("close event");
     if (event.which === 1) {
         $('#menu-add-parts-close').addClass('disappear');
         $(document.body).removeClass('open-sidebar open-gray');
@@ -704,14 +733,17 @@ action.on('click', '#fab-adds', function (event) {
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
 
+    console.log("just to test console logs");
     var feedback;
 
-    var temp_var = partsAll.connectGraph();
+    var temp_var = partsAll.connectGraph(); // DISCOVERY: partsAll.connectGraph() is how they identify MULTIPLE CIRCUITS
+    console.log("temp_var");
+    console.log(temp_var);
     if (temp_var.length == 0) {
         grid.error('Circuit diagram need to contain at least one component!');
         return (false);
     }
-    else if (temp_var.length > 1) {
+    else if (temp_var.length > 1) { // if temp_var array is longer than 1, then this means there is more than 1 circuit on the grid
         grid.error('Cannot simulate more than one separate circuits at the same time!');
         return (false);
     } else {
@@ -720,6 +752,7 @@ action.on('click', '#fab-run', function (event) {
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
     var output = nodeId(filteredCircuit);
+    console.log("output after filtering circuit and applying nodeId function");
     console.log(JSON.stringify(output));
     var xhr = new XMLHttpRequest();
     var url = 'http://127.0.0.1:5000/dc_simulate/Test';
