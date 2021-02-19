@@ -37,19 +37,23 @@ const grid = (function SchematicsGrid() {
         'graphSelecte'  //Waveform selection box flag
     ];
 
-    // TODO: understand the flag methods below
     // !! casts to boolean
     //Flag part
+    // DISCOVERY: This creates properties on the grid object with the titles listed in the "continuous" array above
     for (let i = 0; i < continuous.length; i++) {
         //This is a block-level scope, so there is no need to save the value of i internally
         Object.defineProperty(self, continuous[i], {
             enumerable: true,
             configurable: true,
 
+            // i think this uses the global flag variable and shifts "1" based on the index of the property we are creating (i)
+            // to see if ANDing the flag with this bit shift will return true or false, and that determines the boolean value of the property we defined
             get() {
                 return (!!(flag & (1 << i)));
             }
         });
+
+        // this creates set methods for each property we just defined
         const setValue = 'set' + continuous[i].substring(0, 1).toUpperCase() + continuous[i].substring(1);
         //The operation of the flag bit must pass this function
         self[setValue] = function (value) {
@@ -421,18 +425,21 @@ const sidebar = $('#sidebar-menu'),
 
 //Entry function for mouse movement
 function mousemoveEvent(event) {
-    if (!grid.totalMarks) { return (false); }
+    if (!grid.totalMarks) { return (false); } 
 
     switch (true) {
         //Device movement
         case grid.newMark:
         case grid.pasteParts:
         case grid.moveParts: {
+            console.log("This is triggered when ur mouse is moving a part and dragging it around");
             partsNow.moveParts(event);
+            console.log(partsNow);
             break;
         }
         //canvas move
         case grid.moveMap: {
+            console.log("grid.moveMap");
             //No need to zoom the mouse distance when moving the drawing
             const bias = grid.current.mouseBias(event)
                 .mul(grid.current.zoom);
@@ -459,9 +466,11 @@ function mousemoveEvent(event) {
             break;
         }
         //Draw a checkbox
-        // This gets triggered when clicking and dragging the mouse while left clicking
+        // This gets triggered when clicking and dragging the mouse while left clicking (just in the canvas in blank area)
+        // ie it occurs when you are trying to draw a box of stuff ur mouse wants to select
         // it changes the css and leads to a + cursor
         case grid.selectBox: {
+            console.log("grid.selectBox");
             const node = grid.mouse(event),
                 start = grid.current.selectionBoxStart,
                 maxLen = Math.max(
@@ -492,11 +501,13 @@ function mousemoveEvent(event) {
         }
         //Draw wire
         case grid.drawLine: {
+            console.log("grid.drawLine");
             partsNow.get(-1).setPath(event, 'draw');
             break;
         }
         //Draw waveform interface selection box
         case grid.graphSelecte: {
+            console.log("grid.graphSelecte");
             grid.current.graph.drawSelect(event, grid.current);
             break;
         }
