@@ -29,9 +29,7 @@ const u = undefined,
             [0, 1],
         ]), //Y-Mirror
     ]
-
 var labelSet = new Set();
-
 // Device Description
 const originalElectronic = {
     /**
@@ -524,14 +522,20 @@ const originalElectronic = {
     },
     //diode
     diode: {
-        readWrite: {
-            id: 'VD_',
+        _readWrite: {
+            id: 'D_',
             input: ['1', '0.5', '5M'],
+        },
+        get readWrite() {
+            return this._readWrite
+        },
+        set readWrite(value) {
+            this._readWrite = value
         },
         readOnly: {
             partType: 'diode',
-            inputTxt: ['Breakover V:', 'Breakover R', 'Shutoff R：'],
-            parameterUnit: ['V', 'Ω', 'Ω'],
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
             visionNum: 1,
             txtLocate: 18,
             padding: [1, 0],
@@ -1575,10 +1579,12 @@ PartClass.prototype = {
                 'value'
             )
             const temp_input_match = inputData.match(dataMatch)
-            if ((!temp_input_match || inputData !== temp_input_match[0]) && inputData != this.name) {
-                parameter.addClass('parameter-error-' + (i + 1))
-                error = false
-            }
+            if (!temp_input_match || inputData !== temp_input_match[0]) {
+                if (this.partType !== 'diode') {
+                  parameter.addClass('parameter-error-' + (i + 1))
+                  error = false
+                }
+              }
         }
         if (!error) return false
         //Change the ID of the current device
@@ -1631,8 +1637,6 @@ PartClass.prototype = {
                 }
             }
         }
-
-
         if (this.partType == 'Label') {
             var qmNode1inner = document.getElementById("qmNode1");
             var qmNode2inner = document.getElementById("qmNode2");
@@ -1644,7 +1648,6 @@ PartClass.prototype = {
             }
             labelSet.delete(this.name);
         }
-
         this.deleteSign()
         this.elementDOM.remove()
         partsAll.deletePart(this)

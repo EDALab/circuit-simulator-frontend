@@ -44,6 +44,9 @@ const filter = (jsonString) => {
     } else if (id.includes('IM_')) {
       temp.type = 'AM';
       temp.value.push(value.input[0]);
+    } else if (id.includes('D_')) {
+      temp.type = 'D';
+      temp.value.push(value.input[0]);
     }
 
     temp.connect = value.connect;

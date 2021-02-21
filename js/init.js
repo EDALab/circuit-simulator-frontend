@@ -94,10 +94,10 @@ const iniData = {
         { partType: 'line', way: [[260, 360], [340, 360]] }
     ],
     BridgeRectifier: [
-        { partType: 'diode', id: 'VD_1', position: [300, 200], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
-        { partType: 'diode', id: 'VD_2', position: [380, 200], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
-        { partType: 'diode', id: 'VD_3', position: [300, 440], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
-        { partType: 'diode', id: 'VD_4', position: [380, 440], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
+        { partType: 'diode', id: 'D_1', position: [300, 200], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
+        { partType: 'diode', id: 'D_2', position: [380, 200], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
+        { partType: 'diode', id: 'D_3', position: [300, 440], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
+        { partType: 'diode', id: 'D_4', position: [380, 440], rotate: [[1, 0], [0, 1]], text: [18, 6], input: ['1', '0.5', '0.2G'] },
         { partType: 'ac_voltage_source', id: 'V_1', position: [180, 320], rotate: [[1, 0], [0, 1]], text: [-38, -10], input: ['220', '200', '0', '0'] },
         { partType: 'capacitor', id: 'C_1', position: [500, 320], rotate: [[0, 1], [-1, 0]], text: [-36, -2], input: ['100u'] },
         { partType: 'resistance', id: 'R_1', position: [560, 320], rotate: [[0, 1], [-1, 0]], text: [16, -2], input: ['2k'] },
@@ -135,7 +135,7 @@ const iniData = {
     ],
     halfWaveRectifier: [
         { partType: 'ac_voltage_source', id: 'V_1', position: [180, 220], rotate: [[1, 0], [0, 1]], text: [-38, -10], input: ['20', '200', '0', '0'] },
-        { partType: 'diode', id: 'VD_1', position: [280, 140], rotate: [[0, 1], [-1, 0]], text: [-11.5, -18], input: ['1', '0.5', '0.2G'] },
+        { partType: 'diode', id: 'D_1', position: [280, 140], rotate: [[0, 1], [-1, 0]], text: [-11.5, -18], input: ['1', '0.5', '0.2G'] },
         { partType: 'resistance', id: 'R_1', position: [460, 220], rotate: [[0, 1], [-1, 0]], text: [-30, -2], input: ['100'] },
         { partType: 'line', way: [[180, 180], [180, 140], [240, 140]] },
         { partType: 'line', way: [[320, 140], [380, 140]] },
