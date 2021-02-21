@@ -3,8 +3,11 @@ const filter = (jsonString) => {
   const object = JSON.parse(jsonString)
   let output = {}
 
+  // output is a hashmap
+  // they first create what appears to be an absolute ground node
   output["-1"] = { id: 'GND_Abs', type: 'REF', value: 0, connect: [""] }
 
+  // for each key value pair of the hashmap:
   for (const [key, value] of Object.entries(object)) {
     let temp = { id: '', type: '', value: [], connect: [], name: value.name }
 
@@ -18,7 +21,7 @@ const filter = (jsonString) => {
     } else if (id.includes('V_')) {
       temp.type = 'V'
       temp.value.push(value.input[0])
-    } else if (id.includes('SPVM_')) {
+    } else if (id.includes('SPVM_')) { // special case; perhaps inquire further
       temp.type = 'VM';
       temp.value.push(value.input[0]);
       temp.connect = [];

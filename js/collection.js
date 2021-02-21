@@ -191,6 +191,7 @@ PartsCollection.prototype = {
                     const item = parts.pop();       //Top element pop
                     partsHash[item.id] = false;     //Current device access flag
                     ans.push(item);                 //Current area device push into the stack
+                    // connect is a property defined for objects of type Part (parts.js)
                     item.connect.join(' ').split(' ').forEach(function (n) {
                         const tempPart = partsAll.findPart(n);
                         //attention:
@@ -257,7 +258,6 @@ PartsCollection.prototype = {
 Object.setPrototypeOf(PartsCollection.prototype, Array.prototype);
 
 //Global device collection
-// TODO: what is the diff betw partsAll and partsNow? does partsAll store all the circuits we made recently? 
 const partsAll = new PartsCollection(),
     partsNow = new PartsCollection();
 

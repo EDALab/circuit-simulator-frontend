@@ -1388,6 +1388,8 @@ PartClass.prototype = {
     toFocus() {
         this.elementDOM.addClass('focus')
         partsNow.push(this)
+        console.log("partsNow after toFocus method");
+        console.log(partsNow);
         return this
     },
     //Device cancel focus

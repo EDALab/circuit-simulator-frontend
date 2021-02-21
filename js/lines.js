@@ -2320,6 +2320,8 @@ LineClass.prototype = {
     toFocus() {
         this.elementDOM.addClass('focus');
         partsNow.push(this);
+        console.log("partsNow after toFocus method");
+        console.log(partsNow);
     },
     //Device cancel highlight
     toNormal() {

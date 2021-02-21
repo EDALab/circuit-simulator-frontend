@@ -762,8 +762,10 @@ action.on('click', '#fab-run', function (event) {
     }
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
+    console.log("output after applying filter function");
+    console.log(JSON.stringify(filteredCircuit));
     var output = nodeId(filteredCircuit);
-    console.log("output after filtering circuit and applying nodeId function");
+    console.log("output after applying nodeId function");
     console.log(JSON.stringify(output));
     var xhr = new XMLHttpRequest();
     var url = 'http://127.0.0.1:5000/dc_simulate/Test';

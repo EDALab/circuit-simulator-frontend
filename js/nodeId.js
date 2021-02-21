@@ -87,7 +87,7 @@ function findPin(pin) {
      * @param   {String}    pin, indicates the pin we use to search for the node.
      * @return  {int}       This method will return a integer value indicating 
      *                      the index of the first node containing that pin,
-     *                      it will return 0 if no such pin is found.
+     *                      it will return -1 if no such pin is found.
      * 
      */
     for (var nodeIndex = 0; nodeIndex < nodeList.length; nodeIndex++) {
