@@ -45,7 +45,7 @@ const filter = (jsonString) => {
       temp.type = 'AM';
       temp.value.push(value.input[0]);
     } else if (id.includes('D_')) {
-      temp.type = 'D';
+      temp.type = 'D';//diode
       temp.value.push(value.input[0]);
     }
 
