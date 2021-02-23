@@ -522,16 +522,16 @@ const originalElectronic = {
     },
     //diode
     diode: {
-        _readWrite: {
+        readWrite: {
             id: 'D_',
-            input: ['1', '0.5', '5M'],
+            input: ['1N4148'],
         },
-        get readWrite() {
-            return this._readWrite
-        },
-        set readWrite(value) {
-            this._readWrite = value
-        },
+        // get readWrite() {
+        //     return this.readWrite
+        // },
+        // set readWrite(value) {
+        //     this.readWrite = value
+        // },
         readOnly: {
             partType: 'diode',
             inputTxt: ['Model:'],
@@ -1581,10 +1581,10 @@ PartClass.prototype = {
             const temp_input_match = inputData.match(dataMatch)
             if (!temp_input_match || inputData !== temp_input_match[0]) {
                 if (this.partType !== 'diode') {
-                  parameter.addClass('parameter-error-' + (i + 1))
-                  error = false
+                    parameter.addClass('parameter-error-' + (i + 1))
+                    error = false
                 }
-              }
+            }
         }
         if (!error) return false
         //Change the ID of the current device

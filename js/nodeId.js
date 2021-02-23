@@ -309,7 +309,7 @@ function nodeId(input) {
                     value /= 1000000000000;
                 } else if (component.value[0].includes("n")) {
                     value /= 1000000000
-                } else if (component.value[0].includes("u")) {
+                } else if (component.value[0].includes("μ")) {
                     value /= 1000000
                 } else if (component.value[0].includes("m")) {
                     value /= 1000
@@ -334,9 +334,9 @@ function nodeId(input) {
             if (component.type === 'D') {
                 compJson.modelType = component.value[0]
                 delete compJson.value
-              } else {
+            } else {
                 delete compJson.modelType
-              }
+            }
 
             if (output[component.type]) {
                 output[component.type].push(compJson)

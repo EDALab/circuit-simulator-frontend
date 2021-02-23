@@ -223,7 +223,7 @@ const grid = (function SchematicsGrid() {
             n.markSign();
         });
     };
-    //copy
+    //paste
     self.paste = function (arr) {
         const now = arr ? arr : copyStack, name = [];
 
@@ -727,8 +727,8 @@ action.on('click', '#fab-run', function (event) {
     var output = nodeId(filteredCircuit);
     console.log(JSON.stringify(output));
     var xhr = new XMLHttpRequest();
-    var url = 'http://127.0.0.1:5000/dc_simulate/Test';
-    // var url = 'http://127.0.0.1:5000/static_simulator/Test';
+    // var url = 'http://127.0.0.1:5000/dc_simulate/Test';
+    var url = 'http://127.0.0.1:5000/static_simulator/Test';
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/JSON');
     // Create a state change callback 
@@ -738,6 +738,8 @@ action.on('click', '#fab-run', function (event) {
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
             staticOutputUpdate(eval("(" + feedback + ")"));
+        } else if (xhr.readyState === 4 && xhr.status === 400) {
+            alert(xhr.responseText);
         }
     };
     // Converting JSON data to string 
