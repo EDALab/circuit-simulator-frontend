@@ -332,9 +332,11 @@ function nodeId(input) {
                 node2: component.connect[1],
             }
             if (component.type === 'D') {
+                // remove the value term if it is a diode;
                 compJson.modelType = component.value[0]
                 delete compJson.value
             } else {
+                // remove the modelType term if it is not;
                 delete compJson.modelType
             }
 

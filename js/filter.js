@@ -1,12 +1,14 @@
 
-const filter = (jsonString) => {
+const filter = (jsonString, quickMeasure) => {
   const object = JSON.parse(jsonString)
   let output = {}
 
   output["-1"] = { id: 'GND_Abs', type: 'REF', value: 0, connect: [""] }
+  let qmVoltmeter = { id: 'VM_QM', type: 'VM', value: [], connect: [], name: 'VM_QM' };
+  var qmPin = 0;
 
   for (const [key, value] of Object.entries(object)) {
-    let temp = { id: '', type: '', value: [], connect: [], name: value.name }
+    let temp = { id: '', type: '', value: [], connect: [], name: value.name };
 
     const id = value.id
     temp.id = id
@@ -18,7 +20,7 @@ const filter = (jsonString) => {
     } else if (id.includes('V_')) {
       temp.type = 'V'
       temp.value.push(value.input[0])
-    } else if (id.includes('SPVM_')) {
+    } else if (id.includes('SPVM_') && !quickMeasure) {
       temp.type = 'VM';
       temp.value.push(value.input[0]);
       temp.connect = [];
@@ -26,7 +28,7 @@ const filter = (jsonString) => {
       temp.connect[1] = "GND_Abs-0";
       output[`${key}`] = temp;
       continue;
-    } else if (id.includes('VM_')) {
+    } else if (id.includes('VM_') && !quickMeasure) {
       temp.type = 'VM';
       temp.value.push(value.input[0]);
     } else if (id.includes('C_')) {
@@ -41,17 +43,23 @@ const filter = (jsonString) => {
     } else if (id.includes('I_')) {
       temp.type = 'I';
       temp.value.push(value.input[0]);
-    } else if (id.includes('IM_')) {
+    } else if (id.includes('IM_') && !quickMeasure) {
       temp.type = 'AM';
       temp.value.push(value.input[0]);
     } else if (id.includes('D_')) {
-      temp.type = 'D';//diode
+      temp.type = 'D'; //diode
       temp.value.push(value.input[0]);
+    } else if (id.includes('Label_') && !!quickMeasure) {
+      qmVoltmeter.connect[qmPin] = value.connect[0];
+      qmPin++;
     }
 
     temp.connect = value.connect;
 
     output[`${key}`] = temp;
+  }
+  if (!!quickMeasure) {
+    output["-2"] = qmVoltmeter;
   }
 
   return output

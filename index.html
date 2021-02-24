@@ -148,7 +148,6 @@
 		<div class="st-menu" id="menu-config">
 			<div class="st-menu-title">
 				<h1>Simulation Settings</h1>
-				<h2>For Oscilloscope Simulation Only</h2>
 			</div>
 			<div class="st-menu-input-title">
 				<span>T</span>
@@ -183,23 +182,24 @@
 				<h1>Quick Measurement</h1>
 				<h2>Measure Voltage Across Nodes in DC</h2>
 			</div>
-			<div class="st-menu-input-group">
-				<span>Node 1：</span>
-				<input id="qmNode1" type="st-menu-input-text" value="" required>
-				<span></span>
-				<span class="st-menu-input-bar"></span>
+			<div id="qmRun" class="st-menu-quickMeasure-run-div" tooltip="Add New Components">
+				<div class="fab-rect" id="fab-qmrun"></div>
 			</div>
 			<div class="st-menu-input-group">
-				<span>Node 2：</span>
-				<input id="qmNode2" type="st-menu-input-text" value="" required>
-				<span></span>
+				<input id="qmNode1" type="st-menu-input-text" value="">
 				<span class="st-menu-input-bar"></span>
+				<label>Node 1：</label>
 			</div>
-			<div class="st-menu-quickMeasure-run">
-				<button id="quickMeasureRun">
+			<div class="st-menu-input-group">
+				<input id="qmNode2" type="st-menu-input-text" value="">
+				<span class="st-menu-input-bar"></span>
+				<label>Node 2：</label>
+			</div>
+			<!-- <div class="st-menu-quickMeasure-run">
+				<button id="fab-run">
 					Update
 				</button>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	<!--Simulation and Settings-->

@@ -741,4 +741,36 @@ $('#action-container .fab').each((n) => {
     }));
 });
 
+//Add quick measurement button
+$('#qmRun .fab-rect').each((n) => {
+    //Icon style
+    const icon = {
+        'qmrun': {
+            'long': 1580,
+            'transform': [86, 100],
+            'd': 'M1384 609l-1328 -738q-23 -13 -39.5 -3t-16.5 36v1472q0 26 ' +
+                '16.5 36t39.5 -3l1328 -738q23 -13 23 -31t-23 -31z'
+        },
+    };
+    //Basic parameters
+    const elem = $(n),
+        id = elem.attr('id').split('-')[1],
+        zoom = 0.6, view = icon[id] && icon[id].long;
+
+    //Skip text
+    if (id === 'text') {
+        return;
+    }
+
+    elem.append($('<svg>', SVG_NS, {
+        'viewBox': '0 0 ' + view + ' ' + view
+    })).append($('<g>', SVG_NS, {
+        'transform': 'translate(' + (icon[id]['transform'][0] + (1 - zoom) / 2 * view) +
+            ', ' + (icon[id]['transform'][1] + (1 - zoom) / 2 * view) + ')' +
+            ' scale(' + zoom + ', ' + zoom + ')'
+    })).append($('<path>', SVG_NS, {
+        'd': icon[id]['d']
+    }));
+});
+
 export { iniData, SVG_NS };

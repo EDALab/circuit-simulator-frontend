@@ -376,7 +376,9 @@ const sidebar = $('#sidebar-menu'),
     graphPage = $('#graph-page'),
     context = $('#right-button-menu'),
     qmNode1Content = $('#qmNode1'),
-    qmNode2Content = $('#qmNode2');
+    qmNode2Content = $('#qmNode2'),
+    qmRunButton = $('#fab-qmrun');
+
 
 
 //Entry function for mouse movement
@@ -672,24 +674,6 @@ action.on('click', '#fab-quickMeasure', function (event) {
         sidebar.addClass('open-menu-quickMeasure');
     }
 });
-//Finish setting the nodes 1
-qmNode1Content.on('focusout', function (event) {
-    var qmNode1inner = document.getElementById("qmNode1");
-    var node1Text = qmNode1inner.value;
-    if (node1Text != "" && labelSet && !labelSet.has(node1Text)) {
-        alert("Cannot access this node.");
-        qmNode1inner.focus();
-    }
-})
-//Finish setting the nodes 2
-qmNode2Content.on('focusout', function (event) {
-    var qmNode2inner = document.getElementById("qmNode2");
-    var node2Text = qmNode2inner.value;
-    if (node2Text != "" && labelSet && !labelSet.has(node2Text)) {
-        alert("Cannot access this node.");
-        qmNode2inner.focus();
-    }
-})
 //Open the settings sidebar
 action.on('click', '#fab-config', function (event) {
     if (event.which === 1) {
@@ -708,9 +692,7 @@ action.on('click', '#fab-adds', function (event) {
 
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
-
     var feedback;
-
     var temp_var = partsAll.connectGraph();
     if (temp_var.length == 0) {
         grid.error('Circuit diagram need to contain at least one component!');
@@ -727,7 +709,6 @@ action.on('click', '#fab-run', function (event) {
     var output = nodeId(filteredCircuit);
     console.log(JSON.stringify(output));
     var xhr = new XMLHttpRequest();
-    // var url = 'http://127.0.0.1:5000/dc_simulate/Test';
     var url = 'http://127.0.0.1:5000/static_simulator/Test';
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/JSON');
@@ -806,6 +787,72 @@ function staticOutputUpdate(feedback) {
         }
     }
 };
+
+//Finish setting the nodes 1
+qmNode1Content.on('focusout', function (event) {
+    var qmNode1inner = document.getElementById("qmNode1");
+    var node1Text = qmNode1inner.value;
+    if (node1Text != "" && labelSet && !labelSet.has(node1Text)) {
+        alert("Cannot access this node.");
+        qmNode1inner.focus();
+    }
+})
+//Finish setting the nodes 2
+qmNode2Content.on('focusout', function (event) {
+    var qmNode2inner = document.getElementById("qmNode2");
+    var node2Text = qmNode2inner.value;
+    if (node2Text != "" && labelSet && !labelSet.has(node2Text)) {
+        alert("Cannot access this node.");
+        qmNode2inner.focus();
+    }
+})
+//Quick Measurement Start
+qmRunButton.on('click', function (event) {
+    var qmNode1inner = document.getElementById("qmNode1");
+    var node1Text = qmNode1inner.value;
+    var qmNode2inner = document.getElementById("qmNode2");
+    var node2Text = qmNode2inner.value;
+    if (node1Text == "" || node2Text == "") {
+        alert("Please specify the nodes you want to measure");
+        return (false);
+    }
+    var feedback;
+    var temp_var = partsAll.connectGraph();
+    if (temp_var.length == 0) {
+        alert('Circuit diagram need to contain at least one component!');
+        return (false);
+    }
+    else if (temp_var.length > 1) {
+        alert('Cannot simulate more than one separate circuits at the same time!');
+        return (false);
+    } else {
+        temp_var = temp_var[0];
+    }
+    var filteredCircuit = JSON.stringify(temp_var);
+    filteredCircuit = filter(filteredCircuit, true);
+    var output = nodeId(filteredCircuit);
+    console.log(JSON.stringify(output));
+    var xhr = new XMLHttpRequest();
+    var url = 'http://127.0.0.1:5000/static_simulator/Test';
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-type', 'application/JSON');
+    // Create a state change callback 
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 201) {
+            // Print received data from server 
+            // xhr.innerHTML = xhr.responseText;
+            feedback = xhr.responseText;
+            alert(feedback);
+        } else if (xhr.readyState === 4 && xhr.status === 400) {
+            alert(xhr.responseText);
+        }
+    };
+    // Converting JSON data to string 
+    var data = JSON.stringify(output);
+    // Sending data with the request 
+    xhr.send(data);
+    return;
+})
 
 //Cancel button of device property menu
 parameter.on('click', '#parameter-bottom-cancel', function () {

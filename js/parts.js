@@ -554,13 +554,13 @@ const originalElectronic = {
                 {
                     name: 'path',
                     attribute: {
-                        d: 'M0,-40V40M-13,-11H13',
+                        d: 'M0,-40V40M-13,11H13',
                     },
                 },
                 {
                     name: 'polygon',
                     attribute: {
-                        points: '0,-11 -13,11 13,11',
+                        points: '0,11 -13,-11 13,-11',
                         class: 'fill-whole', //'fill' : '#3B4449', 'stroke-width' : '1'
                     },
                 },
@@ -771,10 +771,10 @@ const originalElectronic = {
             partType: 'Label',
             inputTxt: [],
             visionNum: 1,
-            coordinates: [0, 38],
+            // coordinates: [0, 38],
             pointInfor: [
                 {
-                    position: [-20, -20],
+                    position: [0, -20],
                     direction: [0, -1],
                 },
             ],
@@ -785,26 +785,27 @@ const originalElectronic = {
                 {
                     name: 'path',
                     attribute: {
-                        d: 'M-20,-20L3,3H10',
-                    },
-                }, {
-                    name: 'path',
-                    attribute: {
-                        d: 'M10,3L12,-0.464L15.464,-0.464L17.464,3L15.464,6.464L12,6.464L10,3',
+                        // d: 'M0,0l2,1.155l0,2.309l-2,1.155l-2,-1.155l0,-2.309l2,-1.155',
+                        d: 'M0,-20V0',
                     },
                 }, {
                     name: 'polygon',
                     attribute: {
-                        points: '10,3 12,-0.464 15.464,-0.464 17.464,3 15.464,6.464 12,6.464',
+                        points: '0,0 4,2.31 4,6.928, 0,9.238 -4,6.928 -4,2.31',
                         class: 'fill-whole',
                     },
                 }, {
                     name: 'rect',
                     attribute: {
-                        x: '-20',
-                        y: '-20',
-                        width: '40',
-                        height: '40',
+                        // x: '-20',
+                        // y: '-20',
+                        // width: '40',
+                        // height: '40',
+                        // class: 'focus-part',
+                        x: '-5',
+                        y: '-5',
+                        width: '10',
+                        height: '10',
                         class: 'focus-part',
                     },
                 },
@@ -1557,6 +1558,7 @@ PartClass.prototype = {
             parameter.addClass('parameter-error-0')
             error = false
         }
+        var qmPanelUpdate = 0;
         if (this.partType == 'Label' && this.name != inputID) {
             if (labelSet.has(inputID)) {
                 parameter.addClass('parameter-error-0');
@@ -1565,10 +1567,12 @@ PartClass.prototype = {
                 var qmNode1inner = document.getElementById("qmNode1");
                 var qmNode2inner = document.getElementById("qmNode2");
                 if (this.name == qmNode1inner.value) {
-                    qmNode1inner.value = '';
+                    qmNode1inner.value = inputID;
+                    qmPanelUpdate += 1;
                 }
                 if (this.name == qmNode2inner.value) {
-                    qmNode2inner.value = '';
+                    qmNode2inner.value = inputID;
+                    qmPanelUpdate += 2;
                 }
                 labelSet.delete(this.name);
                 labelSet.add(inputID);
