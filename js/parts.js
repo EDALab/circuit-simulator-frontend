@@ -40,7 +40,7 @@ const originalElectronic = {
      *   input          The component parameters
      *   inputTxt       The description of the component parameters
      *   visionNum      Number of parameters displayed on the parameter panel
-     *   pointInfor     Node position and orientation
+     *   pointInfor     Node position and orientation (it is the placement and orientation of the pin from which we can drag a wire and connect the component to other stuff)
      *   aspectInfor    Design of the SVG component
      *   padding        The component padding
      *   margin         The component margin
@@ -758,6 +758,56 @@ const originalElectronic = {
             introduction: 'Single Point Voltmeter',
         },
     },
+    //Port device to use in subcircuits
+    Port: {
+        readWrite: {
+            id: 'Port_',
+        },
+        readOnly: {
+            partType: 'Port',
+            inputTxt: [],
+            visionNum: 1,
+            pointInfor: [
+                {
+                    position: [-20, -20],
+                    direction: [0, -1],
+                },
+            ],
+            padding: 1,
+            margin: [1, 0],
+            txtLocate: 12,
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-10, -10L3, 3H10',
+                    },
+                }, 
+                // {
+                //     name: 'path',
+                //     attribute: {
+                //         d: 'M10,3L12,-0.464L15.464,-0.464L17.464,3L15.464,6.464L12,6.464L10,3',
+                //     },
+                // }, {
+                //     name: 'polygon',
+                //     attribute: {
+                //         points: '10,3 12,-0.464 15.464,-0.464 17.464,3 15.464,6.464 12,6.464',
+                //         class: 'fill-whole',
+                //     },
+                // }, {
+                //     name: 'rect',
+                //     attribute: {
+                //         x: '-20',
+                //         y: '-20',
+                //         width: '40',
+                //         height: '40',
+                //         class: 'focus-part',
+                //     },
+                // },
+            ],
+            introduction: 'Port',
+        }
+    },
     // Node_Label device
     Label: {
         readWrite: {
@@ -767,7 +817,7 @@ const originalElectronic = {
             partType: 'Label',
             inputTxt: [],
             visionNum: 1,
-            coordinates: [0, 38],
+            coordinates: [0, 38], // TODO: ask what this does
             pointInfor: [
                 {
                     position: [-20, -20],
@@ -1979,6 +2029,8 @@ for (const i in originalElectronic) {
 //Add device icon
 $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
     // New Identification
+    console.log("end of parts.js");
+    console.log(n);
     const elem = $(n),
         special = {
             reference_ground: 'scale(1.3, 1.3)',
@@ -2002,6 +2054,7 @@ $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
 
     icon.attr('transform', bias)
     elem.prop('introduction', intro)
+    console.log(type);
     for (let i = 0; i < part.length; i++) {
         if (part[i].name === 'rect') {
             continue
