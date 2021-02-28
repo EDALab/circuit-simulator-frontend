@@ -1,197 +1,13 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>Circuit Simulator</title>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-    <link rel="shortcut icon" type="image/x-icon" href="./src/favicons.ico" />
-    <link rel="stylesheet" href="./src/circuitlab.min.css" type="text/css" />
-  </head>
 
-  <body id="editor-container">
-    <!--Loading Menu-->
-    <div id="load-cover">
-      <div id="cover-inner">
-        <h3 style="font-style: italic">Loading……</h3>
-        <svg
-          class="spinner"
-          width="55px"
-          height="55px"
-          viewBox="0 0 66 66"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle
-            class="path"
-            fill="none"
-            stroke-width="6"
-            stroke-linecap="round"
-            cx="33"
-            cy="33"
-            r="30"
-          ></circle>
-        </svg>
-        <h3>Circuit Simulator</h3>
-      </div>
-    </div>
-    <!--Gray Background-->
-    <div id="shade-gray"></div>
-    <!--Drawing-->
-    <div id="container-grid" tabindex="-1">
-      <svg
-        height="100%"
-        width="100%"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g id="area-of-parts"></g>
-      </svg>
-    </div>
-    <!--Right Click Menu-->
-    <ul class="" id="right-button-menu">
-      <li class="right-space"></li>
-      <li class="right-button-option" id="edit-parameters">
-        <span class="option-description">Edit Parameters</span>
-      </li>
-      <li class="right-button-option" id="create-subcircuit">
-        <span class="option-description">Create Subcircuit</span>
-        <span class="option-key">Ctrl+M</span>
-      </li>
-      <li class="right-line" id="right-line-1"></li>
-      <li class="right-button-option" id="parts-copy">
-        <span class="option-description">Copy</span>
-        <span class="option-key">Ctrl+C</span>
-      </li>
-      <li class="right-button-option" id="parts-cut">
-        <span class="option-description">Cut</span>
-        <span class="option-key">Ctrl+X</span>
-      </li>
-      <li class="right-button-option" id="parts-paste">
-        <span class="option-description">Paste</span>
-        <span class="option-key">Ctrl+V</span>
-      </li>
-      <li class="right-button-option" id="parts-delete">
-        <span class="option-description">Delete</span>
-        <span class="option-key">Delete</span>
-      </li>
-      <li class="right-button-option" id="right-undo">
-        <span class="option-description">Undo</span>
-        <span class="option-key">Ctrl+Z</span>
-      </li>
-      <li class="right-line" id="right-line-2"></li>
-      <li class="right-button-option" id="clockwise-direction">
-        <span class="option-description">Rotate CW</span>
-        <span class="option-key">Ctrl+D</span>
-      </li>
-      <li class="right-button-option" id="anticlockwise-direction">
-        <span class="option-description">Rotate CCW</span>
-        <span class="option-key">Ctrl+Alt+D</span>
-      </li>
-      <li class="right-button-option" id="X-Mirror">
-        <span class="option-description">Vertical Flip</span>
-        <span class="option-key">Alt+X</span>
-      </li>
-      <li class="right-button-option" id="Y-Mirror">
-        <span class="option-description">Horizontal Flip</span>
-        <span class="option-key">Alt+C</span>
-      </li>
-      <li class="right-line" id="right-line-3"></li>
-      <li class="right-button-option" id="parts-all">
-        <span class="option-description">Select All</span>
-        <span class="option-key">Ctrl+A</span>
-      </li>
-      <li class="right-space"></li>
-    </ul>
-    <!--Wave Display Menu-->
-    <div id="graph-page" class="silence" style="display: none">
-      <div id="graph-box">
-        <div id="graph-topbar">
-          <a id="waveRecover" class="textLink" href="#">Restore Zoom</a>
-          |
-          <a id="waveToImage" class="textLink" href="#">Export Graph</a>
-          |
-          <a id="waveToData" class="textLink" href="#">Export Data</a>
-          |
-          <a id="waveClose" class="textLink" href="#">Close Panel</a>
-        </div>
-        <div id="graph-title"><span>Transient Analysis</span></div>
-        <div id="graph-main"></div>
-      </div>
-    </div>
-    <!--Device Property Menu-->
-    <div class="parameter-close" id="parameter-menu">
-      <div class="parameter-title">Parameters</div>
-      <div class="parameter-bottom-line">
-        <div class="parameter-bottom" id="parameter-bottom-accept">ACCEPT</div>
-        <div class="parameter-bottom" id="parameter-bottom-cancel">CANCEL</div>
-      </div>
-      <div id="parameter-menu-triangle-down"></div>
-    </div>
-    <!--Side Menu-->
-    <div id="sidebar-menu">
-      <div class="st-menu" id="menu-add-parts">
-        <div id="menu-add-parts-close">
-          <span></span>
-        </div>
-        <div class="st-menu-title">
-          <h1>Add Parts</h1>
-          <!-- <h2>Add Parts</h2> -->
-        </div>
-        <div class="parts-menu">
-          <button class="parts-list" id="reference_ground"></button>
-          <!--<button class="parts-list" id="global_connect"></button>-->
-          <button class="parts-list" id="voltage_meter"></button>
-          <button class="parts-list" id="current_meter"></button>
-        </div>
-        <div class="parts-menu">
-          <button class="parts-list" id="dc_voltage_source"></button>
-          <button class="parts-list" id="ac_voltage_source"></button>
-          <button class="parts-list" id="dc_current_source"></button>
-          <!--<button class="parts-list" id="ac_current_source"></button>-->
-        </div>
-        <div class="parts-menu">
-          <button class="parts-list" id="resistance"></button>
-          <button class="parts-list" id="capacitor"></button>
-          <button class="parts-list" id="inductance"></button>
-        </div>
-        <div class="parts-menu">
-          <button class="parts-list" id="diode"></button>
-          <button class="parts-list" id="transistor_npn"></button>
-          <button class="parts-list" id="operational_amplifier"></button>
-        </div>
-        <div class="parts-menu">
-          <button class="parts-list" id="SP_Voltmeter"></button>
-          <button class="parts-list" id="Label"></button>
-          <button class="parts-list" id="Port"></button>
-        </div>
-        <div id="float-tool-tip"></div>
-      </div>
-      <div class="st-menu" id="menu-config">
-        <div class="st-menu-title">
-          <h1>Simulation Settings</h1>
-          <h2>For Oscilloscope Simulation Only</h2>
-        </div>
-        <div class="st-menu-input-title">
-          <span>T</span>
-          <span>Time Setting</span>
-        </div>
-        <div class="st-menu-input-group">
-          <input id="endtime" type="st-menu-input-text" value="20m" required />
-          <span class="st-menu-unit">Seconds</span>
-          <span class="st-menu-input-bar"></span>
-          <label>Time Interval：</label>
-        </div>
-        <div class="st-menu-input-group">
-          <input id="stepsize" type="st-menu-input-text" value="5u" required />
-          <span class="st-menu-unit">Seconds</span>
-          <span class="st-menu-input-bar"></span>
-          <label>Step Size：</label>
-        </div>
-      </div>
-      <div class="st-menu" id="menu-staticOutput">
-        <div class="st-menu-title">
-          <h1>Static Output</h1>
-          <h2>For DC Analysis Only</h2>
-        </div>
+<head>
+	<meta charset="utf-8">
+	<title>Circuit Simulator</title>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link rel="shortcut icon" type="image/x-icon" href="./src/favicons.ico">
+	<link rel="stylesheet" href="./src/circuitlab.min.css" type="text/css">
+</head>
 
 <body id="editor-container">
 	<!--Loading Menu-->
@@ -219,6 +35,10 @@
 		<li class="right-space"></li>
 		<li class="right-button-option" id="edit-parameters">
 			<span class="option-description">Edit Parameters</span>
+		</li>
+		<li class="right-button-option" id="create-subcircuit">
+		<span class="option-description">Create Subcircuit</span>
+		<span class="option-key">Ctrl+M</span>
 		</li>
 		<li class="right-line" id="right-line-1"></li>
 		<li class="right-button-option" id="parts-copy">
@@ -326,6 +146,7 @@
 			<div class="parts-menu">
 				<button class="parts-list" id="SP_Voltmeter"></button>
 				<button class="parts-list" id="Label"></button>
+				<button class="parts-list" id="Port"></button>
 			</div>
 			<div id="float-tool-tip"></div>
 		</div>
