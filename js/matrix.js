@@ -102,7 +102,7 @@ Matrix.prototype = {
     multo(ma) {
         //Create matrix with input data
         const a = (ma instanceof Matrix) ? ma : (new Matrix(ma));
-        //交换相乘双方
+        //exchange the two multipliers
         return this.mul.call(a, this);
     },
     //Column principal element LU triangle decomposition, return LUP matrix
@@ -368,7 +368,7 @@ Matrix.extend({
             for (let j = 0; j < ma[i].length; j++) {
                 let temp;
                 if (!((ma[i][j] instanceof Matrix) && (ma[i][j] instanceof Array)))
-                    temp= new Matrix(RowInRow[i], ColumnInColumn[j], ma[i][j]);
+                    temp = new Matrix(RowInRow[i], ColumnInColumn[j], ma[i][j]);
                 else temp = ma[i][j];
 
                 if (RowMatrix) RowMatrix = RowMatrix.concatRight(temp);

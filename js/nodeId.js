@@ -245,8 +245,6 @@ function nodeId(input) {
             // AC Voltage Source
             component.type == "IA" ||
             // AC Current Source
-            component.type == "D" ||
-            // Diode
             component.type == "TR" ||
             // Transistor
             component.type == "VM" ||
@@ -255,6 +253,8 @@ function nodeId(input) {
             // Ampmeter
             component.type == "OS" ||
             // Oscilloscope
+            component.type == "D" ||
+            //Diode
             component.type == "VCV" ||
             // Voltage Controlled Voltage Source
             component.type == "CCV" ||
@@ -309,7 +309,7 @@ function nodeId(input) {
                     value /= 1000000000000;
                 } else if (component.value[0].includes("n")) {
                     value /= 1000000000
-                } else if (component.value[0].includes("u")) {
+                } else if (component.value[0].includes("μ")) {
                     value /= 1000000
                 } else if (component.value[0].includes("m")) {
                     value /= 1000
@@ -330,6 +330,14 @@ function nodeId(input) {
                 value: value,
                 node1: component.connect[0],
                 node2: component.connect[1],
+            }
+            if (component.type === 'D') {
+                // remove the value term if it is a diode;
+                compJson.modelType = component.value[0]
+                delete compJson.value
+            } else {
+                // remove the modelType term if it is not;
+                delete compJson.modelType
             }
 
             if (output[component.type]) {

@@ -55,6 +55,11 @@ These values are only for simulation methods, the corresponding time is not real
 
 ---
 
+## Unresolved Bugs
+1. Frequently click on the existing nodes or creating new branches may cause the page to freeze.
+2. Some of the elements cannot be deleted from the grid board.
+3. When copy and Paste a connected element, the wire will be disconnected from the node and it will pervent the user from connecting it back on.
+
 ## Browser
 Chrome 42+  
 

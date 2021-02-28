@@ -34,12 +34,16 @@
         font-weight normal
         margin 20px
 
+#sidebar-menu.open-menu-quickMeasure,
 #sidebar-menu.open-menu-staticOutput,
 #sidebar-menu.open-menu-config,
 #sidebar-menu.open-add-parts
   transform translateX(-100%)
   opacity 1
 
+#sidebar-menu.open-menu-quickMeasure #menu-quickMeasure
+  transition-delay 0ms
+  visibility visible
 #sidebar-menu.open-menu-staticOutput #menu-staticOutput
   transition-delay 0ms
   visibility visible
@@ -138,7 +142,7 @@
       span:after
         width 0
 
-#menu-config
+#menu-config, #menu-quickMeasure
   .st-menu-input-title
     font-family font-default
     margin 1vw
@@ -199,6 +203,7 @@
       left 10px
       cursor default
 
+
 #menu-staticOutput
   .st-menu-input-title
     font-family font-default
@@ -227,7 +232,9 @@
       width: 400px;
     .st-menu-value
       font-size: 40px
-      width: 60px;
+      width: 50px
+      margin-right: 10px
+      overflow:hidden
       right 30%
       color #5264AE
       font-size 20px

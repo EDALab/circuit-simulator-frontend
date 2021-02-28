@@ -4,6 +4,7 @@ import { $ } from './jquery';
 import { Point } from './point';
 import { SVG_NS } from './init';
 import { schMap } from './maphash';
+import { labelSet } from './parts';
 import { partsAll, partsNow } from './collection';
 
 //constants

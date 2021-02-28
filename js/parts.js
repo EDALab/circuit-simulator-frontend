@@ -30,7 +30,7 @@ const u = undefined,
             [0, 1],
         ]), //Y-Mirror
     ]
-
+var labelSet = new Set();
 // Device Description
 const originalElectronic = {
     /**
@@ -525,13 +525,19 @@ const originalElectronic = {
     //diode
     diode: {
         readWrite: {
-            id: 'VD_',
-            input: ['1', '0.5', '5M'],
+            id: 'D_',
+            input: ['1N4148'],
         },
+        // get readWrite() {
+        //     return this.readWrite
+        // },
+        // set readWrite(value) {
+        //     this.readWrite = value
+        // },
         readOnly: {
             partType: 'diode',
-            inputTxt: ['Breakover V:', 'Breakover R', 'Shutoff R：'],
-            parameterUnit: ['V', 'Ω', 'Ω'],
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
             visionNum: 1,
             txtLocate: 18,
             padding: [1, 0],
@@ -550,13 +556,13 @@ const originalElectronic = {
                 {
                     name: 'path',
                     attribute: {
-                        d: 'M0,-40V40M-13,-11H13',
+                        d: 'M0,-40V40M-13,11H13',
                     },
                 },
                 {
                     name: 'polygon',
                     attribute: {
-                        points: '0,-11 -13,11 13,11',
+                        points: '0,11 -13,-11 13,-11',
                         class: 'fill-whole', //'fill' : '#3B4449', 'stroke-width' : '1'
                     },
                 },
@@ -817,10 +823,10 @@ const originalElectronic = {
             partType: 'Label',
             inputTxt: [],
             visionNum: 1,
-            coordinates: [0, 38], // TODO: ask what this does
+            // coordinates: [0, 38],
             pointInfor: [
                 {
-                    position: [-20, -20],
+                    position: [0, -20],
                     direction: [0, -1],
                 },
             ],
@@ -831,26 +837,27 @@ const originalElectronic = {
                 {
                     name: 'path',
                     attribute: {
-                        d: 'M-20,-20L3,3H10',
-                    },
-                }, {
-                    name: 'path',
-                    attribute: {
-                        d: 'M10,3L12,-0.464L15.464,-0.464L17.464,3L15.464,6.464L12,6.464L10,3',
+                        // d: 'M0,0l2,1.155l0,2.309l-2,1.155l-2,-1.155l0,-2.309l2,-1.155',
+                        d: 'M0,-20V0',
                     },
                 }, {
                     name: 'polygon',
                     attribute: {
-                        points: '10,3 12,-0.464 15.464,-0.464 17.464,3 15.464,6.464 12,6.464',
+                        points: '0,0 4,2.31 4,6.928, 0,9.238 -4,6.928 -4,2.31',
                         class: 'fill-whole',
                     },
                 }, {
                     name: 'rect',
                     attribute: {
-                        x: '-20',
-                        y: '-20',
-                        width: '40',
-                        height: '40',
+                        // x: '-20',
+                        // y: '-20',
+                        // width: '40',
+                        // height: '40',
+                        // class: 'focus-part',
+                        x: '-5',
+                        y: '-5',
+                        width: '10',
+                        height: '10',
                         class: 'focus-part',
                     },
                 },
@@ -864,7 +871,7 @@ const originalElectronic = {
 function PartClass(data) {
     const type = data.partType || data
     // New Identification
-    this.partType = type
+    this.partType = type;
 
     // Fetches the corresponding component of same type defined above and sets it as the prototype for Part object we are building
     this.extend(Object.clone(originalElectronic[type].readWrite))
@@ -879,6 +886,15 @@ function PartClass(data) {
     }
 
     this.id = partsAll.newId(this.id)
+    if (this.partType == 'Label') {
+        var temp;
+        while (labelSet.has(this.id)) {
+            temp = this.id.split('_');
+            temp[1] = (parseInt(temp[1]) + 1).toString();
+            this.id = temp.join('_');
+        }
+    }
+    labelSet.add(this.id);
     this.rotate = this.rotate
         ? new Matrix(this.rotate)
         : new Matrix([
@@ -966,17 +982,10 @@ PartClass.prototype = {
                 this.input[i] = this.input[i].replace('u', 'μ')
                 propertyVision.push(this.input[i] + this.parameterUnit[i])
             }
-            const textMain = this.id.split('_'),
+            const textMain = this.name,
                 tempDate = $('<text>', SVG_NS, { class: 'features-text' })
 
-            // Create component ID
-            if (this.partType == 'Label') {
-                tempDate.append($('<tspan>', SVG_NS).text(textMain[0] + '-' + textMain[1]));
-                tempDate.append($('<tspan>', SVG_NS).text(''));
-            } else {
-                tempDate.append($('<tspan>', SVG_NS).text(textMain[0]))
-                tempDate.append($('<tspan>', SVG_NS).text(textMain[1]));
-            }
+            tempDate.append($('<tspan>', SVG_NS).text(textMain));
 
             // Set parameters of a component
             for (let i = 0; i < propertyVision.length; i++) {
@@ -1080,16 +1089,17 @@ PartClass.prototype = {
             // Text height
             height = 16,
             textRow = elemtspan.length,
-            totalHeight = (height + 2) * (textRow - 1),
+            totalHeight = (height + 2) * (textRow),
             // Length of displayed ID String
-            idWidth = $(elemtspan[0]).STWidth() + $(elemtspan[1]).STWidth()
+            idWidth = $(elemtspan[0]).STWidth();
+        // idWidth = $(elemtspan[0]).STWidth() + $(elemtspan[1]).STWidth()
 
         if (!coordinates[0]) {
             if (coordinates[1] > 0) {
                 // Downward
                 let last = idWidth / 2
                 $(elemtspan[0]).attr({ dx: -last, dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const elem = $(elemtspan[i]),
                         elemWidth = elem.STWidth() / 2
 
@@ -1101,7 +1111,7 @@ PartClass.prototype = {
                 // Upward
                 let last = idWidth / 2
                 $(elemtspan[0]).attr({ dx: -last, dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const elem = $(elemtspan[i]),
                         elemWidth = elem.STWidth() / 2
 
@@ -1118,7 +1128,7 @@ PartClass.prototype = {
                 // Rightward
                 let last = idWidth
                 $(elemtspan[0]).attr({ dx: '0', dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const text = $(elemtspan[i])
                     text.attr({ dx: -last, dy: height })
                     last = text.STWidth()
@@ -1128,7 +1138,7 @@ PartClass.prototype = {
             } else {
                 // Leftward
                 $(elemtspan[0]).attr({ dx: -idWidth, dy: '0' })
-                for (let i = 2; i < elemtspan.length; i++) {
+                for (let i = 1; i < elemtspan.length; i++) {
                     const elem = $(elemtspan[i])
                     elem.attr({ dx: -elem.STWidth(), dy: height })
                 }
@@ -1590,7 +1600,7 @@ PartClass.prototype = {
     //Display after entering attributes
     inputVision() {
         const parameter = $('#parameter-menu'),
-            idMatch = /[A-Za-z]+_[0-9A-Za-z]+/i,
+            idMatch = /[0-9A-Za-z]+/i,
             dataMatch = /\d+(.\d+)?[GMkmunp]?/
 
         //Cancel all error flags
@@ -1603,14 +1613,36 @@ PartClass.prototype = {
             parameter.addClass('parameter-error-0')
             error = false
         }
+        var qmPanelUpdate = 0;
+        if (this.partType == 'Label' && this.name != inputID) {
+            if (labelSet.has(inputID)) {
+                parameter.addClass('parameter-error-0');
+                error = false;
+            } else {
+                var qmNode1inner = document.getElementById("qmNode1");
+                var qmNode2inner = document.getElementById("qmNode2");
+                if (this.name == qmNode1inner.value) {
+                    qmNode1inner.value = inputID;
+                    qmPanelUpdate += 1;
+                }
+                if (this.name == qmNode2inner.value) {
+                    qmNode2inner.value = inputID;
+                    qmPanelUpdate += 2;
+                }
+                labelSet.delete(this.name);
+                labelSet.add(inputID);
+            }
+        }
         for (let i = 0; i < this.inputTxt.length; i++) {
             const inputData = $('#parameter-' + (i + 1) + ' input', parameter).prop(
                 'value'
             )
             const temp_input_match = inputData.match(dataMatch)
             if (!temp_input_match || inputData !== temp_input_match[0]) {
-                parameter.addClass('parameter-error-' + (i + 1))
-                error = false
+                if (this.partType !== 'diode') {
+                    parameter.addClass('parameter-error-' + (i + 1))
+                    error = false
+                }
             }
         }
         if (!error) return false
@@ -1624,7 +1656,7 @@ PartClass.prototype = {
             )
             this.input[i] = this.input[i].replace('u', 'μ')
             if (i < this.visionNum - 1) {
-                temptext[i + 2].textContent = this.input[i] + this.parameterUnit[i]
+                temptext[i + 1].textContent = this.input[i] + this.parameterUnit[i]
             }
         }
         //Fix the display position of the attribute
@@ -1664,15 +1696,26 @@ PartClass.prototype = {
                 }
             }
         }
-
+        if (this.partType == 'Label') {
+            var qmNode1inner = document.getElementById("qmNode1");
+            var qmNode2inner = document.getElementById("qmNode2");
+            if (this.name == qmNode1inner.value) {
+                qmNode1inner.value = '';
+            }
+            if (this.name == qmNode2inner.value) {
+                qmNode2inner.value = '';
+            }
+            labelSet.delete(this.name);
+        }
         this.deleteSign()
         this.elementDOM.remove()
         partsAll.deletePart(this)
     },
-    //Change the current device ID
+    //Change the current device Name
     exchangeID(label) {
         // New Identification
-        if (label === this.name) return false
+        if (label === this.name) return false;
+        this.name = label
         const last = this.name
         //Delete old device
         partsAll.deletePart(this)
@@ -1680,10 +1723,9 @@ PartClass.prototype = {
         const temptspan = $('tspan', this.elementDOM)
         const points = $('.part-point', this.elementDOM)
         //Change ID and display
-        this.name = label
         this.elementDOM.attr('id', this.id)
-        temptspan.get(0).text(this.name.slice(0, this.name.search('_')))
-        temptspan.get(1).text(this.name.slice(this.name.search('_') + 1))
+        temptspan.get(0).text(this.name.slice(0));
+        // temptspan.get(1).text(this.name.slice(this.name.search('_') + 1))
         //Correct the ID in the connection table of the connected device
         for (let i = 0; i < this.connect.length; i++) {
             const point = points.get(i)
@@ -1692,15 +1734,6 @@ PartClass.prototype = {
             point.attr('id', pointLabel.join('-'))
             if (this.connect[i]) {
                 const tempPart = partsAll.findPart(this.connect[i])
-                for (let j = 0; j < tempPart.connect.length; j++) {
-                    if ((tempPart.connect[j] = last + '-' + i)) {
-                        //tempPart.connect[j] = label + '-' + i
-                        //Originally, Xiaoboost did not update the ID in line's connect after renaming, causing the bug 
-                        //that json output will be seperated into two paragraphs.
-                        //After this change, the ID will stay fixed and will not interfere connect. 
-                        break
-                    }
-                }
             }
         }
         //Remark the drawing
@@ -2079,4 +2112,4 @@ $('#menu-add-parts-close').attr(
 )
 
 //Module external interface
-export { PartClass }
+export { PartClass, labelSet }

@@ -1,18 +1,19 @@
-"use strict";
+'use strict';
 
-import { $ } from "./jquery";
-import { iniData, SVG_NS } from "./init";
-import { schMap } from "./maphash";
-import { Point } from "./point";
-import { LineClass } from "./lines";
-import { Solver } from "./solver";
-import { Graph } from "./graph";
-import { styleRule } from "./styleRule";
-import { PartClass } from "./parts";
-import { partsAll, partsNow } from "./collection";
-import { nodeId } from "./nodeID";
-import filter from "./filter";
-import "./test";
+import { $ } from './jquery';
+import { iniData, SVG_NS } from './init';
+import { schMap } from './maphash';
+import { Point } from './point';
+import { LineClass } from './lines';
+import { Solver } from './solver';
+import { Graph } from './graph';
+import { styleRule } from './styleRule';
+import { PartClass } from './parts';
+import { labelSet } from './parts';
+import { partsAll, partsNow } from './collection';
+import { nodeId } from './nodeID';
+import filter from './filter';
+import './test';
 
 //Global variable definition
 const doc = document,
@@ -67,7 +68,7 @@ const grid = (function SchematicsGrid() {
         flag &= 0xffff ^ (1 << i);
       }
     };
-  }
+  };
 
   // Seems to simply be a boolean to indicate if flag value is 0 or 1 (truthy or falsy)
   //total mark
@@ -261,6 +262,9 @@ const grid = (function SchematicsGrid() {
       n.markSign();
     });
   };
+    //paste
+    self.paste = function (arr) {
+        const now = arr ? arr : copyStack, name = [];
 
   //copy
   self.paste = function (arr) {
@@ -421,15 +425,18 @@ const grid = (function SchematicsGrid() {
 
   //Return module object
   return self;
-})(); // calls the function we JUST defined called schematicsGrid(), to initialize Grid object
+}})(); // calls the function we JUST defined called schematicsGrid(), to initialize Grid object
 
-//Global jquery element definition
-const sidebar = $("#sidebar-menu"),
-  action = $("#action-container"),
-  mainPage = $("#container-grid"),
-  parameter = $("#parameter-menu"),
-  graphPage = $("#graph-page"),
-  context = $("#right-button-menu");
+//Global jquary element definition
+const sidebar = $('#sidebar-menu'),
+    action = $('#action-container'),
+    mainPage = $('#container-grid'),
+    parameter = $('#parameter-menu'),
+    graphPage = $('#graph-page'),
+    context = $('#right-button-menu'),
+    qmNode1Content = $('#qmNode1'),
+    qmNode2Content = $('#qmNode2'),
+    qmRunButton = $('#fab-qmrun');
 
 //Entry function for mouse movement
 function mousemoveEvent(event) {
@@ -771,6 +778,13 @@ action.on("click", "#fab-staticOutput", function (event) {
     sidebar.addClass("open-menu-staticOutput");
   }
 });
+//Open the quick measurement sidebar
+action.on('click', '#fab-quickMeasure', function (event) {
+    if (event.which === 1) {
+        $(document.body).addClass('open-sidebar open-gray');
+        sidebar.addClass('open-menu-quickMeasure');
+    }
+});
 //Open the settings sidebar
 action.on("click", "#fab-config", function (event) {
   if (event.which === 1) {
@@ -925,6 +939,72 @@ function staticOutputUpdate(feedback) {
   }
 }
 
+//Finish setting the nodes 1
+qmNode1Content.on('focusout', function (event) {
+    var qmNode1inner = document.getElementById("qmNode1");
+    var node1Text = qmNode1inner.value;
+    if (node1Text != "" && labelSet && !labelSet.has(node1Text)) {
+        alert("Cannot access this node.");
+        qmNode1inner.focus();
+    }
+})
+//Finish setting the nodes 2
+qmNode2Content.on('focusout', function (event) {
+    var qmNode2inner = document.getElementById("qmNode2");
+    var node2Text = qmNode2inner.value;
+    if (node2Text != "" && labelSet && !labelSet.has(node2Text)) {
+        alert("Cannot access this node.");
+        qmNode2inner.focus();
+    }
+})
+//Quick Measurement Start
+qmRunButton.on('click', function (event) {
+    var qmNode1inner = document.getElementById("qmNode1");
+    var node1Text = qmNode1inner.value;
+    var qmNode2inner = document.getElementById("qmNode2");
+    var node2Text = qmNode2inner.value;
+    if (node1Text == "" || node2Text == "") {
+        alert("Please specify the nodes you want to measure");
+        return (false);
+    }
+    var feedback;
+    var temp_var = partsAll.connectGraph();
+    if (temp_var.length == 0) {
+        alert('Circuit diagram need to contain at least one component!');
+        return (false);
+    }
+    else if (temp_var.length > 1) {
+        alert('Cannot simulate more than one separate circuits at the same time!');
+        return (false);
+    } else {
+        temp_var = temp_var[0];
+    }
+    var filteredCircuit = JSON.stringify(temp_var);
+    filteredCircuit = filter(filteredCircuit, true);
+    var output = nodeId(filteredCircuit);
+    console.log(JSON.stringify(output));
+    var xhr = new XMLHttpRequest();
+    var url = 'http://127.0.0.1:5000/static_simulator/Test';
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-type', 'application/JSON');
+    // Create a state change callback 
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 201) {
+            // Print received data from server 
+            // xhr.innerHTML = xhr.responseText;
+            feedback = xhr.responseText;
+            alert(feedback);
+        } else if (xhr.readyState === 4 && xhr.status === 400) {
+            alert(xhr.responseText);
+        }
+    };
+    // Converting JSON data to string 
+    var data = JSON.stringify(output);
+    // Sending data with the request 
+    xhr.send(data);
+    return;
+})
+
 //Cancel button of device property menu
 parameter.on("click", "#parameter-bottom-cancel", function () {
   $(doc.body).removeClass("open-gray");
@@ -997,17 +1077,14 @@ mainPage.on("mousewheel", function (event) {
   }
 });
 //Mouse click shady
-$("#shade-gray").on("click", function () {
-  if (
-    (sidebar.hasClass("open-menu-staticOutput") ||
-      sidebar.hasClass("open-menu-config")) &&
-    !parameter.hasClass("parameter-open")
-  ) {
-    $(doc.body).removeClass("open-gray open-sidebar");
-    sidebar.removeClass(
-      "open-menu-staticOutput open-menu-config open-add-parts"
-    );
-  }
+$('#shade-gray').on('click', function () {
+    if ((sidebar.hasClass('open-menu-quickMeasure')
+        || sidebar.hasClass('open-menu-staticOutput'))
+        || sidebar.hasClass('open-menu-config')
+        && !parameter.hasClass('parameter-open')) {
+        $(doc.body).removeClass('open-gray open-sidebar');
+        sidebar.removeClass('open-menu-quickMeasure open-menu-staticOutput open-menu-config open-add-parts');
+    }
 });
 
 //Device related events
