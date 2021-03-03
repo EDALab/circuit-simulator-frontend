@@ -774,15 +774,34 @@ const originalElectronic = {
             inputTxt: [],
             visionNum: 1,
             pointInfor: [
-                {
+                
+                { // placement of node for original shape (there was only 1 node)
                     position: [-20, -20],
                     direction: [0, -1],
-                },
+                }, 
+                { // this one added by me to have 2 connections for the port 
+                    // also causes bugs! 
+                    // TODO: figure out how to add another point of connection
+                    position: [10,3],
+                    direction: [0, -1],
+                }
+
+                // //my node position placement: gives bug so far that i have put on hold
+                // cant draw a wire from the nodes i created..
+                // {
+                //     position: [-30, 0],
+                //     direction: [0, -1],
+                // },
+                // {
+                //     position: [30, 0],
+                //     direction: [0, 1],
+                // },
             ],
             padding: 1,
             margin: [1, 0],
             txtLocate: 12,
             aspectInfor: [
+                // original shape they had
                 {
                     name: 'path',
                     attribute: {
@@ -794,22 +813,60 @@ const originalElectronic = {
                     attribute: {
                         d: 'M10,3L12,-0.464L15.464,-0.464L17.464,3L15.464,6.464L12,6.464L10,3',
                     },
-                }, {
+                }, 
+                {
                     name: 'polygon',
                     attribute: {
                         points: '10,3 12,-0.464 15.464,-0.464 17.464,3 15.464,6.464 12,6.464',
                         class: 'fill-whole',
                     },
-                }, {
-                    name: 'rect',
-                    attribute: {
-                        x: '-20',
-                        y: '-20',
-                        width: '40',
-                        height: '40',
-                        class: 'focus-part',
-                    },
-                },
+                }, 
+                // {
+                //     name: 'rect',
+                //     attribute: {
+                //         x: '-20',
+                //         y: '-20',
+                //         width: '40',
+                //         height: '40',
+                //         class: 'focus-part',
+                //     },
+                // },
+
+                // my drawing of hexagon shape for port
+                // { // this draws bottom left side and horiz bottom line
+                //     name: 'path',
+                //     attribute: {
+                //         d: 'M-30,0L-10,20H10', // H10: draw horiz line from curr point -10,20 to 10,20 (takes y of curr pt);
+                //     },
+                // }, 
+                // { // this draws bottom right side
+                //     name: 'path',
+                //     attribute: {
+                //         d: 'M10,20L30,0',
+                //     },
+                // }, 
+                // { // this draws upper right side and upper horiz line
+                //     name: 'path',
+                //     attribute: {
+                //         d: 'M30,0L10,-20H-10'
+                //     },
+                // },
+                // { // this draws upper left side
+                //     name: 'path',
+                //     attribute: {
+                //         d: 'M-10,-20L-30,0'
+                //     },
+                // },
+                // { // what is this for?
+                //     name: 'rect',
+                //     attribute: {
+                //         x: '-20',
+                //         y: '-20',
+                //         width: '40',
+                //         height: '40',
+                //         class: 'focus-part',
+                //     },
+                // },
             ],
             introduction: 'Port',
         }

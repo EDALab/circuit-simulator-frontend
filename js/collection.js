@@ -196,9 +196,7 @@ PartsCollection.prototype = {
           partsHash[item.id] = false; //Current device access flag
           ans.push(item); //Current area device push into the stack
           // connect is a property defined for objects of type Part (parts.js)
-          console.log(item.connect);
-          console.log(item.connect.join(" ") + "hello");
-          console.log(item.connect.join(" ").split(" "));
+    
           item.connect.forEach(function (n) {
             const tempPart = partsAll.findPart(n);
             //attention:
