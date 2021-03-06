@@ -139,7 +139,12 @@ PartsCollection.prototype = {
     }
     return this.hash[tempid] !== undefined;
   },
+
   //Calculate new ID from existing devices
+  // DISCOVERY: new ID is created here, but there is a max number of single devices, so need to take that into account
+  // in our method to auto-generate an ID for subcircuit, we won't take in an input X_ and tack on a number like
+  // they do here for parts, bc we create it from scratch
+  // so we might have to export the maxNumber variable from this js file and check if creating a subcircuit will exceed limit
   newId(input) {
     const temp = input.match(/^[^_]+(_[^_]+)?/),
       id = temp && temp[0];

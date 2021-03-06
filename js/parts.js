@@ -821,16 +821,16 @@ const originalElectronic = {
                         class: 'fill-whole',
                     },
                 }, 
-                // {
-                //     name: 'rect',
-                //     attribute: {
-                //         x: '-20',
-                //         y: '-20',
-                //         width: '40',
-                //         height: '40',
-                //         class: 'focus-part',
-                //     },
-                // },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-20',
+                        y: '-20',
+                        width: '40',
+                        height: '40',
+                        class: 'focus-part',
+                    },
+                },
 
                 // my drawing of hexagon shape for port
                 // { // this draws bottom left side and horiz bottom line
@@ -1922,13 +1922,19 @@ partsNow.extend({
             }
         })
     },
-    //Put down all devices
+    // Put down all devices
+    // this method is called to place the part(s) on the grid, whether you are just placing it for the first time,
+    // or pasting it, etc... it is used multiple times in main.js
     putDownParts(opt) {
+        console.log("in putDownParts printing param opt");
+        console.log(opt);
         const self = this,
             cur = self.current,
             mouse = cur.mouse(event),
             bias = mouse.add(-1, cur.pageL)
 
+        console.log("printing self = this in putDownParts");
+        console.log(self);
         //Alignment of the whole moving device to the grid
         self.forEach((part) => {
             if (part.current.status === 'move') {
@@ -2072,6 +2078,7 @@ Object.freezeMethod(partsNow)
 
 //Processing device prototype format
 function css2obj(css) {
+    console.log("in css2obj!!");
     if (css instanceof Array) {
         if (css.length === 2) {
             return {
