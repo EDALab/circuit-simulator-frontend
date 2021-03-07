@@ -145,7 +145,7 @@ Matrix.prototype = {
     inverse() {
         const [L, U, P] = this.luDecompose(), n = this.row;
         for (let i = 0; i < U.row; i++)
-            if (!U[i][i]) throw ('逆矩阵不存在');
+            if (!U[i][i]) throw ('Inverse Matrix Does Not Exist');
 
         //Initialization of the inverse matrix of L and U
         const li = new Matrix(n);
