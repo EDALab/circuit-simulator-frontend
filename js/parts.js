@@ -581,18 +581,13 @@ const originalElectronic = {
     //BJT-NPN
     transistor_npn: {
         readWrite: {
-            id: 'Q_',
-            input: ['40', '26', '0.6', '1'],
+            id: 'X_',
+            input: ['2N2222A'],
         },
         readOnly: {
             partType: 'transistor_npn',
-            inputTxt: [
-                'Current Magnify Ratio：',
-                'Base Node Resistor：',
-                'BE Saturate Voltage：',
-                'CE Saturate Voltage：',
-            ],
-            parameterUnit: ['', 'Ω', 'V', 'V'],
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
             visionNum: 1,
             txtLocate: 25,
             padding: [1, 1, 1, 0],

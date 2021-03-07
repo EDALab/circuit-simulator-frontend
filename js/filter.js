@@ -52,6 +52,9 @@ const filter = (jsonString, quickMeasure) => {
     } else if (id.includes('Label_') && !!quickMeasure) {
       qmVoltmeter.connect[qmPin] = value.connect[0];
       qmPin++;
+    } else if (id.includes('X_')) {
+      temp.type = 'X';//transistor
+      temp.value.push(value.input[0]);
     }
 
     temp.connect = value.connect;

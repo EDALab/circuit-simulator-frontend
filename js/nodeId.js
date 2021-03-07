@@ -255,6 +255,8 @@ function nodeId(input) {
             // Oscilloscope
             component.type == "D" ||
             //Diode
+            component.type == "X" ||
+            //Transistor
             component.type == "VCV" ||
             // Voltage Controlled Voltage Source
             component.type == "CCV" ||
@@ -331,14 +333,23 @@ function nodeId(input) {
                 node1: component.connect[0],
                 node2: component.connect[1],
             }
-            if (component.type === 'D') {
-                // remove the value term if it is a diode;
-                compJson.modelType = component.value[0]
-                delete compJson.value
-            } else {
-                // remove the modelType term if it is not;
-                delete compJson.modelType
-            }
+            if (component.type === 'X') {
+                compJson = {
+                   id: component.id,
+                   name: component.name,
+                   // id: component.name,
+                   value: value,
+                   node1: component.connect[0],
+                   node2: component.connect[1],
+                   node3: component.connect[2]
+           }
+           }
+           if (component.type === 'D' || component.type === 'X') {//delete value if element contains modelType
+            compJson.modelType = component.value[0]
+            delete compJson.value
+        } else {
+            delete compJson.modelType
+        } 
 
             if (output[component.type]) {
                 output[component.type].push(compJson)
@@ -352,25 +363,39 @@ function nodeId(input) {
 
     for (var components in output) {
         for (var component = 0; component < output[components].length; component++) {
-            var nodeInd0 = findPin(output[components][component]["node1"]);
-            var nodeInd1 = findPin(output[components][component]["node2"]);
+            var nodeInd1 = findPin(output[components][component]["node1"]);
+            var nodeInd2 = findPin(output[components][component]["node2"]);
+            var nodeInd3 = findPin(output[components][component]["node3"]);
             for (var gndIndex = 0; gndIndex < gndList.length; gndIndex++) {
-                if (pinCmp(gndList[gndIndex], nodeInd0)) {
-                    nodeInd0 = "gnd";
-                }
                 if (pinCmp(gndList[gndIndex], nodeInd1)) {
                     nodeInd1 = "gnd";
                 }
-            }
-            if (typeof (nodeInd0) == "number") {
-                nodeInd0 = nodeInd0.toString();
+                if (pinCmp(gndList[gndIndex], nodeInd2)) {
+                    nodeInd2 = "gnd";
+                }
+                if (components === 'X') {
+                    if (pinCmp(gndList[gndIndex], nodeInd3)) {
+                      nodeInd3 = 'gnd'
+                    }
+                  }
+
+
             }
             if (typeof (nodeInd1) == "number") {
                 nodeInd1 = nodeInd1.toString();
             }
-            output[components][component]["node1"] = nodeInd0;
-            output[components][component]["node2"] = nodeInd1;
-        }
+            if (typeof (nodeInd2) == "number") {
+                nodeInd2 = nodeInd2.toString();
+            }
+            output[components][component]['node1'] = nodeInd1
+            output[components][component]['node2'] = nodeInd2
+      
+      if (components === 'X') {
+        output[components][component]['node1'] = nodeInd2
+        output[components][component]['node2'] = nodeInd1
+        output[components][component]['node3'] = nodeInd3
+      }      
+      }
     }
     return output
 }
