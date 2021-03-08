@@ -430,7 +430,12 @@ const delegate = {
             let ret;
             const handleObj = handlerQueue[i],
                 fn = handleObj.handlers.handler;
+            console.log("in dispatch method def of jquery.js");
+            
             event.currentTarget = handleObj.elem;
+
+            console.log("printing event.currentTarget");
+            console.log(event.currentTarget);
             event.handleObj = handleObj;
             event.data = handleObj.handlers.data;
             event.type = handleObj.handlers.origType;

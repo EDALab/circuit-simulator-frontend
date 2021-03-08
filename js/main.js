@@ -14,6 +14,7 @@ import { partsAll, partsNow } from './collection';
 import { nodeId } from './nodeID';
 import filter from './filter';
 import './test';
+import { Subcircuit } from './subcircuits';
 
 //Global variable definition
 const doc = document,
@@ -181,6 +182,8 @@ const grid = (function SchematicsGrid() {
   self.mouse = function (event) {
     return mouse(event);
   };
+
+
   self.createData = function (event) {
     console.log("in create data");
     //Offset initialization
@@ -701,9 +704,8 @@ function createGraph(data) {
   }, 600);
 }
 
-// TODO: Understand this and ask about it: because in jquery, the function definition of 'on' is diff
 //Web page element related events
-//Add all events of the device in the device menu
+//Add all events of the devices in the device menu - ie delegate the actions of each event to happen when each event is triggered
 sidebar.on(
   {
     mousemove(event) {
@@ -733,8 +735,12 @@ sidebar.on(
       if (event.which === 1 && !grid.totalMarks) {
         clearStatus();
         grid.now();
+        console.log("in sidebar.on after calling grid.now()");
         grid.setNewMark(true);
 
+        // this is where the Part component is constructed, and calling toFocus() gives it a css property "focus" which colors it in green
+        // and also pushes this device to the partsNow array 
+        // passing id into PartClass constructor -- then in PartClass constructor, newId() method is responsible for unique id generation!
         new PartClass(event.currentTarget.id).toFocus();
 
         partsNow.checkLine();
@@ -843,14 +849,58 @@ context.on("click", "#create-subcircuit", function (event) {
   temp = temp[0];
   console.log("temp");
   console.log(temp);
-  var filteredCircuit = JSON.stringify(temp);
-  filteredCircuit = filter(filteredCircuit);
-  console.log("output after applying filter function");
-  console.log(JSON.stringify(filteredCircuit));
-  var output = nodeId(filteredCircuit);
-  console.log("output after applying nodeId function");
-  console.log(JSON.stringify(output));
+
+  // validation checks to ensure: 
+  // 1. no independent power sources
+  // 2. no empty connections "" for parts that aren't of type port 
+  if(!validateSubcircuit(temp)) {
+    alert("Invalid subcircuit! Remove all independent power sources and make sure open nodes are connected to ports");
+    return;
+  }
+  // then extract id (figure out how id is automatically given to current parts when they are chosen and dragged from right side menu), name of subcircuit (asked from user as input), blackbox boolean,
+  let subcircuitName = window.prompt("Name of your subcircuit:");
+  
+  // and list of ports and use them in 
+  // subcircuit frontend constructor 
+
+  // ie: IDEA: send the subcircuit id, name, blackbox attr, and list of parts it is made of (raw data) to backend to store long-term
+  // then, in frontend, simplify the representation by picking out only the ports parts, making a list of them, and in frontend 
+  // u store subcircuit component as: id, name, list of PORTS only (simplified representation)
+
+
+  var xhr = new XMLHttpRequest();
+  var url = "http://127.0.0.1:5000/subcircuit"; // fictitious endpoint
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-type", "application/JSON");
+  
+  // Converting JSON data to string
+  var data = JSON.stringify(temp);
+  // Sending data with the request
+  xhr.send(data);
 });
+
+function validateSubcircuit(partsArray) {
+
+  // if array has only 1 or 2 parts in it, definitely breaking the port rule, otherwise it could be
+  // 1 loner port or 2 ports connected to each other which has no meaning
+  if(partsArray.length === 1 || partsArray.length === 2) {
+    return false;
+  }
+
+  for(let i = 0; i < partsArray.length; i++) {
+
+    let isInvalid = partsArray[i].partType === "dc_voltage_source" 
+      || partsArray[i].partType === "ac_voltage_source" 
+      || partsArray[i].partType === "dc_current_source" 
+      || ((partsArray[i].connect[0] === "" || partsArray[i].connect[1] === "") && partsArray[i].partType !== "Port");
+      
+    if(isInvalid) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 function staticOutputRefresh() {
   var staticOutput = $("#menu-staticOutput");
@@ -1373,7 +1423,8 @@ mainPage.on("mouseup", function (event) {
   if (event.which === 1) {
     //left click
     switch (true) {
-      //new devide
+      //new device
+      // this case is for when you have selected a device and you click on grid to place it!
       case grid.newMark: {
         grid.setNewMark(false);
         partsNow.putDownParts("new");
