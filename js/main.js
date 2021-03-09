@@ -14,7 +14,7 @@ import { partsAll, partsNow } from './collection';
 import { nodeId } from './nodeID';
 import filter from './filter';
 import './test';
-import { Subcircuit } from './subcircuits';
+// import { Subcircuit } from './subcircuits';
 
 //Global variable definition
 const doc = document,
