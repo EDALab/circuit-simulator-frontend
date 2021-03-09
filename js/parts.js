@@ -581,7 +581,7 @@ const originalElectronic = {
     //BJT-NPN
     transistor_npn: {
         readWrite: {
-            id: 'X_',
+            id: 'nBJT_',
             input: ['2N2222A'],
         },
         readOnly: {

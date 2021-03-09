@@ -255,7 +255,7 @@ function nodeId(input) {
             // Oscilloscope
             component.type == "D" ||
             //Diode
-            component.type == "X" ||
+            component.type == "nBJT" ||
             //Transistor
             component.type == "VCV" ||
             // Voltage Controlled Voltage Source
@@ -333,7 +333,7 @@ function nodeId(input) {
                 node1: component.connect[0],
                 node2: component.connect[1],
             }
-            if (component.type === 'X') {
+            if (component.type === 'nBJT') {
                 compJson = {
                    id: component.id,
                    name: component.name,
@@ -344,7 +344,7 @@ function nodeId(input) {
                    node3: component.connect[2]
            }
            }
-           if (component.type === 'D' || component.type === 'X') {//delete value if element contains modelType
+           if (component.type === 'D' || component.type === 'nBJT') {//delete value if element contains modelType
             compJson.modelType = component.value[0]
             delete compJson.value
         } else {
@@ -373,7 +373,7 @@ function nodeId(input) {
                 if (pinCmp(gndList[gndIndex], nodeInd2)) {
                     nodeInd2 = "gnd";
                 }
-                if (components === 'X') {
+                if (components === 'nBJT') {
                     if (pinCmp(gndList[gndIndex], nodeInd3)) {
                       nodeInd3 = 'gnd'
                     }
@@ -390,7 +390,7 @@ function nodeId(input) {
             output[components][component]['node1'] = nodeInd1
             output[components][component]['node2'] = nodeInd2
       
-      if (components === 'X') {
+      if (components === 'nBJT') {
         output[components][component]['node1'] = nodeInd2
         output[components][component]['node2'] = nodeInd1
         output[components][component]['node3'] = nodeInd3
