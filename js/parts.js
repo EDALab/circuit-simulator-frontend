@@ -86,8 +86,8 @@ const originalElectronic = {
                     attribute: {
                         x: '-30',
                         y: '-13',
-                        width: '60',
-                        height: '26',
+                        width: '60', // 60
+                        height: '26', // 26 
                         class: 'focus-part',
                     },
                 },
@@ -768,7 +768,7 @@ const originalElectronic = {
             partType: 'Port',
             inputTxt: [],
             visionNum: 1,
-            txtLocate: 14,
+            txtLocate: 50,
             // Default Orientation is horizontal
             padding: [0, 1],
             margin: 1,
@@ -811,9 +811,9 @@ const originalElectronic = {
                 { // what is this for?
                     name: 'rect',
                     attribute: {
-                        x: '-20', // -20, -20 x y
+                        x: '-20', 
                         y: '-20',
-                        width: '40',
+                        width: '70',
                         height: '40',
                         class: 'focus-part',
                     },
@@ -927,6 +927,10 @@ function PartClass(data) {
     delete this.text
     Object.seal(this)
     partsAll.push(this)
+    console.log("this obj");
+    console.log(this);
+    console.log("partsAll in createPart");
+    console.log(partsAll);
 }
 PartClass.prototype = {
     constructor: PartClass,
@@ -1455,6 +1459,8 @@ PartClass.prototype = {
     toFocus() {
         this.elementDOM.addClass('focus')
         partsNow.push(this)
+        console.log("partsNow in toFocus() of parts.js");
+        console.log(partsNow);
         return this
     },
     //Device cancel focus

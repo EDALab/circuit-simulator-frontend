@@ -693,12 +693,7 @@ action.on('click', '#fab-adds', function (event) {
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
     var feedback;
-    console.log("partsall");
-    console.log(partsAll);
-    console.log(JSON.stringify(partsAll));
     var temp_var = partsAll.connectGraph();
-    console.log("temp var after connect graph");
-    console.log(temp_var);
     if (temp_var.length == 0) {
         grid.error('Circuit diagram need to contain at least one component!');
         return (false);
@@ -714,12 +709,9 @@ action.on('click', '#fab-run', function (event) {
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
     console.log("filtered circuit");
-    console.log(filteredCircuit);
+    console.log(JSON.stringify(filteredCircuit));
     var output = nodeId(filteredCircuit);
-    console.log("after nodeId printing output object and stringified");
-    console.log("output obj");
-    console.log(output);
-    console.log("stringified output obj");
+    console.log("stringified output obj after nodeid");
     console.log(JSON.stringify(output));
     var xhr = new XMLHttpRequest();
     var url = 'http://127.0.0.1:5000/static_simulator/Test';
@@ -1507,13 +1499,13 @@ function validateSubcircuit(partsArray) {
 //Right click menu
 //Create subcircuit
 context.on('click', "#create-subcircuit", function (event) {
-//   console.log("It's working");
-//   console.log("partsNow");
-//   console.log(partsNow);
+  console.log("It's working");
+  console.log("partsNow");
+  console.log(partsNow);
   var temp = partsNow.connectGraph();
   temp = temp[0];
-//   console.log("temp");
-//   console.log(temp);
+  console.log("temp");
+  console.log(temp);
 
   // validation checks to ensure: 
   // 1. no independent power sources
@@ -1531,6 +1523,10 @@ context.on('click', "#create-subcircuit", function (event) {
   // ie: IDEA: send the subcircuit id, name, blackbox attr, and list of parts it is made of (raw data) to backend to store long-term
   // then, in frontend, simplify the representation by picking out only the ports parts, making a list of them, and in frontend 
   // u store subcircuit component as: id, name, list of PORTS only (simplified representation)
+
+  // check comments in filter.js method, because idea outline above might not work for the following reason: when people build and play around with circuits 
+  // in the grid, the circuits might not be saved... so if user just wants to simulate an unsaved circuit for now, or if he/she updated the subcircuit in frontend and hasn't saved
+  // the changes yet, then we cannot just query the backend for the subcircuit because the db subcircuit is outdated
 
 });
 //Edit parameters

@@ -1,6 +1,9 @@
 
 const filter = (jsonString, quickMeasure) => {
+  console.log("input to filter");
   const object = JSON.parse(jsonString)
+  console.log("after json parsing input");
+  console.log(object);
   let output = {}
 
   output["-1"] = { id: 'GND_Abs', type: 'REF', value: 0, connect: [""] }
@@ -55,8 +58,18 @@ const filter = (jsonString, quickMeasure) => {
     } else if (id.includes('nBJT_')) {
       temp.type = 'nBJT';//n-type BJT
       temp.value.push(value.input[0]);
-    }
+    } 
 
+    // sketch of subcircuit feature idea: 
+    // else if id.includes(X_)
+    // then we have a subcircuit component in our circuit
+    // this subcircuit has a list of its components as an attribute
+    // we can send then say temp.type = 'X' (for subcircuit)
+    // subcircuit has lets say 3 ports, each of which have 1 node connected to sth in the subcircuit, and another node open and free to connect, and it has been connected
+    // to a device outside the subcircuit; this device is part of the larger circuit
+    // we need to store the information that: the 3 points of entry to the subcircuit which are connected to the external world, are connected to which devices?
+    // we can also recursively apply filter function on the subcircuit
+    
     temp.connect = value.connect;
 
     output[`${key}`] = temp;
