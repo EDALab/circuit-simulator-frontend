@@ -693,7 +693,12 @@ action.on('click', '#fab-adds', function (event) {
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
     var feedback;
+    console.log("partsall");
+    console.log(partsAll);
+    console.log(JSON.stringify(partsAll));
     var temp_var = partsAll.connectGraph();
+    console.log("temp var after connect graph");
+    console.log(temp_var);
     if (temp_var.length == 0) {
         grid.error('Circuit diagram need to contain at least one component!');
         return (false);
@@ -704,9 +709,17 @@ action.on('click', '#fab-run', function (event) {
     } else {
         temp_var = temp_var[0];
     }
+    console.log("original circuit");
+    console.log(temp_var);
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
+    console.log("filtered circuit");
+    console.log(filteredCircuit);
     var output = nodeId(filteredCircuit);
+    console.log("after nodeId printing output object and stringified");
+    console.log("output obj");
+    console.log(output);
+    console.log("stringified output obj");
     console.log(JSON.stringify(output));
     var xhr = new XMLHttpRequest();
     var url = 'http://127.0.0.1:5000/static_simulator/Test';

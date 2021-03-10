@@ -36,14 +36,14 @@ const originalElectronic = {
      * This part is to describe the basic parameters and shape of a component
      *   id             The component name
      *   partType       The component type
-     *   input          The component parameters
+     *   input          The component parameters that relate to a component's input, if it has any
      *   inputTxt       The description of the component parameters
-     *   visionNum      Number of parameters displayed on the parameter panel
-     *   pointInfor     Node position and orientation
+     *   visionNum      Number of parameters displayed on the parameter panel; this includes name of component, so length of input attr = visionNum - 1
+     *   pointInfor     Node position and orientation (it is the placement and orientation of the pin from which we can drag a wire and connect the component to other stuff)
      *   padding        The component padding
      *   margin         The component margin
      *   txtLocate      The distance between the text and the center of the component
-     *   criteriaTrend  Direction of the current with respect to the connection nodes
+     *   criteriaTrend  Direction of the current with respect to the connection nodes -- not in use
      *
      */
 
@@ -307,7 +307,7 @@ const originalElectronic = {
         },
         readOnly: {
             partType: 'dc_current_source',
-            inputTxt: ['电流值：'],
+            inputTxt: ['Current：'],
             parameterUnit: ['A'],
             visionNum: 2,
             pointInfor: [
@@ -755,6 +755,71 @@ const originalElectronic = {
                 },
             ],
             introduction: 'Single Point Voltmeter',
+        },
+    },
+    // Port device
+    Port: {
+        readWrite: {
+            // Editable Data
+            id: 'P_'
+        },
+        readOnly: {
+            // Readonly Data
+            partType: 'Port',
+            inputTxt: [],
+            visionNum: 1,
+            txtLocate: 14,
+            // Default Orientation is horizontal
+            padding: [0, 1],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [-30, 0],
+                    direction: [0, -1],
+                },
+                {
+                    position: [30, 0],
+                    direction: [0, 1],
+                },
+            ],
+            aspectInfor: [
+                // my drawing of hexagon shape for port
+                { // this draws bottom left side and horiz bottom line
+                    name: 'path',
+                    attribute: {
+                        d: 'M-30,0L-10,20H10', 
+                    },
+                }, 
+                { // this draws bottom right side
+                    name: 'path',
+                    attribute: {
+                        d: 'M10,20L30,0',
+                    },
+                }, 
+                { // this draws upper right side and upper horiz line
+                    name: 'path',
+                    attribute: {
+                        d: 'M30,0L10,-20H-10'
+                    },
+                },
+                { // this draws upper left side
+                    name: 'path',
+                    attribute: {
+                        d: 'M-10,-20L-30,0'
+                    },
+                },
+                { // what is this for?
+                    name: 'rect',
+                    attribute: {
+                        x: '-20', // -20, -20 x y
+                        y: '-20',
+                        width: '40',
+                        height: '40',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'Port',
         },
     },
     // Node_Label device
