@@ -1467,7 +1467,59 @@ graphPage.on('mouseup', function () {
     }
 });
 
+// Helper function to validate if subcircuit is correct 
+function validateSubcircuit(partsArray) {
+
+  // if array has only 1 or 2 parts in it, definitely breaking the port rule, otherwise it could be
+  // 1 loner port or 2 ports connected to each other which has no meaning
+  if(partsArray.length === 1 || partsArray.length === 2) {
+    return false;
+  }
+
+  for(let i = 0; i < partsArray.length; i++) {
+
+    let isInvalid = partsArray[i].partType === "dc_voltage_source" 
+      || partsArray[i].partType === "ac_voltage_source" 
+      || partsArray[i].partType === "dc_current_source" 
+      || ((partsArray[i].connect[0] === "" || partsArray[i].connect[1] === "") && partsArray[i].partType !== "Port");
+
+    if(isInvalid) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 //Right click menu
+//Create subcircuit
+context.on('click', "#create-subcircuit", function (event) {
+//   console.log("It's working");
+//   console.log("partsNow");
+//   console.log(partsNow);
+  var temp = partsNow.connectGraph();
+  temp = temp[0];
+//   console.log("temp");
+//   console.log(temp);
+
+  // validation checks to ensure: 
+  // 1. no independent power sources
+  // 2. no empty connections "" for parts that aren't of type port 
+  if(!validateSubcircuit(temp)) {
+    alert("Invalid subcircuit! Remove all independent power sources and make sure open nodes are connected to ports");
+    return;
+  }
+  // then extract id (figure out how id is automatically given to current parts when they are chosen and dragged from right side menu), name of subcircuit (asked from user as input), blackbox boolean,
+  let subcircuitName = window.prompt("Name of your subcircuit:");
+
+  // and list of ports and use them in 
+  // subcircuit frontend constructor 
+
+  // ie: IDEA: send the subcircuit id, name, blackbox attr, and list of parts it is made of (raw data) to backend to store long-term
+  // then, in frontend, simplify the representation by picking out only the ports parts, making a list of them, and in frontend 
+  // u store subcircuit component as: id, name, list of PORTS only (simplified representation)
+
+});
 //Edit parameters
 context.on('click', '#edit-parameters', function (event) {
     const clickpart = partsNow.get(0);
