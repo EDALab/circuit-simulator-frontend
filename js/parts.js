@@ -247,13 +247,13 @@ const originalElectronic = {
     // AC Voltage Source
     ac_voltage_source: {
         readWrite: {
-            id: 'V_',
-            input: ['220', '50', '0', '0'],
+            id: 'VA_',
+            input: ['220', '50', '0'],
         },
         readOnly: {
-            partType: 'ac_voltage_source',
-            inputTxt: ['Vp：', 'Freq：', 'Bias：', 'Phase：'],
-            parameterUnit: ['V', 'Hz', 'V', '°'],
+            partType: 'VA',
+            inputTxt: ['Vp：', 'Freq：', 'Offset: '],
+            parameterUnit: ['V', 'Hz', 'V'],
             visionNum: 3,
             pointInfor: [
                 {
@@ -277,6 +277,14 @@ const originalElectronic = {
                         cy: '0',
                         r: '19',
                         class: 'white-fill',
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M0,-40V-19M0,19V40M0,-15V-9M-3,-12H3M-3,11H3',
+                        fill: 'none',
+                        stroke: 'black',
                     },
                 },
                 {
@@ -307,7 +315,7 @@ const originalElectronic = {
         },
         readOnly: {
             partType: 'dc_current_source',
-            inputTxt: ['电流值：'],
+            inputTxt: ['Current：'],
             parameterUnit: ['A'],
             visionNum: 2,
             pointInfor: [
@@ -359,6 +367,74 @@ const originalElectronic = {
                 },
             ],
             introduction: 'DC Current Source',
+        },
+    },
+    // AC Current Source
+    ac_current_source: {
+        readWrite: {
+            id: 'IA_',
+            input: ['1', '50', '0'],
+        },
+        readOnly: {
+            partType: 'IA',
+            inputTxt: ['Ip：', 'Freq：', 'Offset: '],
+            parameterUnit: ['I', 'Hz', 'I'],
+            visionNum: 3,
+            pointInfor: [
+                {
+                    position: [0, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [0, 40],
+                    direction: [0, 1],
+                },
+            ],
+            // Default Orientation is horizontal
+            padding: 1,
+            margin: [1, 0],
+            txtLocate: 24,
+            aspectInfor: [
+                {
+                    name: 'circle',
+                    attribute: {
+                        cx: '0',
+                        cy: '0',
+                        r: '19',
+                        class: 'white-fill',
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M0,-40V-20M0,20V40M0,-12V12',
+                    },
+                },
+                {
+                    name: 'polygon',
+                    attribute: {
+                        points: '0,-14 -5,-4 0,-8 5,-4',
+                        class: 'fill-whole', //'fill' : '#3B4449', 'stroke-width' : '0.5', 'stroke-linecap' : 'square'
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-0,-40V-19M0,19V40M-12,0Q-6,-12 0,0M0,0Q6,12 12,0',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-20',
+                        y: '-30',
+                        width: '40',
+                        height: '60',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'AC Current Source',
         },
     },
     // Reference Point
@@ -1579,7 +1655,7 @@ PartClass.prototype = {
             )
             const temp_input_match = inputData.match(dataMatch)
             if (!temp_input_match || inputData !== temp_input_match[0]) {
-                if (this.partType !== 'diode') {
+                if (this.partType !== 'diode' && this.partType !== 'transistor_npn') {
                     parameter.addClass('parameter-error-' + (i + 1))
                     error = false
                 }

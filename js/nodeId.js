@@ -304,53 +304,51 @@ function nodeId(input) {
                 migrateNode(pinNode1, minNode1);
             }
 
-            var value = 0;
-            if (component.value[0]) {
-                value = parseInt(component.value[0]);
-                if (component.value[0].includes("p")) {
-                    value /= 1000000000000;
-                } else if (component.value[0].includes("n")) {
-                    value /= 1000000000
-                } else if (component.value[0].includes("μ")) {
-                    value /= 1000000
-                } else if (component.value[0].includes("m")) {
-                    value /= 1000
-                } else if (component.value[0].includes("k")) {
-                    value *= 1000
-                } else if (component.value[0].includes("M")) {
-                    value *= 1000000
-                } else if (component.value[0].includes("G")) {
-                    value *= 1000000000
+            var value = [];
+            for (var i = 0; i < component.value.length; i++) {
+                if (component.value[i]) {
+                    value[i] = parseInt(component.value[i]);
+                    if (component.value[0].includes("p")) {
+                        value[i] /= 1000000000000;
+                    } else if (component.value[0].includes("n")) {
+                        value[i] /= 1000000000
+                    } else if (component.value[0].includes("μ")) {
+                        value[i] /= 1000000
+                    } else if (component.value[0].includes("m")) {
+                        value[i] /= 1000
+                    } else if (component.value[0].includes("k")) {
+                        value[i] *= 1000
+                    } else if (component.value[0].includes("M")) {
+                        value[i] *= 1000000
+                    } else if (component.value[0].includes("G")) {
+                        value[i] *= 1000000000
+                    }
                 }
             }
+
 
             // Output as json
             var compJson = {
                 id: component.id,
                 name: component.name,
                 // id: component.name,
-                value: value,
+                value: value[0] ? value[0] : 0,
                 node1: component.connect[0],
                 node2: component.connect[1],
             }
             if (component.type === 'nBJT') {
-                compJson = {
-                   id: component.id,
-                   name: component.name,
-                   // id: component.name,
-                   value: value,
-                   node1: component.connect[0],
-                   node2: component.connect[1],
-                   node3: component.connect[2]
-           }
-           }
-           if (component.type === 'D' || component.type === 'nBJT') {//delete value if element contains modelType
-            compJson.modelType = component.value[0]
-            delete compJson.value
-        } else {
-            delete compJson.modelType
-        } 
-
+                compJson.modelType = component.value[0].toLowerCase();
+                compJson.node3 = component.connect[2];
+                delete compJson.value
+            } else if (component.type === 'D') {
+                compJson.modelType = component.value[0].toLowerCase();
+                delete compJson.value
+            } else if (component.type === 'VA' || component.type === 'IA') {
+                compJson.amplitude = value[0];
+                compJson.frequency = value[1];
+                compJson.offset = value[2];
+                delete compJson.value
+            }
             if (output[component.type]) {
                 output[component.type].push(compJson)
             } else {
@@ -375,11 +373,9 @@ function nodeId(input) {
                 }
                 if (components === 'nBJT') {
                     if (pinCmp(gndList[gndIndex], nodeInd3)) {
-                      nodeInd3 = 'gnd'
+                        nodeInd3 = 'gnd'
                     }
-                  }
-
-
+                }
             }
             if (typeof (nodeInd1) == "number") {
                 nodeInd1 = nodeInd1.toString();
@@ -389,13 +385,13 @@ function nodeId(input) {
             }
             output[components][component]['node1'] = nodeInd1
             output[components][component]['node2'] = nodeInd2
-      
-      if (components === 'nBJT') {
-        output[components][component]['node1'] = nodeInd2
-        output[components][component]['node2'] = nodeInd1
-        output[components][component]['node3'] = nodeInd3
-      }      
-      }
+
+            if (components === 'nBJT') {
+                output[components][component]['node1'] = nodeInd2
+                output[components][component]['node2'] = nodeInd1
+                output[components][component]['node3'] = nodeInd3
+            }
+        }
     }
     return output
 }

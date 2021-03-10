@@ -543,77 +543,6 @@ function contextSet(event, status) {
     }
 
 }
-//Display waveform
-function createGraph(data) {
-    const ratio = 1.6,                                  //Page aspect ratio
-        otherHeight = 61,                               //Top reserved height
-        totalHeight = $(window).height(),               //Window height
-        totalWidth = $(window).width(),                 //Window width
-        maxForm = !!(data.voltage.length) +             //How many waveform interfaces are needed
-            !!(data.current.length),
-        graphHeight = totalHeight - otherHeight,        //Waveform page height
-        boxHeight = graphHeight / maxForm,              //Height of each panel
-        graphMain = $('#graph-main'),
-        graphWidth = (totalHeight * ratio < totalWidth) ? totalHeight * ratio : totalWidth,
-        graphForm = graphMain.childSelect('div.graph-individual', maxForm);
-
-    //Delete all elements in the DOM
-    for (let i = 0; i < graphForm.length; i++) {
-        const form = graphForm.get(i);
-        form.childrens().remove();
-        form.css('height', boxHeight + 'px');
-    }
-
-    //Set the waveform page width
-    graphPage.attr('style', 'width: ' + graphWidth + 'px');
-    //Create waveform
-    for (let i = 0; i < 2; i++) {
-        const label = ['voltage', 'current'][i];
-        if (data[label].length) {
-            const sub = (graphForm.length === 2) ? i : 0;
-            graphForm.get(sub).attr('id', 'graphForm-' + i);
-            graphForm.get(sub).prop('_data', new Graph(data[label], graphForm[sub], label));
-        }
-    }
-    //Data preparation is complete, ready for page change
-    const height = graphPage.height(),
-        width = graphPage.width(),
-        actionRight = 66,
-        actionBottom = 63.6,
-        R = Math.sqrt((actionRight - width) * (actionRight - width) + (actionBottom - height) * (actionBottom - height)),
-        clipPath = [
-            [R - width + actionRight, R - height],
-            [R - width + actionRight, R + actionBottom + 10],
-            [R + actionRight + 10, R + actionBottom + 10],
-            [R + actionRight + 10, R - height]
-        ].map((n) => n.join('px ')).join('px,') + 'px';
-
-    graphPage.attr('class', 'run');
-
-    const circle = graphPage.append($('<div>', {
-        'id': 'background-circle',
-        'style': 'position: absolute; background-color: #66CCCC; border-radius: 50%;' +
-            '-webkit-clip-path: polygon(' + clipPath + ');' +
-            'margin : 0; right: ' + actionRight + 'px; bottom: ' + actionBottom + 'px; ' +
-            'width: ' + (2 * R) + 'px; height: ' + (2 * R) + 'px; transform: translate(50%,50%)'
-    }));
-    const anime = new styleRule('graph-vision');
-    anime.setRule('0%', {
-        'width': '0px',
-        'height': '0px',
-        '-webkit-clip-path': 'circle(0)'
-    });
-    anime.setRule('100%', {
-        'width': 2 * R + 'px',
-        'height': 2 * R + 'px',
-        '-webkit-clip-path': 'circle(200vh)'
-    });
-
-    setTimeout(function () {
-        graphPage.attr('class', 'visionAll');
-        circle.remove();
-    }, 600);
-}
 
 //Web page element related events
 //Add all events of the device in the device menu
@@ -707,30 +636,83 @@ action.on('click', '#fab-run', function (event) {
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
     var output = nodeId(filteredCircuit);
-    console.log(JSON.stringify(output));
+    var simulationType;
+    if (output.hasOwnProperty('VA') || output.hasOwnProperty('IA')) {
+        simulationType = 'dynamic';
+        var url = 'http://127.0.0.1:5000/dynamic_simulator/Test';
+        var endtimeDom = document.getElementById("endtime");
+        var time_interval = endtimeDom.value;
+        var stepsizeDom = document.getElementById("stepsize");
+        var stepsize = stepsizeDom.value;
+        output.time_interval = magConvert(time_interval);
+        output.step_size = magConvert(stepsize);
+    } else {
+        simulationType = 'static';
+        var url = 'http://127.0.0.1:5000/static_simulator/Test';
+    }
+    // Converting JSON data to string 
+    var data = JSON.stringify(output);
+    console.log(data);
     var xhr = new XMLHttpRequest();
-    var url = 'http://127.0.0.1:5000/static_simulator/Test';
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/JSON');
     // Create a state change callback 
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 201) {
+        if (xhr.readyState === 4 && xhr.status === 201 && simulationType === 'static') {
             // Print received data from server 
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
             staticOutputUpdate(eval("(" + feedback + ")"));
-        } else if (xhr.readyState === 4 && xhr.status === 400) {
+        } else if (xhr.readyState === 4 && xhr.status === 500 && simulationType === 'static') {
             alert(xhr.responseText);
+        } else if (xhr.readyState === 4 && xhr.status === 201 && simulationType === 'dynamic') {
+            // Temporarily print the output through the alert
+            feedback = xhr.responseText;
+            // alert(feedback);
+            console.log(feedback);
+            var feedbackData = eval("(" + feedback + ")");
+            var returnedEntry = feedbackData.VM[0].SPVM_1;
+            var returnedLen = returnedEntry.length;
+            console.log("count: " + returnedLen);
+            data = { voltage: [] };
+            for (var i = 0; i < returnedLen; i++) {
+                data.voltage = data.voltage.concat(returnedEntry[i]);
+            }
+            data.time = time_interval;
+            data.stepTime = stepsize;
         }
     };
-    // Converting JSON data to string 
-    var data = JSON.stringify(output);
     // Sending data with the request 
     xhr.send(data);
-    $(document.body).addClass('open-sidebar open-gray');
-    sidebar.addClass('open-menu-staticOutput');
+    if (simulationType === 'static') {
+        // static output
+        $(document.body).addClass('open-sidebar open-gray');
+        sidebar.addClass('open-menu-staticOutput');
+    } else {
+        // plot
+    }
     return;
 });
+
+function magConvert(input) {
+    var value = parseFloat(input);
+    if (input.includes("p")) {
+        value /= 1000000000000;
+    } else if (input.includes("n")) {
+        value /= 1000000000;
+    } else if (input.includes("u")) {
+        value /= 1000000;
+    } else if (input.includes("m")) {
+        value /= 1000;
+    } else if (input.includes("k")) {
+        value *= 1000;
+    } else if (input.includes("M")) {
+        value *= 1000000;
+    } else if (input.includes("G")) {
+        value *= 1000000000;
+    }
+    return value;
+}
 
 function staticOutputRefresh() {
     var staticOutput = $('#menu-staticOutput');
@@ -831,7 +813,9 @@ qmRunButton.on('click', function (event) {
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit, true);
     var output = nodeId(filteredCircuit);
-    console.log(JSON.stringify(output));
+    // Converting JSON data to string 
+    var data = JSON.stringify(output);
+    console.log(data);
     var xhr = new XMLHttpRequest();
     var url = 'http://127.0.0.1:5000/static_simulator/Test';
     xhr.open('POST', url, true);
@@ -847,8 +831,6 @@ qmRunButton.on('click', function (event) {
             alert(xhr.responseText);
         }
     };
-    // Converting JSON data to string 
-    var data = JSON.stringify(output);
     // Sending data with the request 
     xhr.send(data);
     return;

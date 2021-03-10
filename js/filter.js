@@ -20,6 +20,16 @@ const filter = (jsonString, quickMeasure) => {
     } else if (id.includes('V_')) {
       temp.type = 'V'
       temp.value.push(value.input[0])
+    } else if (id.includes('VA_')) {
+      temp.type = 'VA';
+      temp.value.push(value.input[0]);
+      temp.value.push(value.input[1]);
+      temp.value.push(value.input[2]);
+    } else if (id.includes('IA_')) {
+      temp.type = 'IA';
+      temp.value.push(value.input[0]);
+      temp.value.push(value.input[1]);
+      temp.value.push(value.input[2]);
     } else if (id.includes('SPVM_') && !quickMeasure) {
       temp.type = 'VM';
       temp.value.push(value.input[0]);

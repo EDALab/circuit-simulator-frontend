@@ -32,5 +32,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/xiaoboost/Circuit-Simulator.git"
-  }
+  },
+  "dependencies": {}
 }
