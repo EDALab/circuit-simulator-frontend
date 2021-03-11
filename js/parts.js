@@ -927,10 +927,10 @@ function PartClass(data) {
     delete this.text
     Object.seal(this)
     partsAll.push(this)
-    console.log("this obj");
-    console.log(this);
-    console.log("partsAll in createPart");
-    console.log(partsAll);
+    // console.log("this obj");
+    // console.log(this);
+    // console.log("partsAll in createPart");
+    // console.log(partsAll);
 }
 PartClass.prototype = {
     constructor: PartClass,
@@ -1459,8 +1459,8 @@ PartClass.prototype = {
     toFocus() {
         this.elementDOM.addClass('focus')
         partsNow.push(this)
-        console.log("partsNow in toFocus() of parts.js");
-        console.log(partsNow);
+        // console.log("partsNow in toFocus() of parts.js");
+        // console.log(partsNow);
         return this
     },
     //Device cancel focus

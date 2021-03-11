@@ -58,9 +58,10 @@ var example_output = {
     }]
 }
 
-let nodeList = [[]];
-let gndList = [];
-let firstNode = true;
+let nodeList = [[]]; // List of lists. each list item in the nodeList is a node entity. A node entity is made up of all the pin names 
+// connected at a juncture. Examples of pins are: V_4-0, V_4-1, R_1-0, C_5-0, etc...
+let gndList = []; // List of ground pins/pin names
+let firstNode = true; // boolean indicating that the nodeList is a list of an empty list. Hasn't been filled with anything yet. 
 
 function findLastPin(pin) {
     /**
@@ -87,7 +88,7 @@ function findPin(pin) {
      * @param   {String}    pin, indicates the pin we use to search for the node.
      * @return  {int}       This method will return a integer value indicating 
      *                      the index of the first node containing that pin,
-     *                      it will return 0 if no such pin is found.
+     *                      it will return -1 if no such pin is found.
      * 
      */
     for (var nodeIndex = 0; nodeIndex < nodeList.length; nodeIndex++) {
@@ -105,10 +106,14 @@ function appendNode(pin) {
      * become the first pin in this new Node.
      * 
      * @param   {String}    pin, indicates the first pin included in the new node.
+     *                      Pin is of the format: componentID-0 or componentID-1 or componentID-[insert number of its point of connection]
+     *                      It is the naming of the node of a component. Example: V_1-0 (1st node of voltage source), V_1-1 (2nd node of voltage source)
      * @return  {int}       It returns the index of the node that has just been created.
      * 
      */
     var newNode = [pin];
+    console.log("newNode");
+    console.log(newNode);
     if (firstNode) {
         // If the node List is originally empty, change the first node to the newNode.
         nodeList[0] = newNode;
@@ -119,28 +124,44 @@ function appendNode(pin) {
     return nodeList.length - 1;
 }
 
-function joinNode(pin, node) {
-    if (!(nodeList[node].includes(pin))) {
-        nodeList[node].push(pin);
-        return node;
+/**
+ * 
+ * @param {String} pin      The name of the pin we want to add to the node. 
+ *                          A pin is an identifier of the connection side of a component. 
+ *                          Examples include: R_1-0, R_1-1, GND_1-0, V_4-0, etc...
+ * @param {int} nodeIndex   Index of the node we are currently building which is in the nodeList 
+ * @returns 
+ */
+function joinNode(pin, nodeIndex) {
+    if (!(nodeList[nodeIndex].includes(pin))) { // if the node does not include this pin name, we add the pin 
+        // to the node to complete the picture.
+        nodeList[nodeIndex].push(pin);
+        return nodeIndex;
     }
     return -1;
 }
 
-function migrateNode(oldNode, newNode) {
+/**
+ * Move over the pins in the oldNode to the newNode because they have a pin in common, so we need to merge
+ * them since all these pins are connected to each other; they are part of one node. 
+ * 
+ * @param {int} oldNodeIndex index of the old node in the nodelist
+ * @param {int} newNodeIndex index of the new node in the nodelist 
+ */
+function migrateNode(oldNodeIndex, newNodeIndex) {
     var migratedPin = [];
-    for (var pin in nodeList[oldNode]) {
+    for (var pin in nodeList[oldNodeIndex]) {
         if (pin.includes("isEqual")) {
             break;
         }
-        if (!(nodeList[newNode].includes(nodeList[oldNode][pin]))) {
+        if (!(nodeList[newNodeIndex].includes(nodeList[oldNodeIndex][pin]))) {
             // If a pin exists in oldNode but not in newNode, migrate
-            joinNode(nodeList[oldNode][pin], newNode);
-            migratedPin.push(nodeList[oldNode][pin]);
+            joinNode(nodeList[oldNodeIndex][pin], newNodeIndex);
+            migratedPin.push(nodeList[oldNodeIndex][pin]);
         }
-        // If newNode has that pin, nothing need to be done.
+        // If newNode has that pin, nothing needs to be done.
     }
-    nodeList[oldNode] = [];
+    nodeList[oldNodeIndex] = [];
     // After the migration, clear the oldNode to avoid confusion.
 
     for (var pin in migratedPin) {
@@ -168,9 +189,17 @@ function nodeListToString() {
     return retVal;
 }
 
-function pinCmp(pin_cmp, node) {
-    for (var pin in nodeList[node]) {
-        if (nodeList[node][pin] == pin_cmp) {
+/**
+ * Compares pin_cmp, the pin name we input to it, to all the pins in the node which is accessed by nodeIndex
+ * from the node list 
+ * 
+ * @param {*} pin_cmp   pin name to which to compare all the pins in the node indexed by nodeIndex 
+ * @param {*} nodeIndex index of node in node list
+ * @returns 
+ */
+function pinCmp(pin_cmp, nodeIndex) {
+    for (var pinIndex in nodeList[nodeIndex]) {
+        if (nodeList[nodeIndex][pinIndex] == pin_cmp) {
             return true;
         }
     }
@@ -185,19 +214,20 @@ function nodeId(input) {
     for (var device in input) {
         var component = input[device];
         if (component.type == "REF") { // Reference Point
-            // Check if there is a node containing the pin
+            // Check if there is a node containing the pin name for ground
             var pinName = component.id + "-0";
             // console.log("findPin second time, result: " + findPin(pinName))
-            var pinNode = findPin(pinName);
+            var pinNode = findPin(pinName); // findPin returns the index of the first node (IN NODELIST) containing that pin name
             if (pinNode == -1) {
                 pinNode = appendNode(pinName);
             }
             // Add all the connected lines to the pin node
+            // we split based on space " " because ground can be connected to "line_2 line_3" since it is connected to a juncture
             var connLines = component["connect"][0].split(" ");
             var minNode = pinNode;
-            for (var connLine = 0; connLine < connLines.length; connLine++) {
-                joinNode(connLines[connLine], pinNode);
-                var lowestIndex = findPin(connLines[connLine]);
+            for (var connLineIndex = 0; connLineIndex < connLines.length; connLineIndex++) {
+                joinNode(connLines[connLineIndex], pinNode); // pinNode is index of the first node in nodelist containing the ground pin name
+                var lowestIndex = findPin(connLines[connLineIndex]);
                 if (lowestIndex != -1) {
                     minNode = Math.min(minNode, lowestIndex);
                 }
@@ -209,7 +239,7 @@ function nodeId(input) {
             }
             gndList.push(component.id + "-0");
 
-        } else if (component.type == "W") {
+        } else if (component.type == "W") { // same procedure as above with ground pin
             // Wire
             var pinName = component.id;
             var pinNode = findPin(pinName);
@@ -219,9 +249,9 @@ function nodeId(input) {
             var connLines = component["connect"][0].split(" ");
             connLines = connLines.concat(component["connect"][1].split(" "));
             var minNode = pinNode;
-            for (var connLine = 0; connLine < connLines.length; connLine++) {
-                joinNode(connLines[connLine], pinNode);
-                var lowestIndex = findPin(connLines[connLine]);
+            for (var connLineIndex = 0; connLineIndex < connLines.length; connLineIndex++) {
+                joinNode(connLines[connLineIndex], pinNode);
+                var lowestIndex = findPin(connLines[connLineIndex]);
                 if (lowestIndex != -1) {
                     minNode = Math.min(minNode, lowestIndex);
                 }
@@ -283,16 +313,16 @@ function nodeId(input) {
             var minNode0 = pinNode0;
             var minNode1 = pinNode1;
 
-            for (var connLine = 0; connLine < connLines0.length; connLine++) {
-                joinNode(connLines0[connLine], pinNode0);
-                var lowestIndex = findPin(connLines0[connLine]);
+            for (var connLineIndex = 0; connLineIndex < connLines0.length; connLineIndex++) {
+                joinNode(connLines0[connLineIndex], pinNode0);
+                var lowestIndex = findPin(connLines0[connLineIndex]);
                 if (lowestIndex != -1) {
                     minNode0 = Math.min(minNode0, lowestIndex);
                 }
             }
-            for (var connLine = 0; connLine < connLines1.length; connLine++) {
-                joinNode(connLines1[connLine], pinNode1);
-                var lowestIndex = findPin(connLines1[connLine]);
+            for (var connLineIndex = 0; connLineIndex < connLines1.length; connLineIndex++) {
+                joinNode(connLines1[connLineIndex], pinNode1);
+                var lowestIndex = findPin(connLines1[connLineIndex]);
                 if (lowestIndex != -1) {
                     minNode1 = Math.min(minNode1, lowestIndex);
                 }
@@ -342,15 +372,17 @@ function nodeId(input) {
                    node1: component.connect[0],
                    node2: component.connect[1],
                    node3: component.connect[2]
-           }
+                }
            }
            if (component.type === 'D' || component.type === 'nBJT') {//delete value if element contains modelType
-            compJson.modelType = component.value[0]
-            delete compJson.value
-        } else {
-            delete compJson.modelType
-        } 
+                compJson.modelType = component.value[0]
+                delete compJson.value
+            } else {
+                delete compJson.modelType
+            } 
 
+            // forming the hashmap of components where the keys are the types of components, and
+            // the values are the lists of all the instances of components of that type
             if (output[component.type]) {
                 output[component.type].push(compJson)
             } else {
@@ -361,7 +393,10 @@ function nodeId(input) {
 
 
 
+    // components is the componentType which is the key in the hashmap
+    // component is the index going through the list of components indexed by the type 
     for (var components in output) {
+        // for each element of the same component type, 
         for (var component = 0; component < output[components].length; component++) {
             var nodeInd1 = findPin(output[components][component]["node1"]);
             var nodeInd2 = findPin(output[components][component]["node2"]);
@@ -377,9 +412,7 @@ function nodeId(input) {
                     if (pinCmp(gndList[gndIndex], nodeInd3)) {
                       nodeInd3 = 'gnd'
                     }
-                  }
-
-
+                }
             }
             if (typeof (nodeInd1) == "number") {
                 nodeInd1 = nodeInd1.toString();

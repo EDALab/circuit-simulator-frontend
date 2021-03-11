@@ -704,12 +704,12 @@ action.on('click', '#fab-run', function (event) {
     } else {
         temp_var = temp_var[0];
     }
-    console.log("original circuit");
-    console.log(temp_var);
+    // console.log("original circuit");
+    // console.log(temp_var);
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
-    console.log("filtered circuit");
-    console.log(JSON.stringify(filteredCircuit));
+    // console.log("filtered circuit");
+    // console.log(JSON.stringify(filteredCircuit));
     var output = nodeId(filteredCircuit);
     console.log("stringified output obj after nodeid");
     console.log(JSON.stringify(output));
