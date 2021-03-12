@@ -762,6 +762,59 @@ const originalElectronic = {
             introduction: 'Single Point Voltmeter',
         },
     },
+<<<<<<< HEAD
+=======
+    //Port device to use in subcircuits
+    Port: {
+        readWrite: {
+            id: 'Port_',
+        },
+        readOnly: {
+            partType: 'Port',
+            inputTxt: [],
+            visionNum: 1,
+            pointInfor: [
+                {
+                    position: [-20, -20],
+                    direction: [0, -1],
+                },
+            ],
+            padding: 1,
+            margin: [1, 0],
+            txtLocate: 12,
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-10, -10L3, 3H10',
+                    },
+                }, 
+                // {
+                //     name: 'path',
+                //     attribute: {
+                //         d: 'M10,3L12,-0.464L15.464,-0.464L17.464,3L15.464,6.464L12,6.464L10,3',
+                //     },
+                // }, {
+                //     name: 'polygon',
+                //     attribute: {
+                //         points: '10,3 12,-0.464 15.464,-0.464 17.464,3 15.464,6.464 12,6.464',
+                //         class: 'fill-whole',
+                //     },
+                // }, {
+                //     name: 'rect',
+                //     attribute: {
+                //         x: '-20',
+                //         y: '-20',
+                //         width: '40',
+                //         height: '40',
+                //         class: 'focus-part',
+                //     },
+                // },
+            ],
+            introduction: 'Port',
+        }
+    },
+>>>>>>> parent of e7acba1... minor stuff
     // Node_Label device
     Label: {
         readWrite: {
