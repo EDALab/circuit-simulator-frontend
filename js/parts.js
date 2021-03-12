@@ -40,6 +40,10 @@ const originalElectronic = {
      *   inputTxt       The description of the component parameters
      *   visionNum      Number of parameters displayed on the parameter panel
      *   pointInfor     Node position and orientation
+<<<<<<< HEAD
+=======
+     *   aspectInfor    Design of the SVG component
+>>>>>>> parent of 1ebeac4... Merge branch 'christina' of https://github.com/YukaiZhang2019/circuit-simulator-frontend into christina
      *   padding        The component padding
      *   margin         The component margin
      *   txtLocate      The distance between the text and the center of the component
