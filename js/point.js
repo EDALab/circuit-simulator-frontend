@@ -1,6 +1,3 @@
-// Object to represent a point of (x,y) coordinates
-// TODO: Figure out the uses and meanings of the different functions
-
 //Choose the largest or smallest among the alternative values
 function selectMax(ref, alts, func) {
     let max = -Infinity, sub;

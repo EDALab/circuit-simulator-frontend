@@ -1,4 +1,3 @@
-// Defines the different electronic circuit components offered in the application
 'use strict'
 // Import external packages
 import { $ } from './jquery'
@@ -40,13 +39,12 @@ const originalElectronic = {
      *   input          The component parameters
      *   inputTxt       The description of the component parameters
      *   visionNum      Number of parameters displayed on the parameter panel
-     *   pointInfor     Node position and orientation (it is the placement and orientation of the pin from which we can drag a wire and connect the component to other stuff)
-     *   aspectInfor    Design of the SVG component
+     *   pointInfor     Node position and orientation
      *   padding        The component padding
      *   margin         The component margin
      *   txtLocate      The distance between the text and the center of the component
      *   criteriaTrend  Direction of the current with respect to the connection nodes
-     *   introduction   Official name of the component
+     *
      */
 
     // Resistance
@@ -764,56 +762,6 @@ const originalElectronic = {
             introduction: 'Single Point Voltmeter',
         },
     },
-    //Port device to use in subcircuits
-    Port: {
-        readWrite: {
-            id: 'Port_',
-        },
-        readOnly: {
-            partType: 'Port',
-            inputTxt: [],
-            visionNum: 1,
-            pointInfor: [
-                {
-                    position: [-20, -20],
-                    direction: [0, -1],
-                },
-            ],
-            padding: 1,
-            margin: [1, 0],
-            txtLocate: 12,
-            aspectInfor: [
-                {
-                    name: 'path',
-                    attribute: {
-                        d: 'M-20,-20L3,3H10',
-                    },
-                }, 
-                {
-                    name: 'path',
-                    attribute: {
-                        d: 'M10,3L12,-0.464L15.464,-0.464L17.464,3L15.464,6.464L12,6.464L10,3',
-                    },
-                }, {
-                    name: 'polygon',
-                    attribute: {
-                        points: '10,3 12,-0.464 15.464,-0.464 17.464,3 15.464,6.464 12,6.464',
-                        class: 'fill-whole',
-                    },
-                }, {
-                    name: 'rect',
-                    attribute: {
-                        x: '-20',
-                        y: '-20',
-                        width: '40',
-                        height: '40',
-                        class: 'focus-part',
-                    },
-                },
-            ],
-            introduction: 'Port',
-        }
-    },
     // Node_Label device
     Label: {
         readWrite: {
@@ -873,7 +821,6 @@ function PartClass(data) {
     // New Identification
     this.partType = type;
 
-    // Fetches the corresponding component of same type defined above and sets it as the prototype for Part object we are building
     this.extend(Object.clone(originalElectronic[type].readWrite))
     Object.setPrototypeOf(this, originalElectronic[type].readOnly)
 
@@ -1448,8 +1395,6 @@ PartClass.prototype = {
     toFocus() {
         this.elementDOM.addClass('focus')
         partsNow.push(this)
-        console.log("partsNow after toFocus method");
-        console.log(partsNow);
         return this
     },
     //Device cancel focus
@@ -2062,8 +2007,6 @@ for (const i in originalElectronic) {
 //Add device icon
 $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
     // New Identification
-    console.log("end of parts.js");
-    console.log(n);
     const elem = $(n),
         special = {
             reference_ground: 'scale(1.3, 1.3)',
@@ -2087,7 +2030,6 @@ $('#sidebar-menu #menu-add-parts button.parts-list').each((n) => {
 
     icon.attr('transform', bias)
     elem.prop('introduction', intro)
-    console.log(type);
     for (let i = 0; i < part.length; i++) {
         if (part[i].name === 'rect') {
             continue

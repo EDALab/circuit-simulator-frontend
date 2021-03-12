@@ -3,13 +3,10 @@ const filter = (jsonString, quickMeasure) => {
   const object = JSON.parse(jsonString)
   let output = {}
 
-  // output is a hashmap
-  // they first create what appears to be an absolute ground node
   output["-1"] = { id: 'GND_Abs', type: 'REF', value: 0, connect: [""] }
   let qmVoltmeter = { id: 'VM_QM', type: 'VM', value: [], connect: [], name: 'VM_QM' };
   var qmPin = 0;
 
-  // for each key value pair of the hashmap:
   for (const [key, value] of Object.entries(object)) {
     let temp = { id: '', type: '', value: [], connect: [], name: value.name };
 
