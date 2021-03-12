@@ -41,7 +41,10 @@ const originalElectronic = {
      *   visionNum      Number of parameters displayed on the parameter panel
      *   pointInfor     Node position and orientation
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of b32af5c... defined new part Port in parts.js and made dummy svg for now
      *   aspectInfor    Design of the SVG component
 >>>>>>> parent of 1ebeac4... Merge branch 'christina' of https://github.com/YukaiZhang2019/circuit-simulator-frontend into christina
      *   padding        The component padding
