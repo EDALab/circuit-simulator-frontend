@@ -205,6 +205,9 @@ const grid = (function SchematicsGrid() {
   // TODO: Understand these operations in more depth
   //copy
   self.copy = function (arr) {
+    console.log("in copy");
+    console.log("printing arr passed in");
+    console.log(arr);
 
     const data = arr ? arr : partsNow;
 
@@ -221,6 +224,8 @@ const grid = (function SchematicsGrid() {
     for (let i = 0; i < move.length; i++) {
       copyStack.push(move[i]);
     }
+    console.log("printing copy stack");
+    console.log(copyStack);
   };
 
   //cut
@@ -235,7 +240,13 @@ const grid = (function SchematicsGrid() {
         half.push(partsNow[i]);
       }
     }
-
+    console.log("in cut");
+    console.log("move array");
+    console.log(move);
+    console.log("half array");
+    console.log(half);
+    console.log("partsNow array");
+    console.log(partsNow);
     //copy
     self.copy(partsNow);
     //save the data
@@ -251,6 +262,9 @@ const grid = (function SchematicsGrid() {
       n.markSign();
     });
   };
+    //paste
+    self.paste = function (arr) {
+        const now = arr ? arr : copyStack, name = [];
 
   //copy
   self.paste = function (arr) {
@@ -403,6 +417,7 @@ const grid = (function SchematicsGrid() {
     setTimeout(() => textTip.css("z-index", "-10"), 6000);
   };
 
+  // TODO: what does "current" refer to? the current array of elements forming the current circuit?
   //Reserved global temporary variables
   self.current = [];
   //Closed module; prevents adding new properties to the object and makes the object non-configurable
@@ -410,7 +425,7 @@ const grid = (function SchematicsGrid() {
 
   //Return module object
   return self;
-})(); // calls the function we JUST defined called schematicsGrid(), to initialize Grid object
+}})(); // calls the function we JUST defined called schematicsGrid(), to initialize Grid object
 
 //Global jquary element definition
 const sidebar = $('#sidebar-menu'),
