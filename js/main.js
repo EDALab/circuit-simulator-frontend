@@ -450,6 +450,13 @@ function mousemoveEvent(event) {
         }
         //Draw wire
         case grid.drawLine: {
+            // investigating error for port component drawing line
+            // partsNow.get(-1) somehow gets the line component you are trying to draw coming out of the device you just put on grid
+            // when printing line component being drawn, for port component, its way array has only one elem, whereas for other components, its way component has 2 elems
+            // console.log("partsNow.get(-1)");
+            // console.log(partsNow.get(-1));
+            // console.log("event passed into setPath");
+            // console.log(event);
             partsNow.get(-1).setPath(event, 'draw');
             break;
         }
@@ -1499,13 +1506,13 @@ function validateSubcircuit(partsArray) {
 //Right click menu
 //Create subcircuit
 context.on('click', "#create-subcircuit", function (event) {
-  console.log("It's working");
-  console.log("partsNow");
-  console.log(partsNow);
+//   console.log("It's working");
+//   console.log("partsNow");
+//   console.log(partsNow);
   var temp = partsNow.connectGraph();
   temp = temp[0];
-  console.log("temp");
-  console.log(temp);
+//   console.log("temp");
+//   console.log(temp);
 
   // validation checks to ensure: 
   // 1. no independent power sources

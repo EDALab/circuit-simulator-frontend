@@ -86,8 +86,8 @@ const originalElectronic = {
                     attribute: {
                         x: '-30',
                         y: '-13',
-                        width: '60', // 60
-                        height: '26', // 26 
+                        width: '60', 
+                        height: '26',  
                         class: 'focus-part',
                     },
                 },
@@ -768,17 +768,17 @@ const originalElectronic = {
             partType: 'Port',
             inputTxt: [],
             visionNum: 1,
-            txtLocate: 50,
+            txtLocate: 70,
             // Default Orientation is horizontal
             padding: [0, 1],
             margin: 1,
             pointInfor: [
                 {
-                    position: [-30, 0],
+                    position: [-40, 0], 
                     direction: [0, -1],
                 },
                 {
-                    position: [30, 0],
+                    position: [40, 0], 
                     direction: [0, 1],
                 },
             ],
@@ -787,33 +787,33 @@ const originalElectronic = {
                 { // this draws bottom left side and horiz bottom line
                     name: 'path',
                     attribute: {
-                        d: 'M-30,0L-10,20H10', 
+                        d: 'M-40,0L-10,20H10',  
                     },
                 }, 
                 { // this draws bottom right side
                     name: 'path',
                     attribute: {
-                        d: 'M10,20L30,0',
+                        d: 'M10,20L40,0',
                     },
                 }, 
                 { // this draws upper right side and upper horiz line
                     name: 'path',
                     attribute: {
-                        d: 'M30,0L10,-20H-10'
+                        d: 'M40,0L10,-20H-10'
                     },
                 },
                 { // this draws upper left side
                     name: 'path',
                     attribute: {
-                        d: 'M-10,-20L-30,0'
+                        d: 'M-10,-20L-40,0'
                     },
                 },
-                { // what is this for?
+                { // rect is for outlining the area into which another device cannot infringe upon this device
                     name: 'rect',
                     attribute: {
                         x: '-20', 
                         y: '-20',
-                        width: '70',
+                        width: '80',
                         height: '40',
                         class: 'focus-part',
                     },
