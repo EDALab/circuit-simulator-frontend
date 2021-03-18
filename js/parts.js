@@ -711,6 +711,118 @@ const originalElectronic = {
             introduction: 'BJT-NPN',
         },
     },
+
+    //BJT-PNP
+    transistor_pnp: {
+        readWrite: {
+            id: 'pBJT_',
+            input: ['2N2222A'],
+        },
+        readOnly: {
+            partType: 'transistor_pnp',
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
+            visionNum: 1,
+            txtLocate: 26,
+            padding: [1, 1, 1, 0],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [-20, 0],
+                    direction: [-1, 0],
+                },
+                {
+                    position: [20, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [20, 40],
+                    direction: [0, 1],
+                },
+            ],
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-20,0H0M0,-25V25M20,-40V-28L0,-12M0,12L20,28V40',
+                    },
+                },
+                {
+                    name: 'polygon',
+                    attribute: {
+                        points: '8,-21 2,-31 -5,-20',
+                        class: 'fill-whole',
+                        transform: 'translate(27, -40) rotate(218.7)',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-10',
+                        y: '-30',
+                        width: '30',
+                        height: '60',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'BJT-PNP',
+        },
+    },
+
+    //transistor-NMOS
+    n_MOSFET: {
+        readWrite: {
+            id: 'NMOS_',
+            input: ['2N2222A'],
+        },
+        readOnly: {
+            partType: 'n_MOSFET',
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
+            visionNum: 1,
+            txtLocate: 26,
+            padding: [1, 1, 1, 0],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [-20, 0],
+                    direction: [-1, 0],
+                },
+                {
+                    position: [20, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [20, 40],
+                    direction: [0, 1],
+                },
+            ],
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: "M-40 36.5h20v-11m10-20v21h-7m7 31v-21h-7",
+                      
+                        
+                    },
+                },
+               
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-10',
+                        y: '-30',
+                        width: '30',
+                        height: '60',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'n_MOSFET',
+        },
+    },
+
     //opamp
     operational_amplifier: {
         readWrite: {
@@ -1655,7 +1767,7 @@ PartClass.prototype = {
             )
             const temp_input_match = inputData.match(dataMatch)
             if (!temp_input_match || inputData !== temp_input_match[0]) {
-                if (this.partType !== 'diode' && this.partType !== 'transistor_npn') {
+                if (this.partType !== 'diode' && this.partType !== 'transistor_npn'&& this.partType !== 'transistor_pnp') {
                     parameter.addClass('parameter-error-' + (i + 1))
                     error = false
                 }

@@ -65,6 +65,9 @@ const filter = (jsonString, quickMeasure) => {
     } else if (id.includes('nBJT_')) {
       temp.type = 'nBJT';//n-type BJT
       temp.value.push(value.input[0]);
+    } else if (id.includes('pBJT_')) {
+      temp.type = 'pBJT';//p-type BJT
+      temp.value.push(value.input[0]);
     }
 
     temp.connect = value.connect;

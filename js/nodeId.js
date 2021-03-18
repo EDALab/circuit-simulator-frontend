@@ -256,7 +256,9 @@ function nodeId(input) {
             component.type == "D" ||
             //Diode
             component.type == "nBJT" ||
-            //Transistor
+            //npn-bjt
+            component.type == "pBJT" ||
+            //pnp-bjt
             component.type == "VCV" ||
             // Voltage Controlled Voltage Source
             component.type == "CCV" ||
@@ -336,7 +338,7 @@ function nodeId(input) {
                 node1: component.connect[0],
                 node2: component.connect[1],
             }
-            if (component.type === 'nBJT') {
+            if (component.type === 'nBJT' || component.type === 'pBJT') {
                 compJson.modelType = component.value[0].toLowerCase();
                 compJson.node3 = component.connect[2];
                 delete compJson.value
@@ -361,21 +363,24 @@ function nodeId(input) {
 
     for (var components in output) {
         for (var component = 0; component < output[components].length; component++) {
-            var nodeInd1 = findPin(output[components][component]["node1"]);
-            var nodeInd2 = findPin(output[components][component]["node2"]);
-            var nodeInd3 = findPin(output[components][component]["node3"]);
+            var nodeInd0 = findPin(output[components][component]["node1"]);
+            var nodeInd1 = findPin(output[components][component]["node2"]);
+            var nodeInd2 = findPin(output[components][component]["node3"]);
             for (var gndIndex = 0; gndIndex < gndList.length; gndIndex++) {
+                if (pinCmp(gndList[gndIndex], nodeInd0)) {
+                    nodeInd0 = "gnd";
+                }
                 if (pinCmp(gndList[gndIndex], nodeInd1)) {
                     nodeInd1 = "gnd";
                 }
-                if (pinCmp(gndList[gndIndex], nodeInd2)) {
-                    nodeInd2 = "gnd";
-                }
-                if (components === 'nBJT') {
-                    if (pinCmp(gndList[gndIndex], nodeInd3)) {
-                        nodeInd3 = 'gnd'
+                if (components === 'nBJT' || component.type === 'pBJT') {
+                    if (pinCmp(gndList[gndIndex], nodeInd2)) {
+                        nodeInd2 = 'gnd'
                     }
                 }
+            }
+            if (typeof (nodeInd0) == "number") {
+                nodeInd0 = nodeInd0.toString();
             }
             if (typeof (nodeInd1) == "number") {
                 nodeInd1 = nodeInd1.toString();
@@ -383,14 +388,16 @@ function nodeId(input) {
             if (typeof (nodeInd2) == "number") {
                 nodeInd2 = nodeInd2.toString();
             }
-            output[components][component]['node1'] = nodeInd1
-            output[components][component]['node2'] = nodeInd2
+            output[components][component]['node1'] = nodeInd0
+            output[components][component]['node2'] = nodeInd1
 
-            if (components === 'nBJT') {
-                output[components][component]['node1'] = nodeInd2
-                output[components][component]['node2'] = nodeInd1
-                output[components][component]['node3'] = nodeInd3
-            }
+            if (components === 'nBJT' || components === 'pBJT') {
+                output[components][component]['node1'] = nodeInd1
+                output[components][component]['node2'] = nodeInd0
+                output[components][component]['node3'] = nodeInd2
+            } 
+            
+            
         }
     }
     return output
