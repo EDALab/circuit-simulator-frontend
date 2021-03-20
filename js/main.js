@@ -711,8 +711,8 @@ action.on('click', '#fab-run', function (event) {
     } else {
         temp_var = temp_var[0];
     }
-    // console.log("original circuit");
-    // console.log(temp_var);
+    console.log("original circuit");
+    console.log(temp_var);
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
     // console.log("filtered circuit");
@@ -1506,13 +1506,11 @@ function validateSubcircuit(partsArray) {
 //Right click menu
 //Create subcircuit
 context.on('click', "#create-subcircuit", function (event) {
-//   console.log("It's working");
-//   console.log("partsNow");
-//   console.log(partsNow);
   var temp = partsNow.connectGraph();
   temp = temp[0];
 //   console.log("temp");
 //   console.log(temp);
+//   console.log(JSON.stringify(temp));
 
   // validation checks to ensure: 
   // 1. no independent power sources
@@ -1524,18 +1522,41 @@ context.on('click', "#create-subcircuit", function (event) {
   // then extract id (figure out how id is automatically given to current parts when they are chosen and dragged from right side menu), name of subcircuit (asked from user as input), blackbox boolean,
   let subcircuitName = window.prompt("Name of your subcircuit:");
 
-  // and list of ports and use them in 
-  // subcircuit frontend constructor 
+  const simplifiedTemp = nodeId(filter(JSON.stringify(temp))); // ports by default get connected to "gnd" in their outward pins open to the outside; need to modify this slightly
 
-  // ie: IDEA: send the subcircuit id, name, blackbox attr, and list of parts it is made of (raw data) to backend to store long-term
-  // then, in frontend, simplify the representation by picking out only the ports parts, making a list of them, and in frontend 
-  // u store subcircuit component as: id, name, list of PORTS only (simplified representation)
+  const numPorts = simplifiedTemp["P"];
+  let connectArray = [];
+  for(let i = 0; i < numPorts; i++) {
+    connectArray.push("");
+  }
 
-  // check comments in filter.js method, because idea outline above might not work for the following reason: when people build and play around with circuits 
-  // in the grid, the circuits might not be saved... so if user just wants to simulate an unsaved circuit for now, or if he/she updated the subcircuit in frontend and hasn't saved
-  // the changes yet, then we cannot just query the backend for the subcircuit because the db subcircuit is outdated
+  const subcircuit = {
+      name: subcircuitName,
+      isBlackBox: false, // when adding users and diff types of permissions, we would for example prompt professors if they want this to be a blackbox, but not students
+      components: simplifiedTemp, // temp rn is an array of objects w/ all those props like LineWay, rotate, circle, etc etc... need to apply filter and nodeID on this array to save clean and simplified representation in backend
+      connect: connectArray // array of length equal to the number of ports the subcircuit components list has... we can number ports within a subcircuit as 1,2,3 and map those numbers to indices in the array so we know which array index corresponds to which port
+  }
 
+  console.log("subcircuit");
+  console.log(subcircuit);
+
+  let xhr = new XMLHttpRequest();
+  let url = 'http://127.0.0.1:5000/subcircuit';
+  xhr.open('POST', url, true);
+  xhr.setRequestHeader('Content-Type', 'application/JSON');
+  xhr.onreadystatechange = function () {
+      if(xhr.readyState === 4 && xhr.status === 201) {
+        alert("Subcircuit created!");
+      } else if (xhr.readyState === 4 && xhr.status === 400) {
+          alert(xhr.responseText);
+      }
+  };
+  // Converting JSON data to string
+  let data = JSON.stringify(subcircuit);
+  // Sending the subcircuit stringified data in body of request
+  xhr.send(data);
 });
+
 //Edit parameters
 context.on('click', '#edit-parameters', function (event) {
     const clickpart = partsNow.get(0);

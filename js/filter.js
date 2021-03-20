@@ -1,8 +1,9 @@
 
 const filter = (jsonString, quickMeasure) => {
   console.log("input to filter");
+  console.log(jsonString);
   const object = JSON.parse(jsonString)
-  console.log("after json parsing input");
+  console.log("filter input after json parsing input");
   console.log(object);
   let output = {}
 
@@ -55,6 +56,8 @@ const filter = (jsonString, quickMeasure) => {
     } else if (id.includes('Label_') && !!quickMeasure) {
       qmVoltmeter.connect[qmPin] = value.connect[0];
       qmPin++;
+    } else if (id.includes('P_')) {
+      temp.type = 'P';
     } else if (id.includes('nBJT_')) {
       temp.type = 'nBJT';//n-type BJT
       temp.value.push(value.input[0]);
@@ -78,6 +81,8 @@ const filter = (jsonString, quickMeasure) => {
     output["-2"] = qmVoltmeter;
   }
 
+  console.log("output of filter");
+  console.log(output);
   return output
 }
 

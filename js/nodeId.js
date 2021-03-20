@@ -207,6 +207,8 @@ function pinCmp(pin_cmp, nodeIndex) {
 }
 
 function nodeId(input) {
+    console.log("input to nodeid");
+    console.log(input);
     // Empty the nodeList
     nodeList = [[]];
     var output = {};
@@ -293,10 +295,13 @@ function nodeId(input) {
             // Current Controlled Voltage Source
             component.type == "VCC" ||
             // Voltage Controlled Current Source
-            component.type == "CCC"
+            component.type == "CCC" ||
             // Current Controlled Current Source
-
+            component.type == "P"
+            // Port Component
         ) {
+            console.log("component type in node id is port");
+            console.log(component.type == "P");
             var pinName0 = component.id + "-0";
             var pinName1 = component.id + "-1";
             var pinNode0 = findPin(pinName0);
@@ -430,6 +435,8 @@ function nodeId(input) {
       }      
       }
     }
+    console.log("output of nodeID");
+    console.log(output);
     return output
 }
 
