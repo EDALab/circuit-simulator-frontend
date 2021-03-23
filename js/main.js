@@ -1515,6 +1515,7 @@ context.on('click', "#create-subcircuit", function (event) {
   // validation checks to ensure: 
   // 1. no independent power sources
   // 2. no empty connections "" for parts that aren't of type port 
+
   if(!validateSubcircuit(temp)) {
     alert("Invalid subcircuit! Remove all independent power sources and make sure open nodes are connected to ports");
     return;
@@ -1524,7 +1525,7 @@ context.on('click', "#create-subcircuit", function (event) {
 
   const simplifiedTemp = nodeId(filter(JSON.stringify(temp))); // ports by default get connected to "gnd" in their outward pins open to the outside; need to modify this slightly
 
-  const numPorts = simplifiedTemp["P"];
+  const numPorts = simplifiedTemp["P"].length;
   let connectArray = [];
   for(let i = 0; i < numPorts; i++) {
     connectArray.push("");
@@ -1532,13 +1533,14 @@ context.on('click', "#create-subcircuit", function (event) {
 
   const subcircuit = {
       name: subcircuitName,
+      partType: "Subcircuit",
       isBlackBox: false, // when adding users and diff types of permissions, we would for example prompt professors if they want this to be a blackbox, but not students
       components: simplifiedTemp, // temp rn is an array of objects w/ all those props like LineWay, rotate, circle, etc etc... need to apply filter and nodeID on this array to save clean and simplified representation in backend
       connect: connectArray // array of length equal to the number of ports the subcircuit components list has... we can number ports within a subcircuit as 1,2,3 and map those numbers to indices in the array so we know which array index corresponds to which port
   }
 
   console.log("subcircuit");
-  console.log(subcircuit);
+  console.log(JSON.stringify(subcircuit));
 
   let xhr = new XMLHttpRequest();
   let url = 'http://127.0.0.1:5000/subcircuit';
@@ -1546,6 +1548,7 @@ context.on('click', "#create-subcircuit", function (event) {
   xhr.setRequestHeader('Content-Type', 'application/JSON');
   xhr.onreadystatechange = function () {
       if(xhr.readyState === 4 && xhr.status === 201) {
+          // maybe check returned json body for the backendId we assigned to it and store it in frontend?
         alert("Subcircuit created!");
       } else if (xhr.readyState === 4 && xhr.status === 400) {
           alert(xhr.responseText);
@@ -1555,6 +1558,332 @@ context.on('click', "#create-subcircuit", function (event) {
   let data = JSON.stringify(subcircuit);
   // Sending the subcircuit stringified data in body of request
   xhr.send(data);
+
+  // testing playground is here: for testing how to apply nodeid and filter on a circuit which contains a subcircuit as a component in it and send to backend for more processing there
+//   const fakePartsArrayReadFromGrid = {
+//   "0": {
+//     "partType": "resistance",
+//     "id": "R_1",
+//     "input": [
+//       "10k"
+//     ],
+//     "rotate": {
+//       "0": [
+//         1,
+//         0
+//       ],
+//       "1": [
+//         0,
+//         1
+//       ]
+//     },
+//     "position": {
+//       "0": 700,
+//       "1": 180
+//     },
+//     "connect": [
+//       "line_1",
+//       "line_3"
+//     ],
+//     "current": {
+//       "status": "move",
+//       "bias": {
+//         "0": 700,
+//         "1": 180
+//       }
+//     },
+//     "circle": [
+//       {
+//         "0": {},
+//         "length": 1
+//       },
+//       {
+//         "0": {},
+//         "length": 1
+//       }
+//     ],
+//     "name": "R_1",
+//     "elementDOM": {
+//       "0": {},
+//       "length": 1
+//     }
+//   },
+//   "1": {
+//     "id": "line_3",
+//     "way": {
+//       "0": {
+//         "0": 740,
+//         "1": 180
+//       },
+//       "1": {
+//         "0": 800,
+//         "1": 180
+//       },
+//       "2": {
+//         "0": 800,
+//         "1": 200
+//       },
+//       "length": 3
+//     },
+//     "circle": [
+//       {
+//         "0": {},
+//         "length": 1
+//       },
+//       {
+//         "0": {},
+//         "length": 1
+//       }
+//     ],
+//     "connect": [
+//       "R_1-1",
+//       "X_1-0"
+//     ],
+//     "partType": "line",
+//     "current": {
+//       "status": "move",
+//       "bias": {
+//         "0": 0,
+//         "1": 0
+//       },
+//       "wayBackup": [
+//         [
+//           740,
+//           180
+//         ],
+//         [
+//           800,
+//           180
+//         ],
+//         [
+//           800,
+//           200
+//         ]
+//       ]
+//     },
+//     "elementDOM": {
+//       "0": {},
+//       "length": 1
+//     }
+//   },
+//   "2": {
+//     "id": "line_1",
+//     "way": {
+//       "0": {
+//         "0": 560,
+//         "1": 240
+//       },
+//       "1": {
+//         "0": 560,
+//         "1": 180
+//       },
+//       "2": {
+//         "0": 660,
+//         "1": 180
+//       },
+//       "length": 3
+//     },
+//     "circle": [
+//       {
+//         "0": {},
+//         "length": 1
+//       },
+//       {
+//         "0": {},
+//         "length": 1
+//       }
+//     ],
+//     "connect": [
+//       "V_1-0",
+//       "R_1-0"
+//     ],
+//     "partType": "line",
+//     "current": {
+//       "status": "move",
+//       "bias": {
+//         "0": 0,
+//         "1": 0
+//       },
+//       "wayBackup": [
+//         [
+//           560,
+//           240
+//         ],
+//         [
+//           560,
+//           180
+//         ],
+//         [
+//           660,
+//           180
+//         ]
+//       ]
+//     },
+//     "elementDOM": {
+//       "0": {},
+//       "length": 1
+//     }
+//   },
+//   "3": {
+//     "partType": "dc_voltage_source",
+//     "id": "V_1",
+//     "input": [
+//       "12"
+//     ],
+//     "rotate": {
+//       "0": [
+//         1,
+//         0
+//       ],
+//       "1": [
+//         0,
+//         1
+//       ]
+//     },
+//     "position": {
+//       "0": 560,
+//       "1": 280
+//     },
+//     "connect": [
+//       "line_1",
+//       "line_2"
+//     ],
+//     "current": {
+//       "status": "move",
+//       "bias": {
+//         "0": 560,
+//         "1": 280
+//       }
+//     },
+//     "circle": [
+//       {
+//         "0": {},
+//         "length": 1
+//       },
+//       {
+//         "0": {},
+//         "length": 1
+//       }
+//     ],
+//     "name": "V_1",
+//     "elementDOM": {
+//       "0": {},
+//       "length": 1
+//     }
+//   },
+//   "4": {
+//     "id": "line_2",
+//     "way": {
+//       "0": {
+//         "0": 560,
+//         "1": 320
+//       },
+//       "1": {
+//         "0": 800,
+//         "1": 320
+//       },
+//       "2": {
+//         "0": 800,
+//         "1": 300
+//       },
+//       "length": 3
+//     },
+//     "circle": [
+//       {
+//         "0": {},
+//         "length": 1
+//       },
+//       {
+//         "0": {},
+//         "length": 1
+//       }
+//     ],
+//     "connect": [
+//       "V_1-1",
+//       "X_1-1"
+//     ],
+//     "partType": "line",
+//     "current": {
+//       "status": "move",
+//       "bias": {
+//         "0": 0,
+//         "1": 0
+//       },
+//       "wayBackup": [
+//         [
+//           560,
+//           320
+//         ],
+//         [
+//           800,
+//           320
+//         ],
+//         [
+//           800,
+//           300
+//         ]
+//       ]
+//     },
+//     "elementDOM": {
+//       "0": {},
+//       "length": 1
+//     }
+//   },
+//   "5": {
+//     "id": "X_1",
+//     "backendId": "figure out ltr",
+//     "name": "subcircuit1",
+//     "partType": "Subcircuit",
+//     "isBlackBox": false,
+//     "components": {
+//       "P": [
+//         {
+//           "id": "P_1",
+//           "name": "P_1",
+//           "value": 0,
+//           "node1": "0",
+//           "node2": "gnd"
+//         },
+//         {
+//           "id": "P_2",
+//           "name": "P_2",
+//           "value": 0,
+//           "node1": "gnd",
+//           "node2": "3"
+//         }
+//       ],
+//       "C": [
+//         {
+//           "id": "C_1",
+//           "name": "C_1",
+//           "value": 0.0001,
+//           "node1": "2",
+//           "node2": "0"
+//         }
+//       ],
+//       "R": [
+//         {
+//           "id": "R_1",
+//           "name": "R_1",
+//           "value": 10000,
+//           "node1": "3",
+//           "node2": "2"
+//         }
+//       ]
+//     },
+//     "connect": [
+//       "line_3",
+//       "line_2"
+//     ]
+//   }
+// };
+
+//   console.log("circuit after applying filter+nodeid");
+//   console.log(nodeId(filter(JSON.stringify(fakePartsArrayReadFromGrid))));
+
+  // notice that in the circuit after applying filter+nodeid, the node numbers for the components array inside the subcircuit are repeated and reused as node numbers for the larger circuit it is part of
+  // this means we have duplicate node names, which would produce a different netlist than we intend if we just apply it blindly in the backend
+  // this means that in backend, we should find the max node number (2,3,4,5, etc.. whtvr it is) and then go through the subcircuit components array and if lets say it contains a node 0, then everywhere that that is used inside the subcircuit, we map it to maxNodeNumber + 1 and update maxNodeNumber = maxNodeNumber + 1;
 });
 
 //Edit parameters

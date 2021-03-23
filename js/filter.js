@@ -61,7 +61,10 @@ const filter = (jsonString, quickMeasure) => {
     } else if (id.includes('nBJT_')) {
       temp.type = 'nBJT';//n-type BJT
       temp.value.push(value.input[0]);
-    } 
+    } else if (id.includes('X_')) { // handle subcircuit component in a larger circuit
+      temp.type = 'X';
+      temp.components = value.components;
+    }
 
     // sketch of subcircuit feature idea: 
     // else if id.includes(X_)

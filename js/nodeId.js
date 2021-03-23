@@ -297,11 +297,11 @@ function nodeId(input) {
             // Voltage Controlled Current Source
             component.type == "CCC" ||
             // Current Controlled Current Source
-            component.type == "P"
+            component.type == "P" ||
             // Port Component
+            component.type == "X"
+            // Subcircuit component
         ) {
-            console.log("component type in node id is port");
-            console.log(component.type == "P");
             var pinName0 = component.id + "-0";
             var pinName1 = component.id + "-1";
             var pinNode0 = findPin(pinName0);
@@ -385,6 +385,10 @@ function nodeId(input) {
             } else {
                 delete compJson.modelType
             } 
+
+            if(component.type === 'X') { // if component is subcircuit, send over the array of its components; might not be super needed since backend will have a copy of those in db so u can identify them by subcircuit id
+                compJson.components = component.components;
+            }
 
             // forming the hashmap of components where the keys are the types of components, and
             // the values are the lists of all the instances of components of that type
