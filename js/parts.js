@@ -716,7 +716,7 @@ const originalElectronic = {
     transistor_pnp: {
         readWrite: {
             id: 'pBJT_',
-            input: ['2N2222A'],
+            input: ['2N2907A'],
         },
         readOnly: {
             partType: 'transistor_pnp',
@@ -774,7 +774,7 @@ const originalElectronic = {
     n_MOSFET: {
         readWrite: {
             id: 'NMOS_',
-            input: ['2N2222A'],
+            input: ['ptm65nm_nmos'],
         },
         readOnly: {
             partType: 'n_MOSFET',
@@ -836,7 +836,7 @@ const originalElectronic = {
     p_MOSFET: {
         readWrite: {
             id: 'PMOS_',
-            input: ['2N2222A'],
+            input: ['ptm65nm_pmos'],
         },
         readOnly: {
             partType: 'p_MOSFET',
