@@ -206,6 +206,14 @@
 				</button>
 			</div> -->
 		</div>
+		<div class="st-menu" id="menu-acOutput">
+			<div class="st-menu-title">
+				<h1>AC Simulation Result</h1>
+			</div>
+			<div id="chartContainerV" style="height: 370px; width: 100%;"></div>
+			<div id="chartContainerA" style="height: 370px; width: 100%;"></div>
+
+		</div>
 	</div>
 	<!--Simulation and Settings-->
 	<div id="action-container">
@@ -232,9 +240,13 @@
 		<div class="fab-container" tooltip="Quick Measurement">
 			<div class="fab" id="fab-quickMeasure"></div>
 		</div>
+		<div class="fab-container" tooltip="AC Output">
+			<div class="fab" id="fab-acOutput"></div>
+		</div>
 	</div>
 	<!--Scripts-->
 	<script src="./src/script.min.js"></script>
+	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </body>
 
 </html>

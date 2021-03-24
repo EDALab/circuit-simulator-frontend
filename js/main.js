@@ -590,6 +590,90 @@ sidebar.on('click', '#menu-add-parts-close', function (event) {
     }
 });
 //Open the static output sidebar
+action.on('click', '#fab-acOutput', function (event) {
+    if (event.which === 1) {
+        $(document.body).addClass('open-sidebar open-gray');
+        sidebar.addClass('open-menu-acOutput');
+        $("#sidebar-menu").css('width', '50vw');
+        if (simulationData != null) {
+            var limit = Math.round(timeInterval / stepSize);
+            console.log("limit: " + limit);
+            var dataV = [];
+            var dataA = [];
+            var dataSeries = null;
+            var dataPoints = null;
+            var meterKey = null;
+            var x = 0;
+            var y = 0;
+            for (var i = 0; i < voltmeterNum; i++) {
+                x = 0;
+                y = 0;
+                dataSeries = null;
+                dataPoints = [];
+                meterKey = Object.keys(simulationData.VM[i])[0];
+                dataSeries = { type: "line", showInLegend: true, legendText: meterKey };
+                for (var j = 0; j < limit; j += 1) {
+                    x += 1;
+                    y = (simulationData.VM[i][meterKey])[j];
+                    dataPoints.push({
+                        x: x,
+                        y: y
+                    });
+                }
+                dataSeries.dataPoints = dataPoints;
+                dataV.push(dataSeries);
+            }
+            for (var i = 0; i < ammeterNum; i++) {
+                x = 0;
+                y = 0;
+                dataSeries = null;
+                dataPoints = [];
+                meterKey = Object.keys(simulationData.AM[i])[0];
+                dataSeries = { type: "line", showInLegend: true, legendText: meterKey };
+                for (var j = 0; j < limit; j += 1) {
+                    x += 1;
+                    y = (simulationData.AM[i][meterKey])[j];
+                    dataPoints.push({
+                        x: x,
+                        y: y
+                    });
+                }
+                dataSeries.dataPoints = dataPoints;
+                dataA.push(dataSeries);
+            }
+        }
+
+        //Better to construct options first and then pass it as a parameter
+        var options = {
+            zoomEnabled: true,
+            animationEnabled: true,
+            height: screen.height * 0.3,
+            title: {
+                text: "Voltmeters",
+                fontFamily: "Georgia"
+            },
+            legend: {
+                horizontalAlign: "center", // "center" , "right"
+                verticalAlign: "bottom",  // "top" , "bottom"
+                fontSize: 15
+            },
+            axisY: {
+                lineThickness: 1
+            },
+            data: dataV  // random data
+        };
+
+        var chartV = new CanvasJS.Chart("chartContainerV", options);
+        chartV.render();
+
+        options.data = dataA;
+        options.title.text = "Ammeters";
+
+        var chartA = new CanvasJS.Chart("chartContainerA", options);
+        chartA.render();
+    }
+});
+//Open the static output sidebar
 action.on('click', '#fab-staticOutput', function (event) {
     if (event.which === 1) {
         $(document.body).addClass('open-sidebar open-gray');
@@ -619,6 +703,13 @@ action.on('click', '#fab-adds', function (event) {
     }
 });
 
+// Variables to be updated after the simulation
+var simulationData = null;
+var voltmeterNum = 0;
+var ammeterNum = 0;
+var timeInterval = 0;
+var stepSize = 0;
+
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
     var feedback;
@@ -644,8 +735,10 @@ action.on('click', '#fab-run', function (event) {
         var time_interval = endtimeDom.value;
         var stepsizeDom = document.getElementById("stepsize");
         var stepsize = stepsizeDom.value;
-        output.time_interval = magConvert(time_interval);
-        output.step_size = magConvert(stepsize);
+        timeInterval = magConvert(time_interval);
+        stepSize = magConvert(stepsize);
+        output.time_interval = timeInterval;
+        output.step_size = stepSize;
     } else {
         simulationType = 'static';
         var url = 'http://127.0.0.1:5000/static_simulator/Test';
@@ -668,18 +761,18 @@ action.on('click', '#fab-run', function (event) {
         } else if (xhr.readyState === 4 && xhr.status === 201 && simulationType === 'dynamic') {
             // Temporarily print the output through the alert
             feedback = xhr.responseText;
-            // alert(feedback);
             console.log(feedback);
             var feedbackData = eval("(" + feedback + ")");
-            var returnedEntry = feedbackData.VM[0].SPVM_1;
-            var returnedLen = returnedEntry.length;
-            console.log("count: " + returnedLen);
-            data = { voltage: [] };
-            for (var i = 0; i < returnedLen; i++) {
-                data.voltage = data.voltage.concat(returnedEntry[i]);
+            simulationData = feedbackData;
+            if (feedbackData.VM) {
+                voltmeterNum = feedbackData.VM.length;
             }
-            data.time = time_interval;
-            data.stepTime = stepsize;
+            if (feedbackData.AM) {
+                ammeterNum = feedbackData.AM.length;
+            }
+            console.log('voltmeterNum' + voltmeterNum);
+            console.log('ammeterNum' + ammeterNum);
+            document.getElementById("fab-acOutput").click();
         }
     };
     // Sending data with the request 
@@ -906,11 +999,13 @@ mainPage.on('mousewheel', function (event) {
 //Mouse click shady
 $('#shade-gray').on('click', function () {
     if ((sidebar.hasClass('open-menu-quickMeasure')
-        || sidebar.hasClass('open-menu-staticOutput'))
+        || sidebar.hasClass('open-menu-staticOutput')
+        || sidebar.hasClass('open-menu-acOutput'))
         || sidebar.hasClass('open-menu-config')
         && !parameter.hasClass('parameter-open')) {
         $(doc.body).removeClass('open-gray open-sidebar');
-        sidebar.removeClass('open-menu-quickMeasure open-menu-staticOutput open-menu-config open-add-parts');
+        sidebar.removeClass('open-menu-quickMeasure open-menu-staticOutput open-menu-config open-add-parts open-menu-acOutput');
+        $("#sidebar-menu").css('width', '20vw');
     }
 });
 
