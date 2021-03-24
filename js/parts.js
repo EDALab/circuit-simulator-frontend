@@ -790,6 +790,10 @@ const originalElectronic = {
                     direction: [-1, 0],
                 },
                 {
+                    position: [20, 0],
+                    direction: [0, -1],
+                },
+                {
                     position: [20, -40],
                     direction: [0, -1],
                 },
@@ -823,6 +827,67 @@ const originalElectronic = {
         },
     },
 
+    //BJT-PNP
+    p_MOSFET: {
+        readWrite: {
+            id: 'PMOS_',
+            input: ['2N2222A'],
+        },
+        readOnly: {
+            partType: 'p_MOSFET',
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
+            visionNum: 1,
+            txtLocate: 26,
+            padding: [1, 1, 1, 0],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [-20, 0],
+                    direction: [-1, 0],
+                },
+                {
+                    position: [20, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [20, 0],
+                    direction: [0, -1],
+                },
+                {
+                    position: [20, 40],
+                    direction: [0, 1],
+                },
+            ],
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-20,0H0M0,-25V25M20,-40V-40L0,-12M0,12L20,40V40',
+                    },
+                },
+                {
+                    name: 'polygon',
+                    attribute: {
+                        points: '8,-21 2,-31 -5,-20',
+                        class: 'fill-whole',
+                        transform: 'translate(27, -40) rotate(218.7)',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-10',
+                        y: '-30',
+                        width: '30',
+                        height: '60',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'p_MOSFET',
+        },
+    },
     //opamp
     operational_amplifier: {
         readWrite: {
@@ -1767,7 +1832,7 @@ PartClass.prototype = {
             )
             const temp_input_match = inputData.match(dataMatch)
             if (!temp_input_match || inputData !== temp_input_match[0]) {
-                if (this.partType !== 'diode' && this.partType !== 'transistor_npn'&& this.partType !== 'transistor_pnp') {
+                if (this.partType !== 'diode' && this.partType !== 'transistor_npn'&& this.partType !== 'transistor_pnp'&& this.partType !== 'n_MOSFET'&& this.partType !== 'p_MOSFET') {
                     parameter.addClass('parameter-error-' + (i + 1))
                     error = false
                 }

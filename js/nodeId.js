@@ -259,6 +259,10 @@ function nodeId(input) {
             //npn-bjt
             component.type == "pBJT" ||
             //pnp-bjt
+            component.type == "NMOS" ||
+            //n-mosfet
+            component.type == "PMOS" ||
+            //p-mosfet
             component.type == "VCV" ||
             // Voltage Controlled Voltage Source
             component.type == "CCV" ||
@@ -342,6 +346,11 @@ function nodeId(input) {
                 compJson.modelType = component.value[0].toLowerCase();
                 compJson.node3 = component.connect[2];
                 delete compJson.value
+            } else if (component.type === 'NMOS'||component.type === 'PMOS') {
+                compJson.modelType = component.value[0].toLowerCase();
+                compJson.node3 = component.connect[2];
+                compJson.node4 = component.connect[3];
+                delete compJson.value
             } else if (component.type === 'D') {
                 compJson.modelType = component.value[0].toLowerCase();
                 delete compJson.value
@@ -366,6 +375,7 @@ function nodeId(input) {
             var nodeInd0 = findPin(output[components][component]["node1"]);
             var nodeInd1 = findPin(output[components][component]["node2"]);
             var nodeInd2 = findPin(output[components][component]["node3"]);
+            var nodeInd3 = findPin(output[components][component]["node4"]);
             for (var gndIndex = 0; gndIndex < gndList.length; gndIndex++) {
                 if (pinCmp(gndList[gndIndex], nodeInd0)) {
                     nodeInd0 = "gnd";
@@ -376,6 +386,14 @@ function nodeId(input) {
                 if (components === 'nBJT' || component.type === 'pBJT') {
                     if (pinCmp(gndList[gndIndex], nodeInd2)) {
                         nodeInd2 = 'gnd'
+                    }
+                }
+                if (component.type === 'NMOS'|| component.type === 'PMOS') {
+                    if (pinCmp(gndList[gndIndex], nodeInd2)) {
+                        nodeInd2 = 'gnd'
+                    }
+                    if (pinCmp(gndList[gndIndex], nodeInd3)) {
+                        nodeInd3 = 'gnd'
                     }
                 }
             }
@@ -396,7 +414,20 @@ function nodeId(input) {
                 output[components][component]['node2'] = nodeInd0
                 output[components][component]['node3'] = nodeInd2
             } 
-            
+            if (components === 'PMOS') {
+                output[components][component]['node1'] = nodeInd1
+                output[components][component]['node2'] = nodeInd0
+                output[components][component]['node3'] = nodeInd3
+                output[components][component]['node4'] = nodeInd2
+
+            } 
+            if (components === 'NMOS') {
+                output[components][component]['node1'] = nodeInd2
+                output[components][component]['node2'] = nodeInd0
+                output[components][component]['node3'] = nodeInd3
+                output[components][component]['node4'] = nodeInd1
+
+            } 
             
         }
     }
