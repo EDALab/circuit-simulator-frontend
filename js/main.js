@@ -919,7 +919,8 @@ qmRunButton.on('click', function (event) {
             // Print received data from server 
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
-            alert(feedback);
+            var feedbackData = eval("(" + feedback + ")");
+            alert("Quick Measurement result: " + Math.abs(feedbackData["VM"][0]["VM_QM"]) + "V");
         } else if (xhr.readyState === 4 && xhr.status === 400) {
             alert(xhr.responseText);
         }
