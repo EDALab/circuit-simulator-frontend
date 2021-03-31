@@ -383,19 +383,13 @@ function nodeId(input) {
                 if (pinCmp(gndList[gndIndex], nodeInd1)) {
                     nodeInd1 = "gnd";
                 }
-                if (components === 'nBJT' || component.type === 'pBJT') {
-                    if (pinCmp(gndList[gndIndex], nodeInd2)) {
-                        nodeInd2 = 'gnd'
-                    }
+                if (pinCmp(gndList[gndIndex], nodeInd2)) {
+                    nodeInd2 = "gnd";
                 }
-                if (component.type === 'NMOS'|| component.type === 'PMOS') {
-                    if (pinCmp(gndList[gndIndex], nodeInd2)) {
-                        nodeInd2 = 'gnd'
-                    }
-                    if (pinCmp(gndList[gndIndex], nodeInd3)) {
-                        nodeInd3 = 'gnd'
-                    }
+                if (pinCmp(gndList[gndIndex], nodeInd3)) {
+                    nodeInd3 = "gnd";
                 }
+               
             }
             if (typeof (nodeInd0) == "number") {
                 nodeInd0 = nodeInd0.toString();
@@ -406,28 +400,26 @@ function nodeId(input) {
             if (typeof (nodeInd2) == "number") {
                 nodeInd2 = nodeInd2.toString();
             }
+            if (typeof (nodeInd3) == "number") {
+                nodeInd3 = nodeInd3.toString();
+            }
             output[components][component]['node1'] = nodeInd0
             output[components][component]['node2'] = nodeInd1
+           
 
             if (components === 'nBJT' || components === 'pBJT') {
                 output[components][component]['node1'] = nodeInd1
                 output[components][component]['node2'] = nodeInd0
                 output[components][component]['node3'] = nodeInd2
             } 
-            if (components === 'PMOS') {
+            if (components === 'PMOS'||components === 'NMOS') {
                 output[components][component]['node1'] = nodeInd1
                 output[components][component]['node2'] = nodeInd0
                 output[components][component]['node3'] = nodeInd3
                 output[components][component]['node4'] = nodeInd2
 
             } 
-            if (components === 'NMOS') {
-                output[components][component]['node1'] = nodeInd2
-                output[components][component]['node2'] = nodeInd0
-                output[components][component]['node3'] = nodeInd3
-                output[components][component]['node4'] = nodeInd1
-
-            } 
+            
             
         }
     }
