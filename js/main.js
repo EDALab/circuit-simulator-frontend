@@ -863,13 +863,27 @@ function staticOutputUpdate(feedback) {
     }
 };
 
+var QMLock = false;
+
+// Lock the panel when this part is being edited
+qmNode1Content.on('focus', function (event) {
+    QMLock = true;
+});
+
+// Lock the panel when this part is being edited
+qmNode2Content.on('focus', function (event) {
+    QMLock = true;
+});
+
 //Finish setting the nodes 1
 qmNode1Content.on('focusout', function (event) {
     var qmNode1inner = document.getElementById("qmNode1");
     var node1Text = qmNode1inner.value;
     if (node1Text != "" && labelSet && !labelSet.has(node1Text)) {
-        alert("Cannot access this node.");
+        console.log("Cannot access this node.");
         qmNode1inner.focus();
+    } else {
+        QMLock = false;
     }
 })
 //Finish setting the nodes 2
@@ -877,8 +891,10 @@ qmNode2Content.on('focusout', function (event) {
     var qmNode2inner = document.getElementById("qmNode2");
     var node2Text = qmNode2inner.value;
     if (node2Text != "" && labelSet && !labelSet.has(node2Text)) {
-        alert("Cannot access this node.");
+        console.log("Cannot access this node.");
         qmNode2inner.focus();
+    } else {
+        QMLock = false;
     }
 })
 //Quick Measurement Start
@@ -999,9 +1015,9 @@ mainPage.on('mousewheel', function (event) {
 });
 //Mouse click shady
 $('#shade-gray').on('click', function () {
-    if ((sidebar.hasClass('open-menu-quickMeasure')
+    if ((sidebar.hasClass('open-menu-quickMeasure') && !QMLock)
         || sidebar.hasClass('open-menu-staticOutput')
-        || sidebar.hasClass('open-menu-acOutput'))
+        || sidebar.hasClass('open-menu-acOutput')
         || sidebar.hasClass('open-menu-config')
         && !parameter.hasClass('parameter-open')) {
         $(doc.body).removeClass('open-gray open-sidebar');
