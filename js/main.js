@@ -14,7 +14,7 @@ import { partsAll, partsNow } from './collection';
 import { nodeId } from './nodeID';
 import filter from './filter';
 import './test';
-import { Subcircuit } from './subcircuits';
+// import { Subcircuit } from './subcircuits';
 
 //Global variable definition
 const doc = document,
@@ -813,12 +813,15 @@ action.on("click", "#fab-run", function (event) {
     temp_var = temp_var[0];
   }
   var filteredCircuit = JSON.stringify(temp_var);
+  console.log("Before any filterin or Node ID");
+  console.log(filteredCircuit);
+
   filteredCircuit = filter(filteredCircuit);
   console.log("output after applying filter function");
   console.log(JSON.stringify(filteredCircuit));
   var output = nodeId(filteredCircuit);
   console.log("output after applying nodeId function");
-  console.log(JSON.stringify(output));
+  console.log(output);
   var xhr = new XMLHttpRequest();
   var url = "http://127.0.0.1:5000/static_simulator/Test";
   xhr.open("POST", url, true);
@@ -834,8 +837,14 @@ action.on("click", "#fab-run", function (event) {
   };
   // Converting JSON data to string
   var data = JSON.stringify(output);
+
+  var test_json = JSON.stringify({"raw_data":temp_var , "processed_data": output});
+  console.log("What I intend to send: ")
+  console.log(test_json);
   // Sending data with the request
-  xhr.send(data);
+  xhr.send(test_json);
+  
+  
   $(document.body).addClass("open-sidebar open-gray");
   sidebar.addClass("open-menu-staticOutput");
   return;
