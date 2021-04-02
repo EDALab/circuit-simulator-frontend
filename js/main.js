@@ -920,7 +920,7 @@ qmRunButton.on('click', function (event) {
         temp_var = temp_var[0];
     }
     var filteredCircuit = JSON.stringify(temp_var);
-    filteredCircuit = filter(filteredCircuit, true);
+    filteredCircuit = filter(filteredCircuit, true, node1Text, node2Text);
     var output = nodeId(filteredCircuit);
     // Converting JSON data to string 
     var data = JSON.stringify(output);
@@ -936,7 +936,7 @@ qmRunButton.on('click', function (event) {
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
             var feedbackData = eval("(" + feedback + ")");
-            alert("Quick Measurement result: " + Math.abs(feedbackData["VM"][0]["VM_QM"]) + "V");
+            alert("Quick Measurement result: " + feedbackData["VM"][0]["VM_QM"] + " V");
         } else if (xhr.readyState === 4 && xhr.status === 400) {
             alert(xhr.responseText);
         }

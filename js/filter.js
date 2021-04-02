@@ -1,11 +1,10 @@
 
-const filter = (jsonString, quickMeasure) => {
+const filter = (jsonString, quickMeasure, node1Text, node2Text) => {
   const object = JSON.parse(jsonString)
   let output = {}
 
   output["-1"] = { id: 'GND_Abs', type: 'REF', value: 0, connect: [""] }
   let qmVoltmeter = { id: 'VM_QM', type: 'VM', value: [], connect: [], name: 'VM_QM' };
-  var qmPin = 0;
 
   for (const [key, value] of Object.entries(object)) {
     let temp = { id: '', type: '', value: [], connect: [], name: value.name };
@@ -59,9 +58,10 @@ const filter = (jsonString, quickMeasure) => {
     } else if (id.includes('D_')) {
       temp.type = 'D'; //diode
       temp.value.push(value.input[0]);
-    } else if (id.includes('Label_') && !!quickMeasure) {
-      qmVoltmeter.connect[qmPin] = value.connect[0];
-      qmPin++;
+    } else if (id.includes('Label_') && !!quickMeasure && value.name == node1Text) {
+      qmVoltmeter.connect[0] = value.connect[0];
+    } else if (id.includes('Label_') && !!quickMeasure && value.name == node2Text) {
+      qmVoltmeter.connect[1] = value.connect[0];
     } else if (id.includes('nBJT_')) {
       temp.type = 'nBJT';//n-type BJT
       temp.value.push(value.input[0]);
