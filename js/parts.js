@@ -378,7 +378,7 @@ const originalElectronic = {
         readOnly: {
             partType: 'IA',
             inputTxt: ['Ip：', 'Freq：', 'Offset: '],
-            parameterUnit: ['I', 'Hz', 'I'],
+            parameterUnit: ['A', 'Hz', 'A'],
             visionNum: 3,
             pointInfor: [
                 {
