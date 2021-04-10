@@ -1575,6 +1575,8 @@ function validateSubcircuit(partsArray) {
     return false;
   }
 
+  console.log("parts array");
+  console.log(partsArray);
   for (let i = 0; i < partsArray.length; i++) {
     let isInvalid =
       partsArray[i].partType === "dc_voltage_source" ||
@@ -1632,7 +1634,9 @@ context.on("click", "#create-subcircuit", function (event) {
   console.log("subcircuit");
   console.log(JSON.stringify(subcircuit));
   const subc = new Subcircuit(subcircuit);
+  console.log("CONSTRUCTOR CALLED");
   console.log(subc);
+  console.log("CONSTRUCTOR DONE");
 
   let xhr = new XMLHttpRequest();
   let url = "http://127.0.0.1:5000/subcircuit";

@@ -145,7 +145,7 @@ const originalElectronic = {
     inductance: {
         readWrite: {
             id: 'L_',
-            input: ['10u'],
+            input: ['10u']
         },
         readOnly: {
             partType: 'inductance',

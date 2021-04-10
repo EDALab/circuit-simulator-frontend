@@ -43,7 +43,6 @@ const subcircuitTemplates = {
    *   padding        The component padding
    *   margin         The component margin
    *   txtLocate      The distance between the text and the center of the component
-   *   criteriaTrend  Direction of the current with respect to the connection nodes -- not in use
    *
    */
 
@@ -98,7 +97,7 @@ const subcircuitTemplates = {
       introduction: "SubcircuitOnePort",
     },
   },
-  subcircuitTwoPort: {
+  subcircuitTwoPort: { // NOTE: TODO: input, inputTxt, visionNum, parameterUnit must be dynamically initialized in the constructor based on components we read in the json passed in
     readWrite: {
       // Editable Data
       id: "X_",
@@ -107,12 +106,12 @@ const subcircuitTemplates = {
       input: [],
       inputTxt: [],
       parameterUnit: [],
-      components: {},
+      components: {}, // json object of components where components of the same type are keyed by the same initial, eg key: "P", value: list of ports
+      visionNum: 1, // input.length + 1, // number of parameters in the param panel for subcircuit: input valus of its components + subcircuit name; double check this works
     },
     readOnly: {
       // Readonly Data
       partType: "subcircuit",
-      visionNum: 2,
       txtLocate: 14,
       // Default Orientation is horizontal
       padding: [0, 1],
@@ -278,12 +277,12 @@ function Subcircuit(data) {
       ]);
   this.position = this.position ? Point(this.position) : Point([-5000, -50000]);
   this.connect = this.connect || Array(this.pointInfor.length).fill("");
-  this.input = this.input || []; // TODO: input for subcircuit is input for each of its elements
+  this.input = this.input || []; 
   //, so might need a hashmap where keys are element IDs and the values
   // are the inputs of each element
   this.current = {}; // TODO: what is this?
   this.circle = [];
-  this.elementDOM = this.createPart(); // Create part creates an SVG element with tags
+  this.elementDOM = this.createPart(); // Create part creates an SVG element by using html tags
   this.move(); // TODO: what is this?
 
   // Node DOM Reference
@@ -302,6 +301,24 @@ function Subcircuit(data) {
 
 Subcircuit.prototype = {
   constructor: Subcircuit,
+
+  // initialize input array
+  // subcircuit json: {"name":"tst","partType":"subcircuitTwoPort","isBlackBox":false,"components":
+  //{"P":[{"id":"P_1","name":"P_1","value":0,"node1":"0","node2":"gnd"},{"id":"P_2","name":"P_2","value":0,"node1":"gnd","node2":"2"}],
+  //"C":[{"id":"C_1","name":"C_1","value":0.0001,"node1":"2","node2":"0"}]},"connect":["",""]}
+  // initializeInputs(components) {
+  //   for (const [partType, partList] of Object.entries(components)) {
+  //     if(partType !== "P") { // inptu: , [ { L1: [10u, 50Ohms ]} ]
+  //       // inputTxt: [ { L1: [inductanceUnit, ohmUnit] }]
+  //       // paramUnit: [ { L1: [paramUnitString1, paramUnitString2]} ]
+  //       partList.forEach( (part) => {
+  //         let inputJson = {};
+  //         inputJson[part.id] = 
+  //         this.input.push()
+  //       })
+  //     }
+  //   }  
+  // },
 
   // Drawing Related
   // Create a SVG on paper
