@@ -729,8 +729,8 @@ action.on('click', '#fab-run', function (event) {
     var output = nodeId(filteredCircuit);
     var simulationType;
     if (output.hasOwnProperty('VA') || output.hasOwnProperty('IA')) {
-        simulationType = 'dynamic';
-        var url = 'http://127.0.0.1:5000/dynamic_simulator/Test';
+        simulationType = 'transient';
+        var url = 'http://127.0.0.1:5000/transient_simulator/Test';
         var endtimeDom = document.getElementById("endtime");
         var time_interval = endtimeDom.value;
         var stepsizeDom = document.getElementById("stepsize");
@@ -758,7 +758,7 @@ action.on('click', '#fab-run', function (event) {
             staticOutputUpdate(eval("(" + feedback + ")"));
         } else if (xhr.readyState === 4 && xhr.status === 500 && simulationType === 'static') {
             alert(xhr.responseText);
-        } else if (xhr.readyState === 4 && xhr.status === 201 && simulationType === 'dynamic') {
+        } else if (xhr.readyState === 4 && xhr.status === 201 && simulationType === 'transient') {
             // Temporarily print the output through the alert
             feedback = xhr.responseText;
             console.log(feedback);
