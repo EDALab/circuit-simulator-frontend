@@ -543,77 +543,6 @@ function contextSet(event, status) {
     }
 
 }
-//Display waveform
-function createGraph(data) {
-    const ratio = 1.6,                                  //Page aspect ratio
-        otherHeight = 61,                               //Top reserved height
-        totalHeight = $(window).height(),               //Window height
-        totalWidth = $(window).width(),                 //Window width
-        maxForm = !!(data.voltage.length) +             //How many waveform interfaces are needed
-            !!(data.current.length),
-        graphHeight = totalHeight - otherHeight,        //Waveform page height
-        boxHeight = graphHeight / maxForm,              //Height of each panel
-        graphMain = $('#graph-main'),
-        graphWidth = (totalHeight * ratio < totalWidth) ? totalHeight * ratio : totalWidth,
-        graphForm = graphMain.childSelect('div.graph-individual', maxForm);
-
-    //Delete all elements in the DOM
-    for (let i = 0; i < graphForm.length; i++) {
-        const form = graphForm.get(i);
-        form.childrens().remove();
-        form.css('height', boxHeight + 'px');
-    }
-
-    //Set the waveform page width
-    graphPage.attr('style', 'width: ' + graphWidth + 'px');
-    //Create waveform
-    for (let i = 0; i < 2; i++) {
-        const label = ['voltage', 'current'][i];
-        if (data[label].length) {
-            const sub = (graphForm.length === 2) ? i : 0;
-            graphForm.get(sub).attr('id', 'graphForm-' + i);
-            graphForm.get(sub).prop('_data', new Graph(data[label], graphForm[sub], label));
-        }
-    }
-    //Data preparation is complete, ready for page change
-    const height = graphPage.height(),
-        width = graphPage.width(),
-        actionRight = 66,
-        actionBottom = 63.6,
-        R = Math.sqrt((actionRight - width) * (actionRight - width) + (actionBottom - height) * (actionBottom - height)),
-        clipPath = [
-            [R - width + actionRight, R - height],
-            [R - width + actionRight, R + actionBottom + 10],
-            [R + actionRight + 10, R + actionBottom + 10],
-            [R + actionRight + 10, R - height]
-        ].map((n) => n.join('px ')).join('px,') + 'px';
-
-    graphPage.attr('class', 'run');
-
-    const circle = graphPage.append($('<div>', {
-        'id': 'background-circle',
-        'style': 'position: absolute; background-color: #66CCCC; border-radius: 50%;' +
-            '-webkit-clip-path: polygon(' + clipPath + ');' +
-            'margin : 0; right: ' + actionRight + 'px; bottom: ' + actionBottom + 'px; ' +
-            'width: ' + (2 * R) + 'px; height: ' + (2 * R) + 'px; transform: translate(50%,50%)'
-    }));
-    const anime = new styleRule('graph-vision');
-    anime.setRule('0%', {
-        'width': '0px',
-        'height': '0px',
-        '-webkit-clip-path': 'circle(0)'
-    });
-    anime.setRule('100%', {
-        'width': 2 * R + 'px',
-        'height': 2 * R + 'px',
-        '-webkit-clip-path': 'circle(200vh)'
-    });
-
-    setTimeout(function () {
-        graphPage.attr('class', 'visionAll');
-        circle.remove();
-    }, 600);
-}
 
 //Web page element related events
 //Add all events of the device in the device menu
@@ -661,6 +590,90 @@ sidebar.on('click', '#menu-add-parts-close', function (event) {
     }
 });
 //Open the static output sidebar
+action.on('click', '#fab-acOutput', function (event) {
+    if (event.which === 1) {
+        $(document.body).addClass('open-sidebar open-gray');
+        sidebar.addClass('open-menu-acOutput');
+        $("#sidebar-menu").css('width', '50vw');
+        if (simulationData != null) {
+            var limit = Math.round(timeInterval / stepSize);
+            console.log("limit: " + limit);
+            var dataV = [];
+            var dataA = [];
+            var dataSeries = null;
+            var dataPoints = null;
+            var meterKey = null;
+            var x = 0;
+            var y = 0;
+            for (var i = 0; i < voltmeterNum; i++) {
+                x = 0;
+                y = 0;
+                dataSeries = null;
+                dataPoints = [];
+                meterKey = Object.keys(simulationData.VM[i])[0];
+                dataSeries = { type: "line", showInLegend: true, legendText: meterKey };
+                for (var j = 0; j < limit; j += 1) {
+                    x += 1;
+                    y = (simulationData.VM[i][meterKey])[j];
+                    dataPoints.push({
+                        x: x,
+                        y: y
+                    });
+                }
+                dataSeries.dataPoints = dataPoints;
+                dataV.push(dataSeries);
+            }
+            for (var i = 0; i < ammeterNum; i++) {
+                x = 0;
+                y = 0;
+                dataSeries = null;
+                dataPoints = [];
+                meterKey = Object.keys(simulationData.AM[i])[0];
+                dataSeries = { type: "line", showInLegend: true, legendText: meterKey };
+                for (var j = 0; j < limit; j += 1) {
+                    x += 1;
+                    y = (simulationData.AM[i][meterKey])[j];
+                    dataPoints.push({
+                        x: x,
+                        y: y
+                    });
+                }
+                dataSeries.dataPoints = dataPoints;
+                dataA.push(dataSeries);
+            }
+        }
+
+        //Better to construct options first and then pass it as a parameter
+        var options = {
+            zoomEnabled: true,
+            animationEnabled: true,
+            height: screen.height * 0.3,
+            title: {
+                text: "Voltmeters",
+                fontFamily: "Georgia"
+            },
+            legend: {
+                horizontalAlign: "center", // "center" , "right"
+                verticalAlign: "bottom",  // "top" , "bottom"
+                fontSize: 15
+            },
+            axisY: {
+                lineThickness: 1
+            },
+            data: dataV  // random data
+        };
+
+        var chartV = new CanvasJS.Chart("chartContainerV", options);
+        chartV.render();
+
+        options.data = dataA;
+        options.title.text = "Ammeters";
+
+        var chartA = new CanvasJS.Chart("chartContainerA", options);
+        chartA.render();
+    }
+});
+//Open the static output sidebar
 action.on('click', '#fab-staticOutput', function (event) {
     if (event.which === 1) {
         $(document.body).addClass('open-sidebar open-gray');
@@ -690,6 +703,13 @@ action.on('click', '#fab-adds', function (event) {
     }
 });
 
+// Variables to be updated after the simulation
+var simulationData = null;
+var voltmeterNum = 0;
+var ammeterNum = 0;
+var timeInterval = 0;
+var stepSize = 0;
+
 // Start the simulation
 action.on('click', '#fab-run', function (event) {
     var feedback;
@@ -707,30 +727,85 @@ action.on('click', '#fab-run', function (event) {
     var filteredCircuit = JSON.stringify(temp_var);
     filteredCircuit = filter(filteredCircuit);
     var output = nodeId(filteredCircuit);
-    console.log(JSON.stringify(output));
+    var simulationType;
+    if (output.hasOwnProperty('VA') || output.hasOwnProperty('IA')) {
+        simulationType = 'transient';
+        var url = 'http://127.0.0.1:5000/transient_simulator/Test';
+        var endtimeDom = document.getElementById("endtime");
+        var time_interval = endtimeDom.value;
+        var stepsizeDom = document.getElementById("stepsize");
+        var stepsize = stepsizeDom.value;
+        timeInterval = magConvert(time_interval);
+        stepSize = magConvert(stepsize);
+        output.time_interval = timeInterval;
+        output.step_size = stepSize;
+    } else {
+        simulationType = 'static';
+        var url = 'http://127.0.0.1:5000/static_simulator/Test';
+    }
+    // Converting JSON data to string 
+    var data = JSON.stringify(output);
+    console.log(data);
     var xhr = new XMLHttpRequest();
-    var url = 'http://127.0.0.1:5000/static_simulator/Test';
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/JSON');
     // Create a state change callback 
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 201) {
+        if (xhr.readyState === 4 && xhr.status === 201 && simulationType === 'static') {
             // Print received data from server 
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
             staticOutputUpdate(eval("(" + feedback + ")"));
-        } else if (xhr.readyState === 4 && xhr.status === 400) {
+        } else if (xhr.readyState === 4 && xhr.status === 500 && simulationType === 'static') {
             alert(xhr.responseText);
+        } else if (xhr.readyState === 4 && xhr.status === 201 && simulationType === 'transient') {
+            // Temporarily print the output through the alert
+            feedback = xhr.responseText;
+            console.log(feedback);
+            var feedbackData = eval("(" + feedback + ")");
+            simulationData = feedbackData;
+            if (feedbackData.VM) {
+                voltmeterNum = feedbackData.VM.length;
+            }
+            if (feedbackData.AM) {
+                ammeterNum = feedbackData.AM.length;
+            }
+            console.log('voltmeterNum' + voltmeterNum);
+            console.log('ammeterNum' + ammeterNum);
+            document.getElementById("fab-acOutput").click();
         }
     };
-    // Converting JSON data to string 
-    var data = JSON.stringify(output);
     // Sending data with the request 
     xhr.send(data);
-    $(document.body).addClass('open-sidebar open-gray');
-    sidebar.addClass('open-menu-staticOutput');
+    if (simulationType === 'static') {
+        // static output
+        $(document.body).addClass('open-sidebar open-gray');
+        sidebar.addClass('open-menu-staticOutput');
+    } else {
+        // plot
+    }
     return;
 });
+
+function magConvert(input) {
+    var value = parseFloat(input);
+    if (input.includes("p")) {
+        value /= 1000000000000;
+    } else if (input.includes("n")) {
+        value /= 1000000000;
+    } else if (input.includes("u")) {
+        value /= 1000000;
+    } else if (input.includes("m")) {
+        value /= 1000;
+    } else if (input.includes("k")) {
+        value *= 1000;
+    } else if (input.includes("M")) {
+        value *= 1000000;
+    } else if (input.includes("G")) {
+        value *= 1000000000;
+    }
+    return value;
+}
 
 function staticOutputRefresh() {
     var staticOutput = $('#menu-staticOutput');
@@ -788,13 +863,27 @@ function staticOutputUpdate(feedback) {
     }
 };
 
+var QMLock = false;
+
+// Lock the panel when this part is being edited
+qmNode1Content.on('focus', function (event) {
+    QMLock = true;
+});
+
+// Lock the panel when this part is being edited
+qmNode2Content.on('focus', function (event) {
+    QMLock = true;
+});
+
 //Finish setting the nodes 1
 qmNode1Content.on('focusout', function (event) {
     var qmNode1inner = document.getElementById("qmNode1");
     var node1Text = qmNode1inner.value;
     if (node1Text != "" && labelSet && !labelSet.has(node1Text)) {
-        alert("Cannot access this node.");
+        console.log("Cannot access this node.");
         qmNode1inner.focus();
+    } else {
+        QMLock = false;
     }
 })
 //Finish setting the nodes 2
@@ -802,8 +891,10 @@ qmNode2Content.on('focusout', function (event) {
     var qmNode2inner = document.getElementById("qmNode2");
     var node2Text = qmNode2inner.value;
     if (node2Text != "" && labelSet && !labelSet.has(node2Text)) {
-        alert("Cannot access this node.");
+        console.log("Cannot access this node.");
         qmNode2inner.focus();
+    } else {
+        QMLock = false;
     }
 })
 //Quick Measurement Start
@@ -829,9 +920,11 @@ qmRunButton.on('click', function (event) {
         temp_var = temp_var[0];
     }
     var filteredCircuit = JSON.stringify(temp_var);
-    filteredCircuit = filter(filteredCircuit, true);
+    filteredCircuit = filter(filteredCircuit, true, node1Text, node2Text);
     var output = nodeId(filteredCircuit);
-    console.log(JSON.stringify(output));
+    // Converting JSON data to string 
+    var data = JSON.stringify(output);
+    console.log(data);
     var xhr = new XMLHttpRequest();
     var url = 'http://127.0.0.1:5000/static_simulator/Test';
     xhr.open('POST', url, true);
@@ -842,13 +935,12 @@ qmRunButton.on('click', function (event) {
             // Print received data from server 
             // xhr.innerHTML = xhr.responseText;
             feedback = xhr.responseText;
-            alert(feedback);
+            var feedbackData = eval("(" + feedback + ")");
+            alert("Quick Measurement result: " + feedbackData["VM"][0]["VM_QM"] + " V");
         } else if (xhr.readyState === 4 && xhr.status === 400) {
             alert(xhr.responseText);
         }
     };
-    // Converting JSON data to string 
-    var data = JSON.stringify(output);
     // Sending data with the request 
     xhr.send(data);
     return;
@@ -923,12 +1015,14 @@ mainPage.on('mousewheel', function (event) {
 });
 //Mouse click shady
 $('#shade-gray').on('click', function () {
-    if ((sidebar.hasClass('open-menu-quickMeasure')
-        || sidebar.hasClass('open-menu-staticOutput'))
+    if ((sidebar.hasClass('open-menu-quickMeasure') && !QMLock)
+        || sidebar.hasClass('open-menu-staticOutput')
+        || sidebar.hasClass('open-menu-acOutput')
         || sidebar.hasClass('open-menu-config')
         && !parameter.hasClass('parameter-open')) {
         $(doc.body).removeClass('open-gray open-sidebar');
-        sidebar.removeClass('open-menu-quickMeasure open-menu-staticOutput open-menu-config open-add-parts');
+        sidebar.removeClass('open-menu-quickMeasure open-menu-staticOutput open-menu-config open-add-parts open-menu-acOutput');
+        $("#sidebar-menu").css('width', '20vw');
     }
 });
 

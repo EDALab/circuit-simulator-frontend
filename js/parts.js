@@ -254,13 +254,13 @@ const originalElectronic = {
     // AC Voltage Source
     ac_voltage_source: {
         readWrite: {
-            id: 'V_',
-            input: ['220', '50', '0', '0'],
+            id: 'VA_',
+            input: ['220', '50', '0'],
         },
         readOnly: {
-            partType: 'ac_voltage_source',
-            inputTxt: ['Vp：', 'Freq：', 'Bias：', 'Phase：'],
-            parameterUnit: ['V', 'Hz', 'V', '°'],
+            partType: 'VA',
+            inputTxt: ['Vp：', 'Freq：', 'Offset: '],
+            parameterUnit: ['V', 'Hz', 'V'],
             visionNum: 3,
             pointInfor: [
                 {
@@ -284,6 +284,14 @@ const originalElectronic = {
                         cy: '0',
                         r: '19',
                         class: 'white-fill',
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M0,-40V-19M0,19V40M0,-15V-9M-3,-12H3M-3,11H3',
+                        fill: 'none',
+                        stroke: 'black',
                     },
                 },
                 {
@@ -314,7 +322,7 @@ const originalElectronic = {
         },
         readOnly: {
             partType: 'dc_current_source',
-            inputTxt: ['电流值：'],
+            inputTxt: ['Current：'],
             parameterUnit: ['A'],
             visionNum: 2,
             pointInfor: [
@@ -366,6 +374,74 @@ const originalElectronic = {
                 },
             ],
             introduction: 'DC Current Source',
+        },
+    },
+    // AC Current Source
+    ac_current_source: {
+        readWrite: {
+            id: 'IA_',
+            input: ['1', '50', '0'],
+        },
+        readOnly: {
+            partType: 'IA',
+            inputTxt: ['Ip：', 'Freq：', 'Offset: '],
+            parameterUnit: ['A', 'Hz', 'A'],
+            visionNum: 3,
+            pointInfor: [
+                {
+                    position: [0, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [0, 40],
+                    direction: [0, 1],
+                },
+            ],
+            // Default Orientation is horizontal
+            padding: 1,
+            margin: [1, 0],
+            txtLocate: 24,
+            aspectInfor: [
+                {
+                    name: 'circle',
+                    attribute: {
+                        cx: '0',
+                        cy: '0',
+                        r: '19',
+                        class: 'white-fill',
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M0,-40V-20M0,20V40M0,-12V12',
+                    },
+                },
+                {
+                    name: 'polygon',
+                    attribute: {
+                        points: '0,-14 -5,-4 0,-8 5,-4',
+                        class: 'fill-whole', //'fill' : '#3B4449', 'stroke-width' : '0.5', 'stroke-linecap' : 'square'
+                    },
+                },
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-0,-40V-19M0,19V40M-12,0Q-6,-12 0,0M0,0Q6,12 12,0',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-20',
+                        y: '-30',
+                        width: '40',
+                        height: '60',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'AC Current Source',
         },
     },
     // Reference Point
@@ -588,18 +664,13 @@ const originalElectronic = {
     //BJT-NPN
     transistor_npn: {
         readWrite: {
-            id: 'Q_',
-            input: ['40', '26', '0.6', '1'],
+            id: 'nBJT_',
+            input: ['2N2222A'],
         },
         readOnly: {
             partType: 'transistor_npn',
-            inputTxt: [
-                'Current Magnify Ratio：',
-                'Base Node Resistor：',
-                'BE Saturate Voltage：',
-                'CE Saturate Voltage：',
-            ],
-            parameterUnit: ['', 'Ω', 'V', 'V'],
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
             visionNum: 1,
             txtLocate: 25,
             padding: [1, 1, 1, 0],
@@ -645,6 +716,188 @@ const originalElectronic = {
                 },
             ],
             introduction: 'BJT-NPN',
+        },
+    },
+
+    //BJT-PNP
+    transistor_pnp: {
+        readWrite: {
+            id: 'pBJT_',
+            input: ['2N2907A'],
+        },
+        readOnly: {
+            partType: 'transistor_pnp',
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
+            visionNum: 1,
+            txtLocate: 26,
+            padding: [1, 1, 1, 0],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [-20, 0],
+                    direction: [-1, 0],
+                },
+                {
+                    position: [20, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [20, 40],
+                    direction: [0, 1],
+                },
+            ],
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-20,0H0M0,-25V25M20,-40V-28L0,-12M0,12L20,28V40',
+                    },
+                },
+                {
+                    name: 'polygon',
+                    attribute: {
+                        points: '0,0 -11,-6 -7,0 -11,6',
+                        class: 'fill-whole',
+                        transform: 'translate(2, -13.6) rotate(141.3)',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-10',
+                        y: '-30',
+                        width: '30',
+                        height: '60',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'BJT-PNP',
+        },
+    },
+
+    //transistor-NMOS
+    n_MOSFET: {
+        readWrite: {
+            id: 'NMOS_',
+            input: ['ptm65nm_nmos'],
+        },
+        readOnly: {
+            partType: 'n_MOSFET',
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
+            visionNum: 1,
+            txtLocate: 26,
+            padding: [1, 1, 1, 0],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [-20, 0],
+                    direction: [-1, 0],
+                },
+                {
+                    position: [40, 0],
+                    direction: [1, 0],
+                },
+                {
+                    position: [20, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [20, 40],
+                    direction: [0, 1],
+                },
+            ],
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-20,0H-4M-4-18V18M0,-25V25M20,-40V-20H0M20,40V20H0M0,0H40',
+                    },
+                },
+                {
+                    name: 'polygon',
+                    attribute: {
+                        points: '0,0 -11,-6 -7,0 -11,6',
+                        class: 'fill-whole',
+                        transform: 'rotate(180)',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-20',
+                        y: '-40',
+                        width: '60',
+                        height: '80',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'n_MOSFET',
+        },
+    },
+
+    //transistor-PMOS
+    p_MOSFET: {
+        readWrite: {
+            id: 'PMOS_',
+            input: ['ptm65nm_pmos'],
+        },
+        readOnly: {
+            partType: 'p_MOSFET',
+            inputTxt: ['Model:'],
+            parameterUnit: [''],
+            visionNum: 1,
+            txtLocate: 26,
+            padding: [1, 1, 1, 0],
+            margin: 1,
+            pointInfor: [
+                {
+                    position: [-20, 0],
+                    direction: [-1, 0],
+                },
+                {
+                    position: [20, -40],
+                    direction: [0, -1],
+                },
+                {
+                    position: [40, 0],
+                    direction: [1, 0],
+                },
+                {
+                    position: [20, 40],
+                    direction: [0, 1],
+                },
+            ],
+            aspectInfor: [
+                {
+                    name: 'path',
+                    attribute: {
+                        d: 'M-20,0H-4M-4-18V18M0,-25V25M20,-40V-20H0M20,40V20H0M0,0H40',
+                    },
+                },
+                {
+                    name: 'polygon',
+                    attribute: {
+                        points: '0,0 -11,-6 -7,0 -11,6',
+                        class: 'fill-whole',
+                        transform: 'translate(40, 0)',
+                    },
+                },
+                {
+                    name: 'rect',
+                    attribute: {
+                        x: '-20',
+                        y: '-40',
+                        width: '60',
+                        height: '80',
+                        class: 'focus-part',
+                    },
+                },
+            ],
+            introduction: 'p_MOSFET',
         },
     },
     //opamp
@@ -1591,7 +1844,7 @@ PartClass.prototype = {
             )
             const temp_input_match = inputData.match(dataMatch)
             if (!temp_input_match || inputData !== temp_input_match[0]) {
-                if (this.partType !== 'diode') {
+                if (this.partType !== 'diode' && this.partType !== 'transistor_npn' && this.partType !== 'transistor_pnp' && this.partType !== 'n_MOSFET' && this.partType !== 'p_MOSFET') {
                     parameter.addClass('parameter-error-' + (i + 1))
                     error = false
                 }

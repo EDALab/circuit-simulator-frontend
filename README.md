@@ -68,3 +68,7 @@ Chrome has a bug when scaling the page, if the page scale is not 100%, some of t
 
 ## Licence
 MIT License
+
+## Original Source
+[xiaoboost/circuit-simulator](https://github.com/xiaoboost/circuit-simulator) by [xiaoboost](https://github.com/xiaoboost)  
+(Edited based on branch: [1.0](https://github.com/xiaoboost/circuit-simulator/tree/1.0))
