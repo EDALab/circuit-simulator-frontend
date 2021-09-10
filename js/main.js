@@ -1695,7 +1695,7 @@ context.on("click", "#create-subcircuit", function (event) {
   // then extract id (figure out how id is automatically given to current parts when they are chosen and dragged from right side menu), name of subcircuit (asked from user as input), blackbox boolean,
   let subcircuitName = window.prompt("Name of your subcircuit:");
 
-  const simplifiedTemp = nodeId(filter(JSON.stringify(temp))); // ports by default get connected to "gnd" in their outward pins open to the outside; need to modify this slightly
+  const simplifiedTemp = nodeId(filter(JSON.stringify(temp))); // ports get connected to "" on their unconnected side
 
   const numPorts = simplifiedTemp["P"].length;
   let connectArray = [];
@@ -1726,12 +1726,31 @@ context.on("click", "#create-subcircuit", function (event) {
     if (xhr.readyState === 4 && xhr.status === 201) {
       // maybe check returned json body for the backendId we assigned to it and store it in frontend?
       alert("Subcircuit created!");
+
+      // const divArray = $('div.parts-menu');
+      // const lastDiv = divArray[divArray.length - 1];
+      // console.log(lastDiv.length);
+      // console.log(lastDiv[lastDiv.length - 1]);
+      // console.log("last div");
+      // console.log(lastDiv);
+      // console.log(lastDiv.innerHTML);
+
+      // const divArray = $('#menu-add-parts .parts-menu');
+      // const lastDiv = $('#menu-add-parts .parts-menu').get(divArray.length);
+      // console.log(lastDiv)
+
+      const trying = $(".parts-menu");
+      console.log(trying);
+
+      const last = $(".parts-menu:last > button");
+      console.log(last);
     } else if (xhr.readyState === 4 && xhr.status === 400) {
       alert(xhr.responseText);
     }
   };
   // Converting JSON data to string
   let data = JSON.stringify(subcircuit);
+
   // Sending the subcircuit stringified data in body of request
   xhr.send(data);
 
