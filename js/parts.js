@@ -1221,6 +1221,8 @@ PartClass.prototype = {
       id: this.id,
       opacity: "0.4",
     });
+    console.log("CREATE PART GROUP")
+    console.log(group);
     const nodepoint = {
       // Node shape
       circle: {},
@@ -2354,7 +2356,9 @@ for (const i in originalElectronic) {
 }
 
 //Add device icon
+// Check buildSubcircuitSVGForPartsMenuButton function in subcircuits.js for explanation on how this needs to be modified in the future for persistence and storage of created subcircuits
 $("#sidebar-menu #menu-add-parts button.parts-list").each((n) => {
+  console.log("adding device icon");
   // New Identification
   const elem = $(n),
     special = {

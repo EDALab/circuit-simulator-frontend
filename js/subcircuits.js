@@ -57,6 +57,7 @@ const subcircuitTemplates = {
       inputTxt: [],
       parameterUnit: [],
       components: {},
+      introduction: "SubcircuitOnePort",
     },
     readOnly: {
       // Readonly Data
@@ -94,7 +95,6 @@ const subcircuitTemplates = {
           },
         },
       ],
-      introduction: "SubcircuitOnePort",
     },
   },
   subcircuitTwoPort: { // NOTE: TODO: input, inputTxt, visionNum, parameterUnit must be dynamically initialized in the constructor based on components we read in the json passed in
@@ -162,7 +162,10 @@ const subcircuitTemplates = {
           },
         },
       ],
-      introduction: "SubcircuitTwoPort",
+      // deleted intro attribute here, since it is used as displayed text when user hovers over subcircuit icon in side menu of parts
+      // but we want to display custom user name for subcircuit, not a generic template name!
+      // check buildSubcircuitSVGForPartsMenuButton function to see how we initialized intro to actually be user's custom name
+      // in parts.js, intro is initialized to the introduction field from parts template
     },
   },
   subcircuitThreePort: {
@@ -175,6 +178,7 @@ const subcircuitTemplates = {
       inputTxt: [],
       parameterUnit: [],
       components: {},
+      introduction: "SubcircuitThreePort",
     },
     readOnly: {
       // Readonly Data
@@ -212,7 +216,6 @@ const subcircuitTemplates = {
           },
         },
       ],
-      introduction: "SubcircuitThreePort",
     },
   },
   subcircuitFourPort: {
@@ -225,6 +228,7 @@ const subcircuitTemplates = {
       inputTxt: [],
       parameterUnit: [],
       components: {},
+      introduction: "SubcircuitFourPort",
     },
     readOnly: {
       // Readonly Data
@@ -262,7 +266,6 @@ const subcircuitTemplates = {
           },
         },
       ],
-      introduction: "SubcircuitFourPort",
     },
   },
 };
@@ -345,7 +348,7 @@ Subcircuit.prototype = {
     this.name = this.id;
     const group = $("<g>", SVG_NS, {
       class: "editor-parts",
-      id: this.id,
+      id: this.id + "-" + this.name,
       opacity: "0.4",
     });
     const nodepoint = {
@@ -1475,7 +1478,56 @@ for (const i in subcircuitTemplates) {
   }
 }
 
-// //Add device icon
+//Add device icon
+// This function is based on the commented code below, which is taken from the parts.js file
+// The commented code below, found in parts.js, is responsible for iterating over the index.html file to go through each button already there (resistor button, capacitor button, etc...)
+// and inject SVGs for the buttons to be displayed upon loading up the UI page
+// However, our function buildSubcircuitSVGForPartsMenuButton injects an SVG for a subcircuit button with id "subcircuitHTMLId" ON-DEMAND when the user creates the subcircuit; this function is not called when loading up the page
+// so to implement persistence of subcircuits created and have them show up in parts menu days after they were created, the commented code below which is in parts.js will need to be modified to query the database in backend which
+// contains the stored created subcircuits and add those as well when loading up UI for users
+function buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId) {
+  // New Identification
+  const elem = $(`#${subcircuitHTMLId}`), //$(`#sidebar-menu #menu-add-parts button.parts-list #${subcircuitHTMLId}`),
+    special = {
+      reference_ground: "scale(1.3, 1.3)",
+      transistor_npn: "translate(-5,0)",
+    },
+    type = elem.attr("id").split("-")[0], 
+    parts = subcircuitTemplates[type].readOnly.aspectInfor,
+    intro = elem.attr("id").split("-")[1], // for subcircuit part, unlike the other parts, when hovering over its icon in side menu,
+    // we want to display the custom name the user gave it, instead of generic template introduction
+    bias = special[type]
+      ? "translate(40,40) " + special[type]
+      : "translate(40,40)",
+    icon = elem
+      .append(
+        $("<svg>", SVG_NS, {
+          x: "0px",
+          y: "0px",
+          viewBox: "0 0 80 80",
+        })
+      )
+      .append($("<g>", SVG_NS));
+
+  icon.attr("transform", bias);
+  elem.prop("introduction", intro);
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i].name === "rect") {
+      continue;
+    }
+
+    const svgPart = parts[i],
+      iconSVG = icon.append($("<" + svgPart.name + ">", SVG_NS));
+    for (const k in svgPart.attribute) {
+      if (svgPart.attribute.hasOwnProperty(k)) {
+        if (svgPart.attribute[k] === "class") {
+          continue;
+        }
+        iconSVG.attr(k, svgPart.attribute[k]);
+      }
+    }
+  }
+}
 // $("#sidebar-menu #menu-add-parts button.parts-list").each((n) => {
 //   // New Identification
 //   const elem = $(n),
@@ -1525,4 +1577,4 @@ for (const i in subcircuitTemplates) {
 // );
 
 //Module external interface
-export { Subcircuit };
+export { Subcircuit, buildSubcircuitSVGForPartsMenuButton };

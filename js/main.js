@@ -9,7 +9,7 @@ import { Solver } from "./solver";
 import { Graph } from "./graph";
 import { styleRule } from "./styleRule";
 import { PartClass } from "./parts";
-import { Subcircuit } from "./subcircuits";
+import { Subcircuit, buildSubcircuitSVGForPartsMenuButton } from "./subcircuits";
 import { labelSet } from "./parts";
 import { partsAll, partsNow } from "./collection";
 import { nodeId } from "./nodeID";
@@ -1733,19 +1733,33 @@ context.on("click", "#create-subcircuit", function (event) {
 
       // counts the number of buttons in the last row 
       // by counting the number of occurences of the substring "</button>"
-      const count = innerHTML.match(/<\/button>/g || []).length 
+      const count = innerHTML.match(/<\/button>/g || []).length;
 
-      if(count < 3) {
-        lastDiv.innerHTML += "<button class=\"parts-list\" id=\"SubcircuitTwoPort\"><svg width=\"80\" height=\"60\" xmlns=\"http://www.w3.org/2000/svg\"><g><title>Layer 1</title><rect id=\"svg_1\" height=\"26\" width=\"60\" y=\"-13\" x=\"-30\" stroke=\"#000\" fill=\"#fff\"/></g></svg></button>";
+      const subcircuitHTMLId = subcircuit.partType + "-" + subcircuit.name;
+      const button = document.createElement('button');
+      
+      button.classList.add('parts-list');
+      button.id = subcircuitHTMLId;
+
+      if (count < 3) { // id of subcircuit html element not unique yet, but will be made later
+        //lastDiv.innerHTML += "<button class=\"parts-list\" id=\"" + subcircuit.partType + "-" + subcircuit.name + "\"><svg width=\"80\" height=\"60\" xmlns=\"http://www.w3.org/2000/svg\"><g><title>Layer 1</title><rect id=\"svg_1\" height=\"26\" width=\"60\" y=\"-13\" x=\"-30\" stroke=\"#000\" fill=\"#fff\"/></g></svg></button>";
+        //lastDiv.innerHTML += "<button class=\"parts-list\" id=\"" + subcircuitHTMLId + "\"></button>";
+        lastDiv.appendChild(button);
+      } else {
+        // first, create a new last div to contain the new subcircuit part 
+        const newLastDiv = document.createElement('div');
+        newLastDiv.classList.add('parts-menu');
+
+        // then add the new button for the new subcircuit part in the new div
+        newLastDiv.appendChild(button);
+
+        // select the div that contains the array of divs of 3 buttons each
+        // append the new last div to it
+        const enclosingDiv = $('#menu-add-parts');
+        enclosingDiv.append(newLastDiv);
       }
-      else {
 
-      }
-      const trying = $(".parts-menu");
-      console.log(trying);
-
-      const last = $(".parts-menu:last > button");
-      console.log(last);
+      buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId); // adds svg into the html button tag for the subcircuit 
     } else if (xhr.readyState === 4 && xhr.status === 400) {
       alert(xhr.responseText);
     }
