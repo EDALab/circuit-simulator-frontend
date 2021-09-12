@@ -1703,6 +1703,8 @@ context.on("click", "#create-subcircuit", function (event) {
     connectArray.push("");
   }
 
+  // TODO : When implementing subcircuitThreePort we will need to set the number of ports dynamically based on the number of ports on the grid,
+  // and when validating the subcircuit, we will need to check there are no open connections that are not connected to a port
   const subcircuit = {
     name: subcircuitName,
     partType: "subcircuitTwoPort",
@@ -1737,7 +1739,7 @@ context.on("click", "#create-subcircuit", function (event) {
 
       const subcircuitHTMLId = subcircuit.partType + "-" + subcircuit.name;
       const button = document.createElement('button');
-      
+
       button.classList.add('parts-list');
       button.id = subcircuitHTMLId;
 
