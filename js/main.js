@@ -1726,19 +1726,21 @@ context.on("click", "#create-subcircuit", function (event) {
     if (xhr.readyState === 4 && xhr.status === 201) {
       // maybe check returned json body for the backendId we assigned to it and store it in frontend?
       alert("Subcircuit created!");
+      
+      const divArray = $("div.parts-menu"); // selects the divs of buttons / circuit parts
+      const lastDiv = divArray[divArray.length - 1]; // selects the last div of buttons / circuit parts
+      const innerHTML = lastDiv.innerHTML; // the html string representation of the last row of the menu
 
-      // const divArray = $('div.parts-menu');
-      // const lastDiv = divArray[divArray.length - 1];
-      // console.log(lastDiv.length);
-      // console.log(lastDiv[lastDiv.length - 1]);
-      // console.log("last div");
-      // console.log(lastDiv);
-      // console.log(lastDiv.innerHTML);
+      // counts the number of buttons in the last row 
+      // by counting the number of occurences of the substring "</button>"
+      const count = innerHTML.match(/<\/button>/g || []).length 
 
-      // const divArray = $('#menu-add-parts .parts-menu');
-      // const lastDiv = $('#menu-add-parts .parts-menu').get(divArray.length);
-      // console.log(lastDiv)
+      if(count < 3) {
+        lastDiv.innerHTML += "<button class=\"parts-list\" id=\"SubcircuitTwoPort\"><svg width=\"80\" height=\"60\" xmlns=\"http://www.w3.org/2000/svg\"><g><title>Layer 1</title><rect id=\"svg_1\" height=\"26\" width=\"60\" y=\"-13\" x=\"-30\" stroke=\"#000\" fill=\"#fff\"/></g></svg></button>";
+      }
+      else {
 
+      }
       const trying = $(".parts-menu");
       console.log(trying);
 

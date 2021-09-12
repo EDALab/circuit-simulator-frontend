@@ -118,28 +118,46 @@ const subcircuitTemplates = {
       margin: 1,
       pointInfor: [
         {
-          position: [-40, 0],
-          direction: [-1, 0],
+          position: [-40, -4],
+          direction: [0, -1],
         },
         {
-          position: [40, 0],
-          direction: [1, 0],
+          position: [40, -4],
+          direction: [0, 1],
         },
       ],
       aspectInfor: [
-        {
-          name: "path",
+        { // this draws left vertical side 
+          name: 'path',
           attribute: {
-            d: "M-40,0H-24L-20,-9L-12,9L-4,-9L4,9L12,-9L20,9L24,0H40",
+            d: 'M-40,20 l0 -48', //83 0 83 0 0 49 0 49',  
           },
+        }, 
+        { // this draws top horizontal side
+          name: 'path',
+          attribute: {
+              d: 'M-40,-28 l80,0',
+          },
+        }, 
+        { // this draws right vertical side
+            name: 'path',
+            attribute: {
+              d: 'M40,-28 l0,48'
+            },
+        },
+        { // this draws bottom horizontal side
+            name: 'path',
+            attribute: {
+              d: 'M40,20 l-80,0'
+            },
         },
         {
           name: "rect",
           attribute: {
-            x: "-30",
-            y: "-13",
-            width: "60",
-            height: "26",
+            x: "306",
+            y: "245",
+            width: "188",
+            height: "110",
             class: "focus-part",
           },
         },
