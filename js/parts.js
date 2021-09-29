@@ -1214,6 +1214,7 @@ PartClass.prototype = {
   // Drawing Related
   // Create a SVG on paper
   createPart() {
+    console.log("create part in parts.js called")
     // New Identification
     this.name = this.id;
     const group = $("<g>", SVG_NS, {

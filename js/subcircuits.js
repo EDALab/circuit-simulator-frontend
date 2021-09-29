@@ -7,6 +7,7 @@ import { SVG_NS } from "./init";
 import { schMap } from "./maphash";
 import { styleRule } from "./styleRule";
 import { partsAll, partsNow } from "./collection";
+import { PartClass } from "./parts";
 
 // Define Constants
 const u = undefined,
@@ -272,11 +273,20 @@ const subcircuitTemplates = {
 
 // Subcircuit Constructor
 function Subcircuit(data) {
-  const { name, partType, isBlackBox, components, connect } = data;
-  this.partType = partType;
-  this.name = name;
-  this.isBlackBox = isBlackBox;
-  this.components = components;
+  if (data.partType){ // Data full blown object, so deconstruct it 
+      // PartClass.call()
+      const { name, partType, isBlackBox, components, connect } = data;
+      this.name = name;
+      this.isBlackBox = isBlackBox;
+      this.components = components;
+      this.connect = connect;
+      this.partType = partType;
+    }
+    else{ // data is just "partType-name", so split on delimiter "-"
+      // PartClass.call()
+      this.partType = data.split("-")[0];
+      this.name = data.split("-")[1];
+    }
 
   this.extend(Object.clone(subcircuitTemplates[this.partType].readWrite));
   Object.setPrototypeOf(this, subcircuitTemplates[this.partType].readOnly);
@@ -344,13 +354,15 @@ Subcircuit.prototype = {
   // Drawing Related
   // Create a SVG on paper
   createPart() {
+    console.log("create part in subcircuits called")
     // New Identification
     this.name = this.id;
     const group = $("<g>", SVG_NS, {
       class: "editor-parts",
-      id: this.id + "-" + this.name,
+      id: this.name + "-" + this.id,
       opacity: "0.4",
     });
+    console.log(this.name + "-" + this.id)
     const nodepoint = {
       // Node shape
       circle: {},

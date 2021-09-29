@@ -592,7 +592,12 @@ sidebar.on(
         grid.now();
         grid.setNewMark(true);
 
-        new PartClass(event.currentTarget.id).toFocus();
+        if(event.currentTarget.id.includes("subcircuit")){
+          new Subcircuit(event.currentTarget.id).toFocus();
+        }
+        else{
+          new PartClass(event.currentTarget.id).toFocus();
+        }
 
         partsNow.checkLine();
         partsNow.current = grid.createData(event);
@@ -2268,9 +2273,9 @@ doc.body.onload = function () {
   }
 
   //load parameter
-  if (parameters.init) {
-    grid.revocate(iniData[parameters.init]);
-  }
+  // if (parameters.init) {
+  //   grid.revocate(iniData[parameters.init]);
+  // }
 
   //Remove the gray screen
   cover.css("opacity", 0);
