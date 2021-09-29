@@ -113,7 +113,7 @@ const subcircuitTemplates = {
     readOnly: {
       // Readonly Data
       partType: "subcircuit",
-      txtLocate: 14,
+      txtLocate: 5,
       // Default Orientation is horizontal
       padding: [0, 1],
       margin: 1,
@@ -327,7 +327,7 @@ function Subcircuit(data) {
   delete this.text; // TODO: Figure out why this is here
   Object.seal(this);
   partsNow.deleteAll();
-  //   partsAll.push(this); // We don't know if this is needed yet
+  partsAll.push(this);
 }
 
 Subcircuit.prototype = {

@@ -599,6 +599,8 @@ sidebar.on(
           new PartClass(event.currentTarget.id).toFocus();
         }
 
+        console.log("partsNow")
+        console.log(partsNow)
         partsNow.checkLine();
         partsNow.current = grid.createData(event);
         partsNow.current.pageL = partsNow.center();
@@ -1116,6 +1118,8 @@ mainPage.on(
         grid.setMoveText(true);
       } else {
         //Click ontology
+        console.log("clickpart" + clickpart)
+        console.log("clickpart.id " + clickpart.id)
         if (!partsNow.has(clickpart.id)) {
           //Single device
           clearStatus();

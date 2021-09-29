@@ -2057,6 +2057,7 @@ partsNow.extend({
   },
   //Trace back the wire from the device to determine the wire state
   checkLine() {
+    console.log("checkLine running")
     const self = this;
     //There is no device currently, then exit
     if (!self.length) {
@@ -2071,10 +2072,12 @@ partsNow.extend({
         }
         //Devices that have been determined to move as a whole
         if (part.current.status === "move") {
+          console.log("part.current.status === 'move'")
           return true;
         }
 
         if (part.partType !== "line" && self.has(part)) {
+          console.log("part.partType !== 'line' && self.has(part")
           //Mark the current device
           part.current = {};
           part.current.status = "move";
@@ -2111,12 +2114,15 @@ partsNow.extend({
         }
       })(self[i]);
     }
+    console.log("Device initialization")
     //Device data initialization
     partsAll.forEach((item) => {
+      console.log("in partsAll.forEach")
       const type = item.partType,
         status = item.current.status;
 
       if (status === "move") {
+        console.log("move")
         item.toFocus();
         if (type === "line") {
           //The initial position of the wire is the origin, and the current path is recorded
@@ -2124,7 +2130,9 @@ partsNow.extend({
           item.current.wayBackup = Array.clone(item.way);
         } else {
           //The initial position of the device is the current coordinates of its geometric center
+          console.log("else")
           item.current.bias = Point(item.position);
+          console.log("item.current.bias = " + Point(item.position))
         }
       }
     });
@@ -2155,6 +2163,8 @@ partsNow.extend({
     this.forEach((item) => {
       if (item.current.status === "move") {
         //move as a whole
+        console.log("item ")
+        console.log(item)
         item.move(item.current.bias.add(bias));
       } else {
         //move while transform
