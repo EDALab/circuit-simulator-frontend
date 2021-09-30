@@ -282,10 +282,10 @@ function Subcircuit(data) {
       this.connect = connect;
       this.partType = partType;
     }
-    else{ // data is just "partType-name", so split on delimiter "-"
+    else{ // data is just "partType_name", so split on delimiter "_"
       // PartClass.call()
-      this.partType = data.split("-")[0];
-      this.name = data.split("-")[1];
+      this.partType = data.split("_")[0];
+      this.name = data.split("_")[1];
     }
 
   this.extend(Object.clone(subcircuitTemplates[this.partType].readWrite));
@@ -359,10 +359,10 @@ Subcircuit.prototype = {
     this.name = this.id;
     const group = $("<g>", SVG_NS, {
       class: "editor-parts",
-      id: this.name + "-" + this.id,
+      id: this.name + "_" + this.id,
       opacity: "0.4",
     });
-    console.log(this.name + "-" + this.id)
+    console.log(this.name + "_" + this.id)
     const nodepoint = {
       // Node shape
       circle: {},
@@ -1504,9 +1504,9 @@ function buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId) {
       reference_ground: "scale(1.3, 1.3)",
       transistor_npn: "translate(-5,0)",
     },
-    type = elem.attr("id").split("-")[0], 
+    type = elem.attr("id").split("_")[0], 
     parts = subcircuitTemplates[type].readOnly.aspectInfor,
-    intro = elem.attr("id").split("-")[1], // for subcircuit part, unlike the other parts, when hovering over its icon in side menu,
+    intro = elem.attr("id").split("_")[1], // for subcircuit part, unlike the other parts, when hovering over its icon in side menu,
     // we want to display the custom name the user gave it, instead of generic template introduction
     bias = special[type]
       ? "translate(40,40) " + special[type]

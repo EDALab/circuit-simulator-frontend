@@ -592,10 +592,12 @@ sidebar.on(
         grid.now();
         grid.setNewMark(true);
 
-        if(event.currentTarget.id.includes("subcircuit")){
+        if (event.currentTarget.id.includes("subcircuit")) {
+          console.log("in click in subircuit constructor call");
+          console.log(event.currentTarget.id);
           new Subcircuit(event.currentTarget.id).toFocus();
         }
-        else{
+        else {
           new PartClass(event.currentTarget.id).toFocus();
         }
 
@@ -1722,12 +1724,7 @@ context.on("click", "#create-subcircuit", function (event) {
     connect: connectArray, // array of length equal to the number of ports the subcircuit components list has... we can number ports within a subcircuit as 1,2,3 and map those numbers to indices in the array so we know which array index corresponds to which port
   };
 
-  console.log("subcircuit");
-  console.log(JSON.stringify(subcircuit));
   const subc = new Subcircuit(subcircuit);
-  console.log("CONSTRUCTOR CALLED");
-  console.log(subc);
-  console.log("CONSTRUCTOR DONE");
 
   let xhr = new XMLHttpRequest();
   let url = "http://127.0.0.1:5000/subcircuit";
@@ -1746,7 +1743,7 @@ context.on("click", "#create-subcircuit", function (event) {
       // by counting the number of occurences of the substring "</button>"
       const count = innerHTML.match(/<\/button>/g || []).length;
 
-      const subcircuitHTMLId = subcircuit.partType + "-" + subcircuit.name;
+      const subcircuitHTMLId = subcircuit.partType + "_" + subcircuit.name;
       const button = document.createElement('button');
 
       button.classList.add('parts-list');

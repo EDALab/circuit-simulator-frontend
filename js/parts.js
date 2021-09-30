@@ -1222,8 +1222,8 @@ PartClass.prototype = {
       id: this.id,
       opacity: "0.4",
     });
-    console.log("CREATE PART GROUP")
-    console.log(group);
+    console.log("create part this.id")
+    console.log(this.id);
     const nodepoint = {
       // Node shape
       circle: {},
