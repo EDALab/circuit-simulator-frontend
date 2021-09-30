@@ -272,7 +272,7 @@ const subcircuitTemplates = {
 };
 
 // Subcircuit Constructor
-function Subcircuit(data) {
+function Subcircuit(data, isConcreteInstance = false) {
   if (data.partType){ // Data full blown object, so deconstruct it 
       // PartClass.call()
       const { name, partType, isBlackBox, components, connect } = data;
@@ -282,7 +282,7 @@ function Subcircuit(data) {
       this.connect = connect;
       this.partType = partType;
     }
-    else{ // data is just "partType_name", so split on delimiter "_"
+    else { // data is just "partType_name", so split on delimiter "_"
       // PartClass.call()
       this.partType = data.split("_")[0];
       this.name = data.split("_")[1];
@@ -299,35 +299,43 @@ function Subcircuit(data) {
     this.extend(obj);
   }
 
-  this.id = partsAll.newId(this.id);
-  this.rotate = this.rotate
-    ? new Matrix(this.rotate)
-    : new Matrix([
-        [1, 0],
-        [0, 1],
-      ]);
-  this.position = this.position ? Point(this.position) : Point([-5000, -50000]);
-  this.connect = this.connect || Array(this.pointInfor.length).fill("");
-  this.input = this.input || []; 
-  //, so might need a hashmap where keys are element IDs and the values
-  // are the inputs of each element
-  this.current = {}; // TODO: what is this?
-  this.circle = [];
-  this.elementDOM = this.createPart(); // Create part creates an SVG element by using html tags
-  this.move(); // TODO: what is this?
+  if(isConcreteInstance) { // here wrapped all this code in this if statement because this constructor was taken from parts constructor
+    // parts are implemented differently to subcircuits in that they are there on side menu from get-go, so whenever their constructor is called, it is to create a concrete instance of a part
+    // meaning, placing a part on the grid, so we need to assign a new id to this part and push it to the partsAll array which keeps track of the parts currently on the grid
+    // but, in our subcircuit use case: constructor could be called in 2 cases:
+    // 1. Creating subcircuit for the first time; ie wanting to just add it to the parts menu list, NOT on a grid ==> NOT a concrete instance of a subcircuit!
+    // 2. Dragging and dropping our new subcircuit onto the grid ==> an actual CONCRETE instance of a subcircuit in which we should record the fact that a subcircuit has just been plopped onto a grid
+    // by notifying the partsAll array! -- this case is what this is if statement is for.
+    this.id = partsAll.newId(this.id);
+    this.rotate = this.rotate
+      ? new Matrix(this.rotate)
+      : new Matrix([
+          [1, 0],
+          [0, 1],
+        ]);
+    this.position = this.position ? Point(this.position) : Point([-5000, -50000]);
+    this.connect = this.connect || Array(this.pointInfor.length).fill("");
+    this.input = this.input || []; 
+    //, so might need a hashmap where keys are element IDs and the values
+    // are the inputs of each element
+    this.current = {}; // TODO: what is this?
+    this.circle = [];
+    this.elementDOM = this.createPart(); // Create part creates an SVG element by using html tags
+    this.move(); // TODO: what is this?
 
-  // Node DOM Reference
-  for (let i = 0; i < this.pointInfor.length; i++) {
-    this.circle[i] = $("#" + this.id + "-" + i, this.elementDOM); // Represents pin on the DOM
-    this.setConnect(i);
+    // Node DOM Reference
+    for (let i = 0; i < this.pointInfor.length; i++) {
+      this.circle[i] = $("#" + this.id + "-" + i, this.elementDOM); // Represents pin on the DOM
+      this.setConnect(i);
+    }
+    // Display text, default position is on top of a component
+    this.textVisition(this.text || [10, -10]);
+
+    delete this.text; // TODO: Figure out why this is here
+    Object.seal(this);
+    partsNow.deleteAll();
+    partsAll.push(this);
   }
-  // Display text, default position is on top of a component
-  this.textVisition(this.text || [10, -10]);
-
-  delete this.text; // TODO: Figure out why this is here
-  Object.seal(this);
-  partsNow.deleteAll();
-  partsAll.push(this);
 }
 
 Subcircuit.prototype = {

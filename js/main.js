@@ -595,7 +595,7 @@ sidebar.on(
         if (event.currentTarget.id.includes("subcircuit")) {
           console.log("in click in subircuit constructor call");
           console.log(event.currentTarget.id);
-          new Subcircuit(event.currentTarget.id).toFocus();
+          new Subcircuit(event.currentTarget.id, true).toFocus();
         }
         else {
           new PartClass(event.currentTarget.id).toFocus();

@@ -73,7 +73,15 @@ PartsCollection.prototype = {
             return (false);
         }
 
-        const id = tempid.split('-')[0];
+        let id;
+        const isSubcircuit = tempid.includes("X_"); // TODO: restrict users from using custom names for their subcircuits that contain the delimiter character we use: "_" - do it in main in validateSubcircuit
+        if(isSubcircuit) { // had to do this because we have subcircuitHTMLId that we set to be customname_X_[number], which is different than the id format for other types of parts already implemented in this codebase (handled by the else case below),
+            // due to us needing to have name and X_[number] to uniquely identify a subcircuit part 
+            const substringsOfId = tempid.split('_');
+            id = substringsOfId[1] + "_" + substringsOfId[2];
+        } else {
+            id = tempid.split('-')[0];
+        }
         if (!this.has(id)) {
             return (false);
         }
