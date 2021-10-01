@@ -48,56 +48,56 @@ const subcircuitTemplates = {
    */
 
   // Subcircuit with varying number of ports
-  subcircuitOnePort: {
-    readWrite: {
-      // Editable Data
-      id: "X_",
-      // This depends what components go in the subcircuit,
-      // so they need to be initialized dynamically in the constructor
-      input: [],
-      inputTxt: [],
-      parameterUnit: [],
-      components: {},
-      introduction: "SubcircuitOnePort",
-    },
-    readOnly: {
-      // Readonly Data
-      partType: "subcircuit",
-      visionNum: 2,
-      txtLocate: 14,
-      // Default Orientation is horizontal
-      padding: [0, 1],
-      margin: 1,
-      pointInfor: [
-        {
-          position: [-40, 0],
-          direction: [-1, 0],
-        },
-        {
-          position: [40, 0],
-          direction: [1, 0],
-        },
-      ],
-      aspectInfor: [
-        {
-          name: "path",
-          attribute: {
-            d: "M-40,0H-24L-20,-9L-12,9L-4,-9L4,9L12,-9L20,9L24,0H40",
-          },
-        },
-        {
-          name: "rect",
-          attribute: {
-            x: "-30",
-            y: "-13",
-            width: "60",
-            height: "26",
-            class: "focus-part",
-          },
-        },
-      ],
-    },
-  },
+  // subcircuitOnePort: {
+  //   readWrite: {
+  //     // Editable Data
+  //     id: "X_",
+  //     // This depends what components go in the subcircuit,
+  //     // so they need to be initialized dynamically in the constructor
+  //     input: [],
+  //     inputTxt: [],
+  //     parameterUnit: [],
+  //     components: {},
+  //     introduction: "SubcircuitOnePort",
+  //   },
+  //   readOnly: {
+  //     // Readonly Data
+  //     partType: "subcircuit",
+  //     visionNum: 2,
+  //     txtLocate: 14,
+  //     // Default Orientation is horizontal
+  //     padding: [0, 1],
+  //     margin: 1,
+  //     pointInfor: [
+  //       {
+  //         position: [-40, 0],
+  //         direction: [-1, 0],
+  //       },
+  //       {
+  //         position: [40, 0],
+  //         direction: [1, 0],
+  //       },
+  //     ],
+  //     aspectInfor: [
+  //       {
+  //         name: "path",
+  //         attribute: {
+  //           d: "M-40,0H-24L-20,-9L-12,9L-4,-9L4,9L12,-9L20,9L24,0H40",
+  //         },
+  //       },
+  //       {
+  //         name: "rect",
+  //         attribute: {
+  //           x: "-30",
+  //           y: "-13",
+  //           width: "60",
+  //           height: "26",
+  //           class: "focus-part",
+  //         },
+  //       },
+  //     ],
+  //   },
+  // },
   subcircuitTwoPort: { // NOTE: TODO: input, inputTxt, visionNum, parameterUnit must be dynamically initialized in the constructor based on components we read in the json passed in
     readWrite: {
       // Editable Data
@@ -119,11 +119,11 @@ const subcircuitTemplates = {
       margin: 1,
       pointInfor: [
         {
-          position: [-40, -4],
+          position: [-40, 0],
           direction: [0, -1],
         },
         {
-          position: [40, -4],
+          position: [40, 0],
           direction: [0, 1],
         },
       ],
@@ -169,106 +169,106 @@ const subcircuitTemplates = {
       // in parts.js, intro is initialized to the introduction field from parts template
     },
   },
-  subcircuitThreePort: {
-    readWrite: {
-      // Editable Data
-      id: "X_",
-      // This depends what components go in the subcircuit,
-      // so they need to be initialized dynamically in the constructor
-      input: [],
-      inputTxt: [],
-      parameterUnit: [],
-      components: {},
-      introduction: "SubcircuitThreePort",
-    },
-    readOnly: {
-      // Readonly Data
-      partType: "subcircuit",
-      visionNum: 2,
-      txtLocate: 14,
-      // Default Orientation is horizontal
-      padding: [0, 1],
-      margin: 1,
-      pointInfor: [
-        {
-          position: [-40, 0],
-          direction: [-1, 0],
-        },
-        {
-          position: [40, 0],
-          direction: [1, 0],
-        },
-      ],
-      aspectInfor: [
-        {
-          name: "path",
-          attribute: {
-            d: "M-40,0H-24L-20,-9L-12,9L-4,-9L4,9L12,-9L20,9L24,0H40",
-          },
-        },
-        {
-          name: "rect",
-          attribute: {
-            x: "-30",
-            y: "-13",
-            width: "60",
-            height: "26",
-            class: "focus-part",
-          },
-        },
-      ],
-    },
-  },
-  subcircuitFourPort: {
-    readWrite: {
-      // Editable Data
-      id: "X_",
-      // This depends what components go in the subcircuit,
-      // so they need to be initialized dynamically in the constructor
-      input: [],
-      inputTxt: [],
-      parameterUnit: [],
-      components: {},
-      introduction: "SubcircuitFourPort",
-    },
-    readOnly: {
-      // Readonly Data
-      partType: "subcircuit",
-      visionNum: 2,
-      txtLocate: 14,
-      // Default Orientation is horizontal
-      padding: [0, 1],
-      margin: 1,
-      pointInfor: [
-        {
-          position: [-40, 0],
-          direction: [-1, 0],
-        },
-        {
-          position: [40, 0],
-          direction: [1, 0],
-        },
-      ],
-      aspectInfor: [
-        {
-          name: "path",
-          attribute: {
-            d: "M-40,0H-24L-20,-9L-12,9L-4,-9L4,9L12,-9L20,9L24,0H40",
-          },
-        },
-        {
-          name: "rect",
-          attribute: {
-            x: "-30",
-            y: "-13",
-            width: "60",
-            height: "26",
-            class: "focus-part",
-          },
-        },
-      ],
-    },
-  },
+  // subcircuitThreePort: {
+  //   readWrite: {
+  //     // Editable Data
+  //     id: "X_",
+  //     // This depends what components go in the subcircuit,
+  //     // so they need to be initialized dynamically in the constructor
+  //     input: [],
+  //     inputTxt: [],
+  //     parameterUnit: [],
+  //     components: {},
+  //     introduction: "SubcircuitThreePort",
+  //   },
+  //   readOnly: {
+  //     // Readonly Data
+  //     partType: "subcircuit",
+  //     visionNum: 2,
+  //     txtLocate: 14,
+  //     // Default Orientation is horizontal
+  //     padding: [0, 1],
+  //     margin: 1,
+  //     pointInfor: [
+  //       {
+  //         position: [-40, 0],
+  //         direction: [-1, 0],
+  //       },
+  //       {
+  //         position: [40, 0],
+  //         direction: [1, 0],
+  //       },
+  //     ],
+  //     aspectInfor: [
+  //       {
+  //         name: "path",
+  //         attribute: {
+  //           d: "M-40,0H-24L-20,-9L-12,9L-4,-9L4,9L12,-9L20,9L24,0H40",
+  //         },
+  //       },
+  //       {
+  //         name: "rect",
+  //         attribute: {
+  //           x: "-30",
+  //           y: "-13",
+  //           width: "60",
+  //           height: "26",
+  //           class: "focus-part",
+  //         },
+  //       },
+  //     ],
+  //   },
+  // },
+  // subcircuitFourPort: {
+  //   readWrite: {
+  //     // Editable Data
+  //     id: "X_",
+  //     // This depends what components go in the subcircuit,
+  //     // so they need to be initialized dynamically in the constructor
+  //     input: [],
+  //     inputTxt: [],
+  //     parameterUnit: [],
+  //     components: {},
+  //     introduction: "SubcircuitFourPort",
+  //   },
+  //   readOnly: {
+  //     // Readonly Data
+  //     partType: "subcircuit",
+  //     visionNum: 2,
+  //     txtLocate: 14,
+  //     // Default Orientation is horizontal
+  //     padding: [0, 1],
+  //     margin: 1,
+  //     pointInfor: [
+  //       {
+  //         position: [-40, 0],
+  //         direction: [-1, 0],
+  //       },
+  //       {
+  //         position: [40, 0],
+  //         direction: [1, 0],
+  //       },
+  //     ],
+  //     aspectInfor: [
+  //       {
+  //         name: "path",
+  //         attribute: {
+  //           d: "M-40,0H-24L-20,-9L-12,9L-4,-9L4,9L12,-9L20,9L24,0H40",
+  //         },
+  //       },
+  //       {
+  //         name: "rect",
+  //         attribute: {
+  //           x: "-30",
+  //           y: "-13",
+  //           width: "60",
+  //           height: "26",
+  //           class: "focus-part",
+  //         },
+  //       },
+  //     ],
+  //   },
+  // },
 };
 
 // Subcircuit Constructor
