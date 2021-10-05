@@ -364,7 +364,6 @@ Subcircuit.prototype = {
   createPart() {
     console.log("create part in subcircuits called")
     // New Identification
-    this.name = this.id;
     const group = $("<g>", SVG_NS, {
       class: "editor-parts",
       id: this.name + "_" + this.id,
