@@ -1684,6 +1684,16 @@ function validateSubcircuit(partsArray) {
   return true;
 }
 
+// TODO: Add validation checks for more special symbols that break the subcircuit naming functionality.. need more testing
+// Probably could use a regex
+function validateSubcircuitName(subcircuitName){
+  if (subcircuitName.includes("_") || subcircuitName.includes("-") || subcircuitName.includes("$") 
+  || subcircuitName.includes("@") || subcircuitName.includes(".") || subcircuitName.includes("#")) {
+    return false;
+  }
+  return true;
+}
+
 //Right click menu
 //Create subcircuit
 context.on("click", "#create-subcircuit", function (event) {
@@ -1705,6 +1715,11 @@ context.on("click", "#create-subcircuit", function (event) {
   }
   // then extract id (figure out how id is automatically given to current parts when they are chosen and dragged from right side menu), name of subcircuit (asked from user as input), blackbox boolean,
   let subcircuitName = window.prompt("Name of your subcircuit:");
+
+  if (!validateSubcircuitName(subcircuitName)) {
+    alert("Cannot use special characters such as \"_\" or \"-\" or others in subcircuit name.");
+    return;
+  }
 
   const simplifiedTemp = nodeId(filter(JSON.stringify(temp))); // ports get connected to "" on their unconnected side
 
