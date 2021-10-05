@@ -91,8 +91,10 @@ const filter = (jsonString, quickMeasure, node1Text, node2Text) => {
     } else if (id.includes("PMOS_")) {
       temp.type = "PMOS"; // p-mosfet
       temp.value.push(value.input[0]);
+    } else if (id.includes('X_')) {
+      temp.type = 'X';// subcircuit
     }
-
+    
     // sketch of subcircuit feature idea:
     // else if id.includes(X_)
     // then we have a subcircuit component in our circuit
