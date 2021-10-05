@@ -1750,6 +1750,11 @@ context.on("click", "#create-subcircuit", function (event) {
       // maybe check returned json body for the backendId we assigned to it and store it in frontend?
       alert("Subcircuit created!");
       
+      // Delete subcircuit parts on the grid 
+      contextSet();
+      partsNow.forEach((n) => n.deleteSelf());
+      partsNow.deleteAll();
+      
       const divArray = $("div.parts-menu"); // selects the divs of buttons / circuit parts
       const lastDiv = divArray[divArray.length - 1]; // selects the last div of buttons / circuit parts
       const innerHTML = lastDiv.innerHTML; // the html string representation of the last row of the menu
