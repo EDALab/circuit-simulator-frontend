@@ -109,6 +109,7 @@ const subcircuitTemplates = {
       parameterUnit: [],
       components: {}, // json object of components where components of the same type are keyed by the same initial, eg key: "P", value: list of ports
       visionNum: 1, // input.length + 1, // number of parameters in the param panel for subcircuit: input valus of its components + subcircuit name; double check this works
+      portIdentifiers: [],
     },
     readOnly: {
       // Readonly Data
@@ -275,17 +276,24 @@ const subcircuitTemplates = {
 function Subcircuit(data, isConcreteInstance = false) {
   if (data.partType){ // Data full blown object, so deconstruct it 
       // PartClass.call()
-      const { name, partType, isBlackBox, components, connect } = data;
+      const { name, partType, isBlackBox, components, connect, portIdentifiers } = data;
       this.name = name;
       this.isBlackBox = isBlackBox;
       this.components = components;
       this.connect = connect;
       this.partType = partType;
+      this.portIdentifiers = portIdentifiers;
     }
-    else { // data is just "partType_name", so split on delimiter "_"
+    else { 
+      // data is of this form, because we are creating a concrete instance of the subcircuit so we only need to pass in this info
+      // const data = {
+      //     subcircuitHTMLId: event.currentTarget.id,
+      //     portIdentifiers: event.currentTarget.portIdentifiers
+      // }
       // PartClass.call()
-      this.partType = data.split("_")[0];
-      this.name = data.split("_")[1];
+      this.partType = data["subcircuitHTMLId"].split("_")[0];
+      this.name = data["subcircuitHTMLId"].split("_")[1];
+      this.portIdentifiers = data["portIdentifiers"];
     }
 
   this.extend(Object.clone(subcircuitTemplates[this.partType].readWrite));
@@ -427,6 +435,11 @@ Subcircuit.prototype = {
       for (let i = 0; i < propertyVision.length; i++) {
         tempDate.append($("<tspan>", SVG_NS).text(propertyVision[i]));
       }
+
+      for(let i = 0; i < this.portIdentifiers.length; i++) {
+        tempDate.append($("<tspan>", SVG_NS).text(this.portIdentifiers[i]));
+      }
+
       group.append(tempDate);
     }
     actionArea.append(group);
@@ -1504,7 +1517,7 @@ for (const i in subcircuitTemplates) {
 // However, our function buildSubcircuitSVGForPartsMenuButton injects an SVG for a subcircuit button with id "subcircuitHTMLId" ON-DEMAND when the user creates the subcircuit; this function is not called when loading up the page
 // so to implement persistence of subcircuits created and have them show up in parts menu days after they were created, the commented code below which is in parts.js will need to be modified to query the database in backend which
 // contains the stored created subcircuits and add those as well when loading up UI for users
-function buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId) {
+function buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId, portIdentifiers) {
   // New Identification
   const elem = $(`#${subcircuitHTMLId}`), //$(`#sidebar-menu #menu-add-parts button.parts-list #${subcircuitHTMLId}`),
     special = {
@@ -1530,11 +1543,13 @@ function buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId) {
 
   icon.attr("transform", bias);
   elem.prop("introduction", intro);
+  elem.prop("portIdentifiers", portIdentifiers);
   for (let i = 0; i < parts.length; i++) {
     if (parts[i].name === "rect") {
       continue;
     }
 
+    // this section here is responsible for going through the aspectInfor array (the array of lines and shapes needed to draw part shape) and adding it to svg icon for the part
     const svgPart = parts[i],
       iconSVG = icon.append($("<" + svgPart.name + ">", SVG_NS));
     for (const k in svgPart.attribute) {
