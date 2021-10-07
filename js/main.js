@@ -1733,12 +1733,14 @@ context.on("click", "#create-subcircuit", function (event) {
     connectArray.push("");
   }
 
-  // Collect port identifiers from the list of ports: the port identifiers are in the format: portId--portCustomName; example: port ids are in the format: P_1 usually, and custom name is a custom name chosen by the user when building their subcircuit
-  // so an example of a port identifier for a port with id "P_1" and custom name "OUTPORT" is: P_1--OUTPORT
-  const portIdentifiers = [];
+  // Collect port identifiers from the list of ports: the port identifiers map is of the following format: 
+  // portIdentifiersMap: { portId1: portCustomName1, portId2: portCustomName2, etc..}
+  // example: port ids are in the format: P_1 usually, and custom name is a custom name chosen by the user when building their subcircuit
+  // so an example of a port identifier map could be: { "P_1": "INPORT", "P_2": "OUTPORT" }
+  const portIdentifiersMap = {};
   const listOfPorts = simplifiedTemp["P"];
   for(let i = 0; i < numPorts; i++) {
-    portIdentifiers.push(listOfPorts[i].id + "--" + listOfPorts[i].name);
+    portIdentifiersMap["P_" + (i+1)] = listOfPorts[i].name;
   }
 
   // TODO : When implementing subcircuitThreePort we will need to set the number of ports dynamically based on the number of ports on the grid,
@@ -1749,7 +1751,7 @@ context.on("click", "#create-subcircuit", function (event) {
     isBlackBox: false, // when adding users and diff types of permissions, we would for example prompt professors if they want this to be a blackbox, but not students
     components: simplifiedTemp,
     connect: connectArray, // array of length equal to the number of ports the subcircuit components list has... we can number ports within a subcircuit as 1,2,3 and map those numbers to indices in the array so we know which array index corresponds to which port
-    portIdentifiers: portIdentifiers
+    portIdentifiersMap: portIdentifiersMap
   };
 
   const subc = new Subcircuit(subcircuit);
@@ -1800,7 +1802,7 @@ context.on("click", "#create-subcircuit", function (event) {
         enclosingDiv.append(newLastDiv);
       }
 
-      buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId, portIdentifiers); // adds svg into the html button tag for the subcircuit 
+      buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId, portIdentifiersMap); // adds svg into the html button tag for the subcircuit 
     } else if (xhr.readyState === 4 && xhr.status === 400) {
       alert(xhr.responseText);
     }

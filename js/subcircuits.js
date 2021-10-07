@@ -109,7 +109,7 @@ const subcircuitTemplates = {
       parameterUnit: [],
       components: {}, // json object of components where components of the same type are keyed by the same initial, eg key: "P", value: list of ports
       visionNum: 1, // input.length + 1, // number of parameters in the param panel for subcircuit: input valus of its components + subcircuit name; double check this works
-      portIdentifiers: [],
+      portIdentifiers: {},
     },
     readOnly: {
       // Readonly Data
@@ -436,8 +436,8 @@ Subcircuit.prototype = {
         tempDate.append($("<tspan>", SVG_NS).text(propertyVision[i]));
       }
 
-      for(let i = 0; i < this.portIdentifiers.length; i++) {
-        tempDate.append($("<tspan>", SVG_NS).text(this.portIdentifiers[i]));
+      for(let i = 0; i < Object.keys(this.portIdentifiers).length; i++) {
+        tempDate.append($("<tspan>", SVG_NS).text(this.portIdentifiers["P_" + (i+1)])); // appends the custom name that is accessed by the key that is the port ID in the portIdentifiers map! 
       }
 
       group.append(tempDate);

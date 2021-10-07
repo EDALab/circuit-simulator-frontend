@@ -2154,6 +2154,7 @@ partsNow.extend({
   },
   //move a device
   moveParts(event) {
+    console.log("moveParts in parts.js");
     const self = this,
       cur = self.current,
       mouse = cur.mouse(event),
