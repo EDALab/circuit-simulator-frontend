@@ -11,7 +11,7 @@ import { styleRule } from './styleRule';
 import { PartClass } from './parts';
 import { labelSet } from './parts';
 import { partsAll, partsNow } from './collection';
-import { nodeId } from './nodeID';
+import { nodeId } from './nodeId';
 import filter from './filter';
 import './test';
 
@@ -730,7 +730,7 @@ action.on('click', '#fab-run', function (event) {
     var simulationType;
     if (output.hasOwnProperty('VA') || output.hasOwnProperty('IA')) {
         simulationType = 'transient';
-        var url = 'http://127.0.0.1:5000/transient_simulator/Test';
+        var url = 'http://132.206.31.70/transient_simulator/Test';
         var endtimeDom = document.getElementById("endtime");
         var time_interval = endtimeDom.value;
         var stepsizeDom = document.getElementById("stepsize");
@@ -741,7 +741,7 @@ action.on('click', '#fab-run', function (event) {
         output.step_size = stepSize;
     } else {
         simulationType = 'static';
-        var url = 'http://127.0.0.1:5000/static_simulator/Test';
+        var url = 'http://132.206.31.70/static_simulator/Test';
     }
     // Converting JSON data to string 
     var data = JSON.stringify(output);
@@ -926,7 +926,7 @@ qmRunButton.on('click', function (event) {
     var data = JSON.stringify(output);
     console.log(data);
     var xhr = new XMLHttpRequest();
-    var url = 'http://127.0.0.1:5000/static_simulator/Test';
+    var url = 'http://132.206.31.70/static_simulator/Test';
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/JSON');
     // Create a state change callback 
