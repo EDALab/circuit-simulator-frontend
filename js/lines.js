@@ -98,6 +98,9 @@ function SearchRules(nodestart, nodeend, mode) {
         excludeLines = [],  //Wires to be excluded
         end = Array.clone(nodeend, 0.05);
 
+    // console.log("printing end variable in searchrules consturctor");
+    // console.log(end);
+
     //The shortest distance from point to point or line
     function nodeDistance(node, end) {
         return Point.prototype.distance.call(node, end);
@@ -199,6 +202,10 @@ function SearchRules(nodestart, nodeend, mode) {
     }
     //Equal to the end
     function checkEndNode(node) {
+        // console.log("nodexpand.point in checkEndNode");
+        // console.log(node.point);
+        // console.log("printing end agn in checkEndNode");
+        // console.log(end);
         return node.point.isEqual(end);
     }
     //Within the final line
@@ -344,9 +351,10 @@ function SearchRules(nodestart, nodeend, mode) {
             //In the case of drawing, the end can only be a point, 
             // which is classified according to the attributes of the end point
             const status = schMap.getValueBySmalle(end);
-
+            // console.log("switch statement case draw");
             switch (status.form) {
                 case 'line': {
+                    console.log("drawing line case");
                     //wire
                     endLine = excludeLine(end);
                     self.checkPoint = checkPointNodeAlign;
@@ -355,6 +363,7 @@ function SearchRules(nodestart, nodeend, mode) {
                 }
                 case 'cross-point': {
                     //Staggered node
+                    console.log("drawing cross-point case");
                     endLine = excludeLine(end);
                     self.checkPoint = checkPointNodeAlign;
                     self.checkEnd = checkEndNodeInLine1;
@@ -362,19 +371,22 @@ function SearchRules(nodestart, nodeend, mode) {
                 }
                 case 'part-point':
                 case 'line-point': {
+                    console.log("drawing line-point case");
                     //Device pin, wire temporary node
                     self.checkPoint = checkPointNodeAlign;
                     self.checkEnd = checkEndNode;
                     break;
                 }
                 case 'part': {
+                    console.log("drawing part case");
                     //Device body
                     excludeParts = excludePart(end);
                     self.checkPoint = checkPointExcludePart;
                     self.checkEnd = checkEndNode;
                     break;
                 }
-                default: {
+                default: { // when first drawing line out of a device on the grid, this case is invoked
+                    console.log("drawing default case");
                     self.checkPoint = checkPointNode2Space;
                     self.checkEnd = checkEndNode;
                 }
@@ -432,6 +444,7 @@ function SearchRules(nodestart, nodeend, mode) {
         }
     }
 
+    // Returns a number that somehow indicates how the line is allowed to travel 
     //Current point expansion points
     self.expandNumber = function (node) {
         //If the current extension point is on a wire and the point is not an excluded point, 
@@ -529,7 +542,7 @@ function SearchStack(nodestart, vector, map) {
 function AStartSearch(start, end, vector, opt) {
     //initialization
     const map = SearchMap(),
-        check = SearchRules(start, end, opt),
+        check = SearchRules(start, end, opt), // initialize the rules for the search algo depending on the parameters passed, including the checkEnd function
         stackopen = SearchStack(start, vector, map);
 
     //Check if checkNode has an end tag
@@ -543,12 +556,17 @@ function AStartSearch(start, end, vector, opt) {
     while ((!endFlag) && (stackopen.closeSize < 1000)) {
         //The top element of the open stack pops up as the current node
         const nodenow = stackopen.pop(),
-            expandCount = check.expandNumber(nodenow.point);
+            expandCount = check.expandNumber(nodenow.point); // returns 1 or 3: which is a number indicating how the line is allowed to travel
+
+        // console.log("astartsearch node now");
+        // console.log(nodenow);
 
         (typeof mapTest !== 'undefined' && mapTest.point(nodenow.point, '#2196F3', 20));
 
         for (let i = 0; i < expandCount; i++) {
             const nodexpand = newNode(nodenow, rotate[i]);
+            // console.log("node expand which relies on nodenow");
+            // console.log(nodexpand);
 
             (typeof mapTest !== 'undefined' && mapTest.point(nodexpand.point, '#000000', 20));
 
@@ -558,10 +576,16 @@ function AStartSearch(start, end, vector, opt) {
             nodexpand.straight = true;
             nodexpand.junctionParent = i ? nodenow : nodenow.junctionParent;
             nodexpand.value = check.calValue(nodexpand);
-
+            
+            // console.log(nodexpand);
             //Whether the current extension point is the end point
-            if (check.checkEnd(nodexpand)) {
-                endStatus = nodexpand;
+            // checkEnd function was set upon creation of check object based on switch statement for the process mode
+            // (ie based on what we are drawing, we make different checks)
+            // for port component and for other devices when we are first drawing a line coming out of their pins,
+            // the switch statement in SearchRules constructor sets the checkEnd algo to simply check if the node is equal to the end node we curr have
+            if (check.checkEnd(nodexpand)) { // this condition is currently false for port component, but true for other devices when first drawing lines out of them
+                // console.log("initializing endStatus");
+                endStatus = nodexpand; // initializes endStatus
                 endFlag = true;
                 break;
             }
@@ -585,7 +609,8 @@ function AStartSearch(start, end, vector, opt) {
     const tempway = new LineWay();
     //The junctionParent of the starting point is equal to itself,
     // so the parent attribute of the node is checked here
-    while (endStatus.parent) {
+    while (endStatus.parent) { // throws error for port component drawing wire: cannot read property 'parent' of undefined
+    // endStatus for port component is undefined because check.checkEnd(nodexpand) returned false above
         tempway.push(Point([endStatus.point[0] * 20, endStatus.point[1] * 20]));
         endStatus = endStatus.junctionParent;
     }
@@ -692,6 +717,7 @@ const Search = {
                 for (let i = 0; i < endGrid.length; i++) {
                     const end = endGrid[i];
                     if (!mouseGrid.has(end)) {
+                        // this throws error for port component drawing line
                         mouseGrid.set(end,
                             AStartSearch(nodeStart, end, initTrend, option)
                                 .checkWayExcess(initTrend)

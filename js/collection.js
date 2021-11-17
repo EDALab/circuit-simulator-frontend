@@ -73,7 +73,33 @@ PartsCollection.prototype = {
             return (false);
         }
 
-        const id = tempid.split('-')[0];
+        let id;
+        const isSubcircuit = tempid.includes("X_"); // TODO: restrict users from using custom names for their subcircuits that contain the delimiter character we use: "_" - do it in main in validateSubcircuit
+        if(isSubcircuit) { // had to do this because we have subcircuit id for the svg <g> html element of the subcircuit svg that we set to be customname_X_[number], which is different than the id format for other types of parts already implemented in this codebase (handled by the else case below),
+            // due to us needing to have name and X_[number] to uniquely identify a subcircuit part 
+            
+            // In both cases we are trying to isolate id = X_number, since it is the id used in partsAll array
+
+            // If the tempid passed is of the form X_1-1 for example, use this split
+            // In this case, we are dealing with a pin of a subcircuit part
+            if(tempid.includes("-")) {
+                var substringsOfId = tempid.split("-");
+                id = substringsOfId[0];
+            }
+            // Otherwise the tempid is of the form subcircuitName_X_number, which means we are
+            // dealing with a subcircuit part itself, so we split with the _ as a delimiter
+
+            // The only reason why we would ever have an ID for the subcircuit of the form subcircuitName_X_number
+            // is because this ID is used as subcircuit id for the svg <g> html element of the subcircuit svg built in createPart()
+            // so that we can easily identify it with our own eyes when we inspect code. 
+            else {
+                var substringsOfId = tempid.split('_');
+                id = substringsOfId[1] + "_" + substringsOfId[2];
+            }
+
+        } else {
+            id = tempid.split('-')[0];
+        }
         if (!this.has(id)) {
             return (false);
         }
