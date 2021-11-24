@@ -1674,9 +1674,9 @@ function validateSubcircuit(partsArray) {
   console.log(partsArray);
   for (let i = 0; i < partsArray.length; i++) {
     let isInvalid =
-      partsArray[i].partType === "dc_voltage_source" ||
-      partsArray[i].partType === "ac_voltage_source" ||
-      partsArray[i].partType === "dc_current_source" ||
+      // partsArray[i].partType === "dc_voltage_source" ||
+      // partsArray[i].partType === "ac_voltage_source" ||
+      // partsArray[i].partType === "dc_current_source" ||
       ((partsArray[i].connect[0] === "" || partsArray[i].connect[1] === "") &&
         partsArray[i].partType !== "Port");
 
