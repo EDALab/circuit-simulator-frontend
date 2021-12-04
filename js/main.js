@@ -9,7 +9,10 @@ import { Solver } from "./solver";
 import { Graph } from "./graph";
 import { styleRule } from "./styleRule";
 import { PartClass } from "./parts";
-import { Subcircuit, buildSubcircuitSVGForPartsMenuButton } from "./subcircuits";
+import {
+  Subcircuit,
+  buildSubcircuitSVGForPartsMenuButton,
+} from "./subcircuits";
 import { labelSet } from "./parts";
 import { partsAll, partsNow } from "./collection";
 import { nodeId } from "./nodeID";
@@ -597,16 +600,15 @@ sidebar.on(
           console.log(event.currentTarget.id);
           const data = {
             subcircuitHTMLId: event.currentTarget.id,
-            portIdentifiers: event.currentTarget.portIdentifiers
-          }
+            portIdentifiers: event.currentTarget.portIdentifiers,
+          };
           new Subcircuit(data, true).toFocus();
-        }
-        else {
+        } else {
           new PartClass(event.currentTarget.id).toFocus();
         }
 
-        console.log("partsNow")
-        console.log(partsNow)
+        console.log("partsNow");
+        console.log(partsNow);
         partsNow.checkLine();
         partsNow.current = grid.createData(event);
         partsNow.current.pageL = partsNow.center();
@@ -652,7 +654,7 @@ action.on("click", "#fab-acOutput", function (event) {
           x += 1;
           y = simulationData.VM[i][meterKey][j];
           dataPoints.push({
-            x: x,
+            x: x * stepSize,
             y: y,
           });
         }
@@ -670,7 +672,7 @@ action.on("click", "#fab-acOutput", function (event) {
           x += 1;
           y = simulationData.AM[i][meterKey][j];
           dataPoints.push({
-            x: x,
+            x: x * stepSize,
             y: y,
           });
         }
@@ -693,7 +695,11 @@ action.on("click", "#fab-acOutput", function (event) {
         verticalAlign: "bottom", // "top" , "bottom"
         fontSize: 15,
       },
+      axisX: {
+        title: "Time (s)",
+      },
       axisY: {
+        title: "Voltage (V)",
         lineThickness: 1,
       },
       data: dataV, // random data
@@ -704,6 +710,7 @@ action.on("click", "#fab-acOutput", function (event) {
 
     options.data = dataA;
     options.title.text = "Ammeters";
+    options.axisY.title = "Current (A)";
 
     var chartA = new CanvasJS.Chart("chartContainerA", options);
     chartA.render();
@@ -1124,8 +1131,8 @@ mainPage.on(
         grid.setMoveText(true);
       } else {
         //Click ontology
-        console.log("clickpart" + clickpart)
-        console.log("clickpart.id " + clickpart.id)
+        console.log("clickpart" + clickpart);
+        console.log("clickpart.id " + clickpart.id);
         if (!partsNow.has(clickpart.id)) {
           //Single device
           clearStatus();
@@ -1677,8 +1684,8 @@ function validateSubcircuit(partsArray) {
       // partsArray[i].partType === "dc_voltage_source" ||
       // partsArray[i].partType === "ac_voltage_source" ||
       // partsArray[i].partType === "dc_current_source" ||
-      ((partsArray[i].connect[0] === "" || partsArray[i].connect[1] === "") &&
-        partsArray[i].partType !== "Port");
+      (partsArray[i].connect[0] === "" || partsArray[i].connect[1] === "") &&
+      partsArray[i].partType !== "Port";
 
     if (isInvalid) {
       return false;
@@ -1690,9 +1697,15 @@ function validateSubcircuit(partsArray) {
 
 // TODO: Add validation checks for more special symbols that break the subcircuit naming functionality.. need more testing
 // Probably could use a regex
-function validateSubcircuitName(subcircuitName){
-  if (subcircuitName.includes("_") || subcircuitName.includes("-") || subcircuitName.includes("$") 
-  || subcircuitName.includes("@") || subcircuitName.includes(".") || subcircuitName.includes("#")) {
+function validateSubcircuitName(subcircuitName) {
+  if (
+    subcircuitName.includes("_") ||
+    subcircuitName.includes("-") ||
+    subcircuitName.includes("$") ||
+    subcircuitName.includes("@") ||
+    subcircuitName.includes(".") ||
+    subcircuitName.includes("#")
+  ) {
     return false;
   }
   return true;
@@ -1721,7 +1734,9 @@ context.on("click", "#create-subcircuit", function (event) {
   let subcircuitName = window.prompt("Name of your subcircuit:");
 
   if (!validateSubcircuitName(subcircuitName)) {
-    alert("Cannot use special characters such as \"_\" or \"-\" or others in subcircuit name.");
+    alert(
+      'Cannot use special characters such as "_" or "-" or others in subcircuit name.'
+    );
     return;
   }
 
@@ -1733,14 +1748,14 @@ context.on("click", "#create-subcircuit", function (event) {
     connectArray.push("");
   }
 
-  // Collect port identifiers from the list of ports: the port identifiers map is of the following format: 
+  // Collect port identifiers from the list of ports: the port identifiers map is of the following format:
   // portIdentifiersMap: { portId1: portCustomName1, portId2: portCustomName2, etc..}
   // example: port ids are in the format: P_1 usually, and custom name is a custom name chosen by the user when building their subcircuit
   // so an example of a port identifier map could be: { "P_1": "INPORT", "P_2": "OUTPORT" }
   const portIdentifiersMap = {};
   const listOfPorts = simplifiedTemp["P"];
-  for(let i = 0; i < numPorts; i++) {
-    portIdentifiersMap["P_" + (i+1)] = listOfPorts[i].name;
+  for (let i = 0; i < numPorts; i++) {
+    portIdentifiersMap["P_" + (i + 1)] = listOfPorts[i].name;
   }
 
   // TODO : When implementing subcircuitThreePort we will need to set the number of ports dynamically based on the number of ports on the grid,
@@ -1751,7 +1766,7 @@ context.on("click", "#create-subcircuit", function (event) {
     isBlackBox: false, // when adding users and diff types of permissions, we would for example prompt professors if they want this to be a blackbox, but not students
     components: simplifiedTemp,
     connect: connectArray, // array of length equal to the number of ports the subcircuit components list has... we can number ports within a subcircuit as 1,2,3 and map those numbers to indices in the array so we know which array index corresponds to which port
-    portIdentifiersMap: portIdentifiersMap
+    portIdentifiersMap: portIdentifiersMap,
   };
 
   const subc = new Subcircuit(subcircuit);
@@ -1764,45 +1779,49 @@ context.on("click", "#create-subcircuit", function (event) {
     if (xhr.readyState === 4 && xhr.status === 201) {
       // maybe check returned json body for the backendId we assigned to it and store it in frontend?
       alert("Subcircuit created!");
-      
-      // Delete subcircuit parts on the grid 
+
+      // Delete subcircuit parts on the grid
       contextSet();
       partsNow.forEach((n) => n.deleteSelf());
       partsNow.deleteAll();
-      
+
       const divArray = $("div.parts-menu"); // selects the divs of buttons / circuit parts
       const lastDiv = divArray[divArray.length - 1]; // selects the last div of buttons / circuit parts
       const innerHTML = lastDiv.innerHTML; // the html string representation of the last row of the menu
 
-      // counts the number of buttons in the last row 
+      // counts the number of buttons in the last row
       // by counting the number of occurences of the substring "</button>"
       const count = innerHTML.match(/<\/button>/g || []).length;
 
       const subcircuitHTMLId = subcircuit.partType + "_" + subcircuit.name;
-      const button = document.createElement('button');
+      const button = document.createElement("button");
 
-      button.classList.add('parts-list');
+      button.classList.add("parts-list");
       button.id = subcircuitHTMLId;
 
-      if (count < 3) { // id of subcircuit html element not unique yet, but will be made later
+      if (count < 3) {
+        // id of subcircuit html element not unique yet, but will be made later
         //lastDiv.innerHTML += "<button class=\"parts-list\" id=\"" + subcircuit.partType + "-" + subcircuit.name + "\"><svg width=\"80\" height=\"60\" xmlns=\"http://www.w3.org/2000/svg\"><g><title>Layer 1</title><rect id=\"svg_1\" height=\"26\" width=\"60\" y=\"-13\" x=\"-30\" stroke=\"#000\" fill=\"#fff\"/></g></svg></button>";
         //lastDiv.innerHTML += "<button class=\"parts-list\" id=\"" + subcircuitHTMLId + "\"></button>";
         lastDiv.appendChild(button);
       } else {
-        // first, create a new last div to contain the new subcircuit part 
-        const newLastDiv = document.createElement('div');
-        newLastDiv.classList.add('parts-menu');
+        // first, create a new last div to contain the new subcircuit part
+        const newLastDiv = document.createElement("div");
+        newLastDiv.classList.add("parts-menu");
 
         // then add the new button for the new subcircuit part in the new div
         newLastDiv.appendChild(button);
 
         // select the div that contains the array of divs of 3 buttons each
         // append the new last div to it
-        const enclosingDiv = $('#menu-add-parts');
+        const enclosingDiv = $("#menu-add-parts");
         enclosingDiv.append(newLastDiv);
       }
 
-      buildSubcircuitSVGForPartsMenuButton(subcircuitHTMLId, portIdentifiersMap); // adds svg into the html button tag for the subcircuit 
+      buildSubcircuitSVGForPartsMenuButton(
+        subcircuitHTMLId,
+        portIdentifiersMap
+      ); // adds svg into the html button tag for the subcircuit
     } else if (xhr.readyState === 4 && xhr.status === 400) {
       alert(xhr.responseText);
     }
